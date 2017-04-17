@@ -1,0 +1,128 @@
+﻿<Page x:Name="Page"
+    x:Class="Mastoom.UWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Mastoom.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cv="using:Mastoom.Shared.Converters"
+    xmlns:vm="using:Mastoom.Shared.ViewModels"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:b="using:Mastoom.UWP.Behaviors"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <vm:MainViewModel/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
+    </Page.Resources>
+
+    <Pivot ItemsSource="{Binding Connections}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot.HeaderTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Name}"/>
+            </DataTemplate>
+        </Pivot.HeaderTemplate>
+        <Pivot.ItemTemplate>
+            <DataTemplate>
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <!--投稿欄-->
+                    <Border Background="#ddeeff">
+                        <Grid Margin="40,20,40,20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <!--テキストボックス-->
+                            <TextBox Grid.Row="0"
+                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
+                                     FontSize="20" Text="{Binding PostStatus.Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                                <!--エラーメッセージ-->
+                                <TextBlock Foreground="Red" FontSize="16" VerticalAlignment="Bottom"
+                                          Text="{Binding PostStatus.ErrorMessage}" Margin="0,0,16,0"/>
+
+                                <!--文字数-->
+                                <TextBlock Text="{Binding PostStatus.TextLengthLeave}" FontSize="18"
+                                           Foreground="DarkBlue" Margin="0,0,20,0" VerticalAlignment="Bottom"/>
+
+                                <!--tootボタン-->
+                                <Button Grid.Row="1" Content="トゥート"
+                                        Command="{Binding DataContext.PostStatusCommand,ElementName=Page}" CommandParameter="{Binding PostStatus}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!--タイムライン-->
+                    <ScrollViewer Grid.Column="0" Grid.Row="1"
+                                 VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
+                        <ItemsControl
+                                      ItemsSource="{Binding Statuses.DynamicLimited}"
+                                      Margin="20,0,20,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!--アイコン表示-->
+                                        <Image Grid.Column="0" Grid.RowSpan="3"
+                                                Width="72" Height="72" VerticalAlignment="Top"
+                                                Source="{Binding Account.IconUri}"/>
+
+                                        <StackPanel Grid.Column="1">
+                                            <!--名前表示-->
+                                            <StackPanel Margin="12,4,0,8"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
+                                                           Text="{Binding Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                                            </StackPanel>
+
+                                            <!--コンテンツ表示部分-->
+                                            <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
+                                                       TextWrapping="Wrap" IsTextSelectionEnabled="True">
+                                                <i:Interaction.Behaviors>
+                                                    <b:HtmlTextBehavior Content="{Binding Content,Converter={StaticResource String2EmojiConv}}"/>
+                                                </i:Interaction.Behaviors>
+                                            </TextBlock>
+
+                                            <!--画像表示部分-->
+                                            <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
+                                                <i:Interaction.Behaviors>
+                                                    <b:ImageCollectionBehavior Content="{Binding Content}"/>
+                                                </i:Interaction.Behaviors>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <i:Interaction.Behaviors>
+                            <b:TimelineScrollBehavior Collection="{Binding Statuses}"/>
+                        </i:Interaction.Behaviors>
+                    </ScrollViewer>
+
+                    <!--OAuthブラウザ-->
+                    <WebView Grid.RowSpan="2">
+                        <i:Interaction.Behaviors>
+                            <b:OAuthWebBehavior Helper="{Binding OAuthHelper}"/>
+                        </i:Interaction.Behaviors>
+                    </WebView>
+                </Grid>
+            </DataTemplate>
+        </Pivot.ItemTemplate>
+    </Pivot>
+</Page>

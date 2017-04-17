@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>81b148c4-3baa-456a-8033-0c0cceca2082</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Mastoom.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Emoji.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\GuiThread.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\String2EmojiConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Common\OAuthModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Account\MastodonAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\InstanceAccessProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatusCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\PostStatusModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
+  </ItemGroup>
+</Project>
