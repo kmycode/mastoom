@@ -11,6 +11,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 {
     public class PostStatusModel : INotifyPropertyChanged
     {
+        private const int TextLengthMax = 500;
 		private readonly MastodonClient client;
 
 		/// <summary>
@@ -30,7 +31,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 					this.OnPropertyChanged();
 
 					this.TextLength = this.Text.Length;
-					this.TextLengthLeave = 500 - this.TextLength;
+					this.TextLengthLeave = TextLengthMax - this.TextLength;
 				}
 			}
 		}
@@ -74,7 +75,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 				}
 			}
 		}
-		private int _textLengthLeave;
+		private int _textLengthLeave = TextLengthMax;
 
 		/// <summary>
 		/// 表示するメッセージ
