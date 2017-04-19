@@ -9,9 +9,14 @@ namespace Mastoom.Shared.Models.Mastodon.Account
     public class MastodonAccount : INotifyPropertyChanged
     {
 		/// <summary>
-		/// ID
+		/// ID（固有の数値）
 		/// </summary>
 		public int Id { get; }
+
+        /// <summary>
+        /// 実際に表示されるID
+        /// </summary>
+        public string DisplayId { get; }
 
 		/// <summary>
 		/// 名前
@@ -61,6 +66,7 @@ namespace Mastoom.Shared.Models.Mastodon.Account
 		public MastodonAccount(Mastonet.Entities.Account account)
 		{
 			this.Id = account.Id;
+            this.DisplayId = account.AccountName;
 			this.Name = account.DisplayName;
 			this.IconUri = account.AvatarUrl;
 		}

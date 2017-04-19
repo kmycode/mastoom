@@ -77,6 +77,26 @@ namespace Mastoom.Shared.Models.Mastodon
 		}
 		private string _instanceUri;
 
+        /// <summary>
+        /// ログインしているユーザ
+        /// </summary>
+        public MastodonAccount Account
+        {
+            get
+            {
+                return this._account;
+            }
+            private set
+            {
+                if (this._account != value)
+                {
+                    this._account = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+        private MastodonAccount _account;
+
 		/// <summary>
 		/// OAuthブラウザを操作するヘルパ
 		/// </summary>
@@ -145,8 +165,9 @@ namespace Mastoom.Shared.Models.Mastodon
 					this.OAuthHelper.Hide();
 
 					this.PostStatus = new PostStatusModel(this.client);
-					Task.Run(() =>
+					Task.Run(async () =>
 					{
+                        await this.GetCurrentUserAsync();
 						this.StartStreamingPublicStatus();
 					}).Wait();
 				}
@@ -179,6 +200,30 @@ namespace Mastoom.Shared.Models.Mastodon
 				this.Statuses.Add(new MastodonStatus(item));
 			}
 		}
+
+        private async Task GetCurrentUserAsync(int tryCount = 1)
+        {
+            if (tryCount > 3)
+            {
+                return;
+            }
+
+            try
+            {
+                var account = new MastodonAccount(await this.client.GetCurrentUser());
+                Task.Run(() =>
+                {
+                    GuiThread.Run(() =>
+                    {
+                        this.Account = account;
+                    });
+                });
+            }
+            catch
+            {
+                await this.GetCurrentUserAsync(tryCount + 1);
+            }
+        }
 
         private void StartStreamingPublicStatus()
         {

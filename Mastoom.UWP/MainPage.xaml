@@ -36,18 +36,39 @@
 
                     <!--投稿欄-->
                     <Border Background="#ddeeff">
-                        <Grid Margin="40,20,40,20">
+                        <Grid Margin="30,10,40,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
+                            <!--発言者のアイコン-->
+                            <Image Grid.Column="0" Grid.Row="1"
+                                   VerticalAlignment="Center" Margin="0,0,10,0"
+                                   Source="{Binding Account.IconUri}" Width="72" Height="72"/>
+
+                            <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,8" Orientation="Horizontal">
+                                <!--ユーザ名-->
+                                <TextBlock FontWeight="Bold" FontSize="22" Margin="0,0,24,0"
+                                           Text="{Binding Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                                
+                                <!--ID-->
+                                <TextBlock Foreground="#777" FontSize="18" VerticalAlignment="Bottom">
+                                    <Run Text="@"/><Run Text="{Binding Account.DisplayId}"/>
+                                </TextBlock>
+                            </StackPanel>
+
                             <!--テキストボックス-->
-                            <TextBox Grid.Row="0"
+                            <TextBox Grid.Column="1" Grid.Row="1"
                                      AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
                                      FontSize="20" Text="{Binding PostStatus.Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
-                            <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                            <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
                                 <!--エラーメッセージ-->
                                 <TextBlock Foreground="Red" FontSize="16" VerticalAlignment="Bottom"
                                           Text="{Binding PostStatus.ErrorMessage}" Margin="0,0,16,0"/>
