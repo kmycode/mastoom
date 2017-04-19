@@ -64,7 +64,7 @@
                             </StackPanel>
 
                             <!--テキストボックス-->
-                            <TextBox Grid.Column="1" Grid.Row="1"
+                            <TextBox Grid.Column="1" Grid.Row="1" FontFamily="Meiryo"
                                      AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
                                      FontSize="20" Text="{Binding PostStatus.Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -113,7 +113,8 @@
 
                                             <!--コンテンツ表示部分-->
                                             <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
-                                                       TextWrapping="Wrap" IsTextSelectionEnabled="True">
+                                                       TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                                                       FontFamily="Meiryo">
                                                 <i:Interaction.Behaviors>
                                                     <b:HtmlTextBehavior Content="{Binding Content,Converter={StaticResource String2EmojiConv}}"/>
                                                 </i:Interaction.Behaviors>
