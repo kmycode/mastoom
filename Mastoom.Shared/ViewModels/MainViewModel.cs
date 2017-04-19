@@ -40,9 +40,11 @@ namespace Mastoom.Shared.ViewModels
 
 		#endregion
 
-		#region コマンド
+		#region Commands
 
-
+        /// <summary>
+        /// Post new status (toot)
+        /// </summary>
 		public RelayCommand<PostStatusModel> PostStatusCommand
 		{
 			get
@@ -55,7 +57,22 @@ namespace Mastoom.Shared.ViewModels
 		}
 		private RelayCommand<PostStatusModel> _postStatusCommand;
 
+        /// <summary>
+        /// Exit page mode
+        /// </summary>
+        public RelayCommand<MastodonStatusCollection> ExitPageModeCommand
+        {
+            get
+            {
+                return this._exitPageModeCommand = this._exitPageModeCommand ?? new RelayCommand<MastodonStatusCollection>((collection) =>
+                {
+                    collection.ExitPageMode();
+                });
+            }
+        }
+        private RelayCommand<MastodonStatusCollection> _exitPageModeCommand;
 
-		#endregion
-	}
+
+        #endregion
+    }
 }

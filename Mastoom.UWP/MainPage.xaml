@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cv="using:Mastoom.Shared.Converters"
+    xmlns:cvu="using:Mastoom.UWP.Converters"
     xmlns:vm="using:Mastoom.Shared.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:b="using:Mastoom.UWP.Behaviors"
@@ -17,6 +18,7 @@
 
     <Page.Resources>
         <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
+        <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
     </Page.Resources>
 
     <Pivot ItemsSource="{Binding Connections}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -136,6 +138,16 @@
                             <b:TimelineScrollBehavior Collection="{Binding Statuses}"/>
                         </i:Interaction.Behaviors>
                     </ScrollViewer>
+                    
+                    <!--タイムラインの上へ移動-->
+                    <Border Grid.Row="1" Background="White" Margin="40,10,40,0"
+                            VerticalAlignment="Top"
+                            Visibility="{Binding Statuses.IsPageMode,Converter={StaticResource Boolean2VisibilityConv}}">
+                        <Button Content="最新のトゥートを表示"
+                                Command="{Binding DataContext.ExitPageModeCommand,ElementName=Page}"
+                                CommandParameter="{Binding Statuses}"
+                                HorizontalAlignment="Stretch" Height="42"/>
+                    </Border>
 
                     <!--OAuthブラウザ-->
                     <WebView Grid.RowSpan="2">

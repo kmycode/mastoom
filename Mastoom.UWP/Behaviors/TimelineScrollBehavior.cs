@@ -11,6 +11,9 @@ using Windows.UI.Xaml.Controls;
 
 namespace Mastoom.UWP.Behaviors
 {
+    /// <summary>
+    /// Manage timeline scrolling
+    /// </summary>
 	class TimelineScrollBehavior : Behavior<ScrollViewer>
 	{
 		private ScrollViewer attached;
@@ -19,23 +22,36 @@ namespace Mastoom.UWP.Behaviors
         private bool isPrevPage = false;
         private bool isNextPage = false;
         
+        /// <summary>
+        /// Collection which displaying in the timeline
+        /// </summary>
 		public MastodonStatusCollection Collection
         {
-            get
-            {
-                return (MastodonStatusCollection)this.GetValue(CollectionProperty);
-            }
-            set
-            {
-                this.SetValue(CollectionProperty, value);
-            }
+            get { return (MastodonStatusCollection)this.GetValue(CollectionProperty); }
+            set { this.SetValue(CollectionProperty, value); }
         }
         public static readonly DependencyProperty CollectionProperty =
             DependencyProperty.RegisterAttached(
-                "Collection",
+                nameof(Collection),
                 typeof(MastodonStatusCollection),
                 typeof(TimelineScrollBehavior),
-                new PropertyMetadata(null)
+                new PropertyMetadata(null, (sender, e) =>
+                {
+                    var b = sender as TimelineScrollBehavior;
+                    if (b != null)
+                    {
+                        if (e.OldValue != null)
+                        {
+                            var collection = (MastodonStatusCollection)e.OldValue;
+                            collection.PageModeExited -= b.Collection_PageModeExited;
+                        }
+                        if (e.NewValue != null)
+                        {
+                            var collection = (MastodonStatusCollection)e.NewValue;
+                            collection.PageModeExited += b.Collection_PageModeExited;
+                        }
+                    }
+                })
             );
 
         protected override void OnAttached()
@@ -132,6 +148,12 @@ namespace Mastoom.UWP.Behaviors
                 this.isNextPage = true;
                 collection.EnterPageMode();
             }
+        }
+
+        private void Collection_PageModeExited(object sender, EventArgs e)
+        {
+            // Scroll to top (animation must be disabled, or cannot scroll well)
+            this.attached.ChangeView(null, 0, null, true);
         }
     }
 }

@@ -10,10 +10,29 @@ using System.Text;
 
 namespace Mastoom.Shared.Models.Mastodon.Status
 {
-    public class MastodonStatusCollection : ReadOnlyObservableCollection<MastodonStatus>
+    public class MastodonStatusCollection : ReadOnlyObservableCollection<MastodonStatus>, INotifyPropertyChanged
     {
 		private ObservableCollection<MastodonStatus> collection;
-        public bool IsPageMode { get; private set; }
+
+        /// <summary>
+        /// Page mode (during scrolling timeline)
+        /// </summary>
+        public bool IsPageMode
+        {
+            get
+            {
+                return this._isPageMode;
+            }
+            private set
+            {
+                if (this._isPageMode != value)
+                {
+                    this._isPageMode = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+        private bool _isPageMode;
 
         /// <summary>
         /// 画面スクロールなどに対応して、実際に表示する要素
@@ -70,6 +89,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
             this.IsPageMode = false;
             this.NewestPage();
+
+            this.PageModeExited?.Invoke(this, new EventArgs());
         }
 
         public void PerformNextPage(bool isEnter = false)
@@ -139,5 +160,20 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		{
 			return this.SingleOrDefault(item => item.Id == id);
 		}
-	}
+
+        /// <summary>
+        /// Published when exited page mode
+        /// </summary>
+        public event EventHandler PageModeExited;
+
+        #region INotifyPropertyChanged
+
+        public new event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+    }
 }
