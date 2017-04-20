@@ -7,16 +7,10 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using CarouselView.FormsPlugin.Android;
 
-namespace Mastoom.Droid
+namespace MastoomXF.Droid
 {
-    [Activity(
-        Label = "MastoomXF.Droid",
-        Icon = "@drawable/icon",
-        Theme = "@style/MyTheme",
-        MainLauncher = true,
-        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "MastoomXF.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
@@ -24,13 +18,10 @@ namespace Mastoom.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-            base.OnCreate(bundle);
+			base.OnCreate(bundle);
 
-            // スリープさせないお
-            Window.AddFlags(WindowManagerFlags.KeepScreenOn);
+			global::Xamarin.Forms.Forms.Init(this, bundle, this.GetType().Assembly);
 
-            global::Xamarin.Forms.Forms.Init(this, bundle);
-            CarouselViewRenderer.Init();
             LoadApplication(new App());
         }
     }

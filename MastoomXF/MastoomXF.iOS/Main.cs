@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace Mastoom.iOS
+namespace MastoomXF.iOS
 {
     public class Application
     {

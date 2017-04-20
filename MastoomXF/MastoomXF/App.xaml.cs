@@ -1,8 +1,6 @@
 ﻿using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
-[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
-namespace Mastoom
+namespace MastoomXF
 {
     public partial class App : Application
     {
@@ -10,7 +8,7 @@ namespace Mastoom
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new Views.MainPage());
+            MainPage = new MastoomXFPage();
         }
 
         protected override void OnStart()
