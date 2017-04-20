@@ -6,7 +6,7 @@
     <ProjectGuid>{10D964BB-8F15-4278-8566-A10540BC6980}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>MastoomXF.Droid</RootNamespace>
+    <RootNamespace>Mastoom.Droid</RootNamespace>
     <AssemblyName>MastoomXF.Droid</AssemblyName>
     <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
