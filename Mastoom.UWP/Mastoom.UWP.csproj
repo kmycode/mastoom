@@ -133,9 +133,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Mastonet">
-      <HintPath>..\plugin\Mastonet.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Mastonet\Mastonet\Mastonet.csproj">
+      <Project>{7f0c617e-c8c1-4003-80de-d36b89097ac4}</Project>
+      <Name>Mastonet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Mastoom.Shared\Mastoom.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

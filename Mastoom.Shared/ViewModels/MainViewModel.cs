@@ -10,7 +10,9 @@ namespace Mastoom.Shared.ViewModels
     {
 		#region プロパティ
 
-		/// <summary>
+        public string Test => "sample";
+
+        /// <summary>
 		/// 接続先一覧
 		/// </summary>
 		public MastodonConnectionCollection Connections { get; } = new MastodonConnectionCollection();

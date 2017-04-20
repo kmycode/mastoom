@@ -31,7 +31,7 @@ namespace Mastoom.Shared.Models.Mastodon
 		private bool isInitialized = false;
 		private string streamingInstance;
         private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
-        private Timer StreamingTimer;
+        //private Timer StreamingTimer;
 
 		#endregion
 
@@ -137,11 +137,11 @@ namespace Mastoom.Shared.Models.Mastodon
             //this.InitializeAsync().ConfigureAwait(false);
 
             // ストリーミングの更新がタイムアウトした時の処理
-            this.StreamingTimer = new Timer((sender) =>
-            {
-                this.StopStreamingPublicStatus();
-                this.StartStreamingPublicStatus();
-            }, null, Timeout.Infinite, Timeout.Infinite);
+            //this.StreamingTimer = new Timer((sender) =>
+            //{
+            //    this.StopStreamingPublicStatus();
+            //    this.StartStreamingPublicStatus();
+            //}, null, Timeout.Infinite, Timeout.Infinite);
         }
 
 		private async Task InitializeAsync()
@@ -254,7 +254,7 @@ namespace Mastoom.Shared.Models.Mastodon
                     this.publicStatusStreaming.OnUpdate += this.PublicStatus_OnUpdate;
                 }
 
-                this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
+                //this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
                 this.publicStatusStreaming.Start();
 			}
 			catch (Exception e)
@@ -275,13 +275,13 @@ namespace Mastoom.Shared.Models.Mastodon
 				catch { }
 				this.publicStatusStreaming.OnUpdate -= this.PublicStatus_OnUpdate;
 				this.publicStatusStreaming = null;
-                this.StreamingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                //this.StreamingTimer.Change(Timeout.Infinite, Timeout.Infinite);
 			}
 		}
 
 		private void PublicStatus_OnUpdate(object sender, StreamUpdateEventArgs e)
 		{
-            this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
+            //this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
 			GuiThread.Run(() =>
 			{
 				this.Statuses.Add(new MastodonStatus(e.Status));
