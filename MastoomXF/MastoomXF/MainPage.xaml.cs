@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using Mastoom.Shared.ViewModels;
+using Xamarin.Forms;
 
 namespace Mastoom
 {

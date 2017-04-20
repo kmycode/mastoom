@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Mastoom" x:Class="Mastoom.MainPage">
-    <Label Text="Welcome to Xamarin Forms!" VerticalOptions="Center" HorizontalOptions="Center" />
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:control="clr-namespace:Xamarin.Forms;assembly=Xamarin.Forms.CarouselView"
+             xmlns:local="clr-namespace:Mastoom"
+             x:Class="Mastoom.MainPage"
+             xmlns:vm="clr-namespace:Mastoom.Shared.ViewModels"
+             xmlns:cv="clr-namespace:Mastoom.Shared.Converters">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <cv:String2EmojiConverter x:Key="String2EmojiConv" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <control:CarouselView ItemsSource="{Binding Connections}">
+        <control:CarouselView.ItemTemplate>
+            <DataTemplate>
+                <Label Text="{Binding Name}" />
+            </DataTemplate>
+        </control:CarouselView.ItemTemplate>
+    </control:CarouselView>
 </ContentPage>
