@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
+	xmlns="http://xamarin.com/schemas/2014/forms" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:b="clr-namespace:Mastoom.Behaviors"
+    xmlns:m="clr-namespace:Mastoom.Shared.Models.Common"
+	x:Class="Mastoom.Views.SingleTimelineView">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+			<m:OAuthModel x:Key="oAuthModel" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+	
+	<ContentView.Content>
+		<Grid
+			BackgroundColor="Gray"
+			HorizontalOptions="FillAndExpand"
+			VerticalOptions="FillAndExpand">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+			
+	        <!--タイムライン-->
+	        <ListView 
+				BackgroundColor="Fuchsia"
+				Grid.Column="0" 
+				Grid.Row="2"
+				ItemsSource="{Binding Statuses.DynamicLimited}">
+  
+    
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<ViewCell>
+							<Label Text="{Binding .}"/>
+						</ViewCell>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+
+<!--	            <ListView.Behaviors>
+	                <b:TimelineScrollBehavior Collection="{Binding Statuses}"/>
+	            </ListView.Behaviors> -->
+	        </ListView>
+	    
+	        <!--タイムラインの上へ移動
+	        <Border 
+				Grid.Row="2" 
+				Background="White" 
+				Margin="40,10,40,0"
+                VerticalAlignment="Top"
+				Visibility="{Binding Statuses.IsPageMode}">
+	            <Button Content="最新のトゥートを表示"
+	                    Command="{Binding DataContext.ExitPageModeCommand, ElementName=Page}"
+	                    CommandParameter="{Binding Statuses}"
+	                    HorizontalAlignment="Stretch" Height="42"/>
+	        </Border> -->
+
+	        <!--OAuthブラウザ -->
+	        <WebView 
+				BackgroundColor="Aqua"
+				Grid.RowSpan="2" 
+				Grid.Row="1">
+	            <WebView.Behaviors>
+<!--					<b:EventToCommand EventName="{Binding Name}" Helper="{Binding OAuthHelper}" />-->
+	                <b:OAuthWebBehavior Helper="{Binding OAuthHelper}"/>
+	            </WebView.Behaviors>
+	        </WebView>
+
+<!--			<Label 
+				Text="{Binding Name}"
+				Grid.RowSpan="2" 
+				Grid.Row="1"
+				>
+			</Label>
+-->
+		</Grid>
+	</ContentView.Content>
+</ContentView>

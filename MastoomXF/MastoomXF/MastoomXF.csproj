@@ -29,16 +29,43 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.xaml" />
-    <EmbeddedResource Include="MainPage.xaml" />
+    <EmbeddedResource Include="Views\MainPage.xaml" />
+    <EmbeddedResource Include="Views\SingleTimelineView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\NotificationsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FavouritesView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\OtherInstancesTimelineView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\SingleTimelineView.xaml.cs">
+      <DependentUpon>SingleTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MyTemplateSelector.cs" />
+    <Compile Include="Views\NotificationsView.xaml.cs">
+      <DependentUpon>NotificationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FavouritesView.xaml.cs">
+      <DependentUpon>FavouritesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OtherInstancesTimelineView.xaml.cs">
+      <DependentUpon>OtherInstancesTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Behaviors\OAuthWebBehavior.cs" />
+    <Compile Include="Behaviors\EventToCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mastonet">
@@ -60,7 +87,20 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\" />
+    <Folder Include="Behaviors\" />
+  </ItemGroup>
   <Import Project="..\..\Mastoom.Shared\Mastoom.Shared.projitems" Label="Shared" Condition="Exists('..\..\Mastoom.Shared\Mastoom.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileFormatDefault" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

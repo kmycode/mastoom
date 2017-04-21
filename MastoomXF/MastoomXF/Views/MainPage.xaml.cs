@@ -1,7 +1,7 @@
 ﻿using Mastoom.Shared.ViewModels;
 using Xamarin.Forms;
 
-namespace Mastoom
+namespace Mastoom.Views
 {
     public partial class MainPage : ContentPage
     {
