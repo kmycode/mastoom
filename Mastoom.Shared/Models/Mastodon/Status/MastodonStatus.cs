@@ -47,8 +47,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			this.Id = id;
 			this.Account = account;
 		}
-
-        private static int a = 0;
+        
 		public MastodonStatus(Mastonet.Entities.Status status)
 		{
 			this.Id = status.Id;
