@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -36,11 +37,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 #if DEBUG
 		public void AddTestConnection()
 		{
-			this.Add(new MastodonConnection("pawoo.net")
+			this.Add(new MastodonConnection("pawoo.net", ConnectionFunctionType.PublicTimeline)
 			{
 				Name = "Pawoo",
 			});
-			this.Add(new MastodonConnection("mstdn.jp")
+			this.Add(new MastodonConnection("mstdn.jp", ConnectionFunctionType.PublicTimeline)
 			{
 				Name = "Mstdn",
 			});

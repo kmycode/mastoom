@@ -2,6 +2,8 @@
 using Mastonet.Entities;
 using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
+using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +62,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// この認証情報で得られるユーザ
         /// </summary>
         public MastodonAccount CurrentUser { get; private set; }
+
+        /// <summary>
+        /// 公開タイムラインへアクセスする機能のカウンタ
+        /// </summary>
+        public ConnectionFunctionCounter<MastodonStatus> PublicStreamingFunctionCounter { get; private set; }
 
         #endregion
 
@@ -144,6 +151,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this.Client = new MastodonClient(this.appRegistration, this.AccessToken);
             var auth = await this.Client.ConnectWithCode(this.AccessToken);
             this.CurrentUser = new MastodonAccount(await this.Client.GetCurrentUser());
+
+            this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
+            {
+                Client = this.Client,
+                StreamingInstanceUri = this.StreamingUri,
+            });
         }
 
         public void StartOAuthLogin()

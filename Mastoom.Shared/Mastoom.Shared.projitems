@@ -14,11 +14,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\String2EmojiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Common\OAuthModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Account\MastodonAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\InstanceAccessProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonAuthentication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonAuthenticationHouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\IConnectionFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\PublicTimelineFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatusCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\PostStatusModel.cs" />

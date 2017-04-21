@@ -4,6 +4,7 @@ using Mastoom.Shared.Common;
 using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection;
+using Mastoom.Shared.Models.Mastodon.Connection.Function;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -28,12 +29,14 @@ namespace Mastoom.Shared.Models.Mastodon
 		private TimelineStreaming publicStatusStreaming;
         
 		private string streamingInstance;
-        private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
-        private Timer StreamingTimer;
+        
+        private IConnectionFunction function;
 
-		#endregion
+        private ConnectionFunctionType functionType;
 
-		#region プロパティ
+        #endregion
+
+        #region プロパティ
 
         /// <summary>
         /// マストドンのひとつの認証
@@ -111,17 +114,11 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		public MastodonConnection(string instanceUri)
+		public MastodonConnection(string instanceUri, ConnectionFunctionType functionType)
 		{
             this.InstanceUri = instanceUri;
+            this.functionType = functionType;
             this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
-
-            // ストリーミングの更新がタイムアウトした時の処理
-            this.StreamingTimer = new Timer((sender) =>
-            {
-                this.StopStreamingPublicStatus();
-                this.StartStreamingPublicStatus();
-            }, null, Timeout.Infinite, Timeout.Infinite);
 
             if (!this.Auth.HasAuthenticated)
             {
@@ -129,9 +126,9 @@ namespace Mastoom.Shared.Models.Mastodon
                 this.Auth.Completed += (sender, e) =>
                 {
                     this.ImportAuthenticationData();
-                    Task.Run(() =>
+                    Task.Run(async () =>
                     {
-                        this.StartStreamingPublicStatus();
+                        await this.StartFunctionAsync();
                     }).Wait();
                 };
 
@@ -141,9 +138,9 @@ namespace Mastoom.Shared.Models.Mastodon
             else
             {
                 this.ImportAuthenticationData();
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    this.StartStreamingPublicStatus();
+                    await this.StartFunctionAsync();
                 }).Wait();
             }
         }
@@ -156,75 +153,49 @@ namespace Mastoom.Shared.Models.Mastodon
             this.Account = this.Auth.CurrentUser;
         }
 
-		private async Task GetNewerStatuses()
-		{
-			var timeline = await this.client.GetPublicTimeline();
-			foreach (var item in timeline)
-			{
-				this.Statuses.Add(new MastodonStatus(item));
-			}
-		}
-
-        private void StartStreamingPublicStatus()
+        private async Task StartFunctionAsync()
         {
-            this.StartStreamingPublicStatus(1);
-        }
-
-		private void StartStreamingPublicStatus(int tryCount)
-		{
-            // 試行回数
-            if (tryCount > 3)
+            if (this.function != null)
             {
                 return;
             }
 
-            try
+            switch (this.functionType)
             {
-                if (this.publicStatusStreaming == null)
-			    {
-                    if (this.streamingInstance == null)
-                    {
-                        this.publicStatusStreaming = this.client.GetPublicStreaming();
-                    }
-                    else
-                    {
-                        this.publicStatusStreaming = this.client.GetPublicStreaming(this.streamingInstance);
-                    }
+                case ConnectionFunctionType.PublicTimeline:
+                    var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
+                    func.Updated += this.StatusFunction_OnUpdate;
+                    this.function = func;
+                    break;
+            }
 
-                    this.publicStatusStreaming.OnUpdate += this.PublicStatus_OnUpdate;
-                }
+            await this.function.StartAsync();
+        }
 
-                this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
-                this.publicStatusStreaming.Start();
-			}
-			catch (Exception e)
-			{
-				this.StopStreamingPublicStatus();
-				this.StartStreamingPublicStatus(tryCount + 1);
-			}
-		}
+        private async Task StopFunctionAsync()
+        {
+            if (this.function == null)
+            {
+                return;
+            }
 
-		private void StopStreamingPublicStatus()
+            switch (this.functionType)
+            {
+                case ConnectionFunctionType.PublicTimeline:
+                    var func = (IConnectionFunction<MastodonStatus>)this.function;
+                    func.Updated -= this.StatusFunction_OnUpdate;
+                    await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();
+                    break;
+            }
+
+            this.function = null;
+        }
+
+		private void StatusFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonStatus> e)
 		{
-			if (this.publicStatusStreaming != null)
-			{
-				try
-				{
-					this.publicStatusStreaming.Stop();
-				}
-				catch { }
-				this.publicStatusStreaming.OnUpdate -= this.PublicStatus_OnUpdate;
-				this.publicStatusStreaming = null;
-                this.StreamingTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			}
-		}
-
-		private void PublicStatus_OnUpdate(object sender, StreamUpdateEventArgs e)
-		{
-            this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
 			GuiThread.Run(() =>
 			{
-				this.Statuses.Add(new MastodonStatus(e.Status));
+				this.Statuses.Add(e.Object);
 			});
 		}
 
