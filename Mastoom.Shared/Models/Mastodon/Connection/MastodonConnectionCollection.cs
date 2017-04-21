@@ -36,14 +36,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 #if DEBUG
 		public void AddTestConnection()
 		{
-			this.Add(new MastodonConnection
+			this.Add(new MastodonConnection("pawoo.net")
 			{
-				InstanceUri = "pawoo.net",
 				Name = "Pawoo",
 			});
-			this.Add(new MastodonConnection
+			this.Add(new MastodonConnection("mstdn.jp")
 			{
-				InstanceUri = "mstdn.jp",
 				Name = "Mstdn",
 			});
 			this.Main = this[0];

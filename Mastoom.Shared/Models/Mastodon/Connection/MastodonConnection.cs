@@ -26,9 +26,7 @@ namespace Mastoom.Shared.Models.Mastodon
 		private MastodonClient client;
 
 		private TimelineStreaming publicStatusStreaming;
-
-		private AppRegistration appRegistration;
-		private bool isInitialized = false;
+        
 		private string streamingInstance;
         private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
         private Timer StreamingTimer;
@@ -36,6 +34,11 @@ namespace Mastoom.Shared.Models.Mastodon
 		#endregion
 
 		#region プロパティ
+
+        /// <summary>
+        /// マストドンのひとつの認証
+        /// </summary>
+        public MastodonAuthentication Auth { get; private set; }
 
 		/// <summary>
 		/// 接続の名前
@@ -60,22 +63,7 @@ namespace Mastoom.Shared.Models.Mastodon
 		/// <summary>
 		/// インスタンスのURI
 		/// </summary>
-		public string InstanceUri
-		{
-			get
-			{
-				return this._instanceUri;
-			}
-			set
-			{
-				if (this._instanceUri != value)
-				{
-					this._instanceUri = value;
-					this.OnPropertyChanged();
-				}
-			}
-		}
-		private string _instanceUri;
+		public string InstanceUri { get; }
 
         /// <summary>
         /// ログインしているユーザ
@@ -96,11 +84,6 @@ namespace Mastoom.Shared.Models.Mastodon
             }
         }
         private MastodonAccount _account;
-
-		/// <summary>
-		/// OAuthブラウザを操作するヘルパ
-		/// </summary>
-		public OAuthModel OAuthHelper { get; } = new OAuthModel();
 
 		/// <summary>
 		/// ステータスの集まり
@@ -128,13 +111,10 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		public MastodonConnection()
+		public MastodonConnection(string instanceUri)
 		{
-			this.OAuthHelper.Attached += async (sender, e) =>
-			{
-				await this.InitializeAsync();
-			};
-            //this.InitializeAsync().ConfigureAwait(false);
+            this.InstanceUri = instanceUri;
+            this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
 
             // ストリーミングの更新がタイムアウトした時の処理
             this.StreamingTimer = new Timer((sender) =>
@@ -142,55 +122,39 @@ namespace Mastoom.Shared.Models.Mastodon
                 this.StopStreamingPublicStatus();
                 this.StartStreamingPublicStatus();
             }, null, Timeout.Infinite, Timeout.Infinite);
+
+            if (!this.Auth.HasAuthenticated)
+            {
+                // 認証完了した時の処理
+                this.Auth.Completed += (sender, e) =>
+                {
+                    this.ImportAuthenticationData();
+                    Task.Run(() =>
+                    {
+                        this.StartStreamingPublicStatus();
+                    }).Wait();
+                };
+
+                // 認証開始
+                this.Auth.StartOAuthLogin();
+            }
+            else
+            {
+                this.ImportAuthenticationData();
+                Task.Run(() =>
+                {
+                    this.StartStreamingPublicStatus();
+                }).Wait();
+            }
         }
 
-		private async Task InitializeAsync()
-		{
-			if (this.isInitialized)
-			{
-				return;
-			}
-			this.isInitialized = true;
-
-			this.OAuthHelper.UriNavigated += async (sender, e) =>
-			{
-				if (e.Uri.Contains("/oauth/authorize/"))
-				{
-					var paths = e.Uri.Split('/');
-					var token = paths.ElementAt(paths.Count() - 1);
-					
-					this.client = new MastodonClient(this.appRegistration, token);
-					var auth = await this.client.ConnectWithCode(token);
-
-					this.OAuthHelper.Hide();
-
-					this.PostStatus = new PostStatusModel(this.client);
-					Task.Run(async () =>
-					{
-                        await this.GetCurrentUserAsync();
-						this.StartStreamingPublicStatus();
-					}).Wait();
-				}
-			};
-
-			await this.ConnectAsync();
-		}
-
-		private async Task ConnectAsync()
-		{
-			var data = InstanceAccessProvider.GetWithInstanceUri(this.InstanceUri);
-			this.streamingInstance = data.StreamingInstance;
-			//var appRegistration = await MastodonClient.CreateApp(this.instanceUrl, ApplicationName, Scope.Follow | Scope.Read | Scope.Write, "http://kmycode.net/");
-			this.appRegistration = new AppRegistration
-			{
-				Instance = this.InstanceUri,
-				ClientId = data.ClientId,
-				ClientSecret = data.ClientSecret,
-				Scope = Scope.Follow | Scope.Read | Scope.Write,
-			};
-			var preClient = new MastodonClient(this.appRegistration);
-			this.OAuthHelper.NavigateRequest(preClient.OAuthUrl());
-		}
+        private void ImportAuthenticationData()
+        {
+            this.client = this.Auth.Client;
+            this.streamingInstance = this.Auth.StreamingUri;
+            this.PostStatus = new PostStatusModel(this.client);
+            this.Account = this.Auth.CurrentUser;
+        }
 
 		private async Task GetNewerStatuses()
 		{
@@ -200,30 +164,6 @@ namespace Mastoom.Shared.Models.Mastodon
 				this.Statuses.Add(new MastodonStatus(item));
 			}
 		}
-
-        private async Task GetCurrentUserAsync(int tryCount = 1)
-        {
-            if (tryCount > 3)
-            {
-                return;
-            }
-
-            try
-            {
-                var account = new MastodonAccount(await this.client.GetCurrentUser());
-                Task.Run(() =>
-                {
-                    GuiThread.Run(() =>
-                    {
-                        this.Account = account;
-                    });
-                });
-            }
-            catch
-            {
-                await this.GetCurrentUserAsync(tryCount + 1);
-            }
-        }
 
         private void StartStreamingPublicStatus()
         {
