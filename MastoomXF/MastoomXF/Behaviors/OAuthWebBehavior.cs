@@ -150,7 +150,7 @@ namespace Mastoom.Behaviors
 			{
 				if (this.associatedObject != null)
 				{
-	                this.associatedObject.Source = e.Uri;
+					this.associatedObject.Source = new Uri(e.Uri);
 				}
 			}
 			catch { }

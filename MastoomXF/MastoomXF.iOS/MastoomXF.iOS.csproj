@@ -97,6 +97,10 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\packages\Xamarin.Forms.2.3.4.231\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
+    <Reference Include="ModernHttpClient">
+      <HintPath>..\packages\modernhttpclient.2.4.2\lib\Xamarin.iOS10\ModernHttpClient.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="CarouselView.FormsPlugin.Abstractions">
       <HintPath>..\packages\CarouselView.FormsPlugin.4.1.2\lib\Xamarin.iOS10\CarouselView.FormsPlugin.Abstractions.dll</HintPath>
     </Reference>
@@ -108,6 +112,10 @@
     <ProjectReference Include="..\MastoomXF\MastoomXF.csproj">
       <Project>{6A172184-A55E-4F45-8058-C869789DC2A0}</Project>
       <Name>MastoomXF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\playground\Mastonet\Mastonet\MastonetPcl.csproj">
+      <Project>{DC6C188F-B867-4321-808F-28260370C531}</Project>
+      <Name>MastonetPcl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +137,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
   </ItemGroup>
+  <Import Project="..\..\Mastoom.Shared\Mastoom.Shared.projitems" Label="Shared" Condition="Exists('..\..\Mastoom.Shared\Mastoom.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.4.231\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
   <ProjectExtensions>
