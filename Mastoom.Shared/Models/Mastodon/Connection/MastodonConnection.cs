@@ -25,8 +25,6 @@ namespace Mastoom.Shared.Models.Mastodon
 		private const string ApplicationName = "Mastoom.Master.Test";
 		
 		private MastodonClient client;
-
-		private TimelineStreaming publicStatusStreaming;
         
 		private string streamingInstance;
         
