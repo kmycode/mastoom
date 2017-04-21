@@ -8,7 +8,7 @@ namespace Mastoom
         {
             InitializeComponent();
 
-			MainPage = new NavigationPage(new MainPage());
+			MainPage = new NavigationPage(new Views.MainPage());
         }
 
         protected override void OnStart()
