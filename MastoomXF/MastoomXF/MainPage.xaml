@@ -2,7 +2,7 @@
 
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:control="clr-namespace:Xamarin.Forms;assembly=Xamarin.Forms.CarouselView"
+			 xmlns:controls="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:local="clr-namespace:Mastoom"
              x:Class="Mastoom.MainPage"
              xmlns:vm="clr-namespace:Mastoom.Shared.ViewModels"
@@ -18,11 +18,17 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <control:CarouselView ItemsSource="{Binding Connections}">
-        <control:CarouselView.ItemTemplate>
-            <DataTemplate>
+	<controls:CarouselViewControl 
+		Orientation="Horizontal" 
+		InterPageSpacing="10" 
+		Position="0" 
+		ItemsSource="{Binding Connections}" 
+		VerticalOptions="FillAndExpand" 
+		HorizontalOptions="FillAndExpand">
+	    <controls:CarouselViewControl.ItemTemplate>
+	        <DataTemplate>
                 <Label Text="{Binding Name}" />
-            </DataTemplate>
-        </control:CarouselView.ItemTemplate>
-    </control:CarouselView>
+		    </DataTemplate>
+	    </controls:CarouselViewControl.ItemTemplate>
+	</controls:CarouselViewControl>
 </ContentPage>
