@@ -160,7 +160,7 @@
                         </Border>
 
                         <!--OAuthブラウザ-->
-                        <WebView Grid.RowSpan="2" Grid.Row="1">
+                        <WebView Grid.RowSpan="2" Grid.Row="1" Visibility="Collapsed">
                             <i:Interaction.Behaviors>
                                 <b:OAuthWebBehavior Helper="{Binding Auth.OAuthHelper}"/>
                             </i:Interaction.Behaviors>

@@ -148,6 +148,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         public void StartOAuthLogin()
         {
+            this.OAuthHelper.Show();
             var preClient = new MastodonClient(this.appRegistration);
             this.OAuthHelper.NavigateRequest(preClient.OAuthUrl());
         }
