@@ -26,6 +26,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+    <AndroidTlsProvider>btls</AndroidTlsProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,9 +46,6 @@
     <Reference Include="Mono.Android" />
     <Reference Include="Xamarin.Android.Support.v7.CardView">
       <HintPath>..\packages\Xamarin.Android.Support.v7.CardView.23.3.0\lib\MonoAndroid403\Xamarin.Android.Support.v7.CardView.dll</HintPath>
-    </Reference>
-    <Reference Include="Mastonet">
-      <HintPath>..\..\ext\Mastonet.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.IO.Compression" />
@@ -113,6 +112,9 @@
     </Reference>
     <Reference Include="CarouselView.FormsPlugin.Android">
       <HintPath>..\packages\CarouselView.FormsPlugin.4.1.2\lib\MonoAndroid\CarouselView.FormsPlugin.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="Mastonet">
+      <HintPath>..\..\ext\Mastonet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
