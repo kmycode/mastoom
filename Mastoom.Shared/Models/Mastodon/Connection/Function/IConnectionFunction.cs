@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 {
     /// <summary>
-    /// 接続のファンクション
+    /// 接続のファンクション。
+    /// 公開タイムラインなどのStreamingと、
+    /// お気に入り・フォロワー一覧などStreamingのないAPIとの通信を
+    /// まとめて抽象化するインターフェース
     /// </summary>
     public interface IConnectionFunction
     {
@@ -32,6 +35,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         Task GetNewerAsync();
     }
 
+    /// <summary>
+    /// IConnectionFunctionに型をつける
+    /// </summary>
+    /// <typeparam name="T">このインターフェースがサーバから取得するオブジェクトの型。例：タイムラインと接続するクラスであればMastodonStatus</typeparam>
     public interface IConnectionFunction<T> : IConnectionFunction
     {
         /// <summary>
@@ -67,6 +74,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public Exception Exception { get; set; }
     }
 
+    /// <summary>
+    /// IConnectionFunctionがサーバから取得したオブジェクトについて、
+    /// もし新しく追加されたデータであれば、そのデータを追加する位置
+    /// </summary>
     public enum ObjectFunctionAdditionPosition
     {
         /// <summary>
@@ -80,11 +91,21 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         Bottom,
     }
 
+    /// <summary>
+    /// IConnectionFunctionの種別。
+    /// １つの種別あたりただ１つのインスタンスを１つの認証ごとに保持するので、
+    /// １つの認証から同じ種別の接続を複数作らないよう、
+    /// 認証オブジェクトと他のオブジェクトとのやり取り時に使用する
+    /// </summary>
     public enum ConnectionFunctionType
     {
         PublicTimeline,
     }
 
+    /// <summary>
+    /// IConnectionFunctionがエラーを返した時、
+    /// そのエラーがどのタイミングで発生したどういう種類のエラーなのか
+    /// </summary>
     public enum ObjectFunctionErrorType
     {
         /// <summary>
