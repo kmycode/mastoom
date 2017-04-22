@@ -27,7 +27,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// <summary>
         /// １まとまり前のデータをサーバから取得する
         /// </summary>
-        Task GetPrevAsync(int maxId);
+        Task GetPrevAsync();
 
         /// <summary>
         /// １まとまり分、最新のデータをサーバから取得する

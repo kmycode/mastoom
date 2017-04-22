@@ -40,7 +40,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         {
         }
 
-        public async Task GetPrevAsync(int maxId)
+        public async Task GetPrevAsync()
         {
         }
 
