@@ -97,9 +97,6 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\packages\Xamarin.Forms.2.3.4.231\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="ModernHttpClient">
-      <HintPath>..\packages\modernhttpclient.2.4.2\lib\Xamarin.iOS10\ModernHttpClient.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="CarouselView.FormsPlugin.Abstractions">
       <HintPath>..\packages\CarouselView.FormsPlugin.4.1.2\lib\Xamarin.iOS10\CarouselView.FormsPlugin.Abstractions.dll</HintPath>
