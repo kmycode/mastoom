@@ -37,7 +37,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        public Task GetNextAsync()
+        public Task GetNewerAsync()
         {
             throw new NotImplementedException();
         }

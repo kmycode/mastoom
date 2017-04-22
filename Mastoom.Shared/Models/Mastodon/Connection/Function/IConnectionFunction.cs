@@ -27,9 +27,9 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         Task GetPrevAsync();
 
         /// <summary>
-        /// １まとまり後のデータをサーバから取得する
+        /// １まとまり分、最新のデータをサーバから取得する
         /// </summary>
-        Task GetNextAsync();
+        Task GetNewerAsync();
     }
 
     public interface IConnectionFunction<T> : IConnectionFunction
