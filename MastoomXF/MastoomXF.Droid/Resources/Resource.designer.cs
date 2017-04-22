@@ -2072,7 +2072,6 @@ namespace Mastoom.Droid
 			global::CarouselView.FormsPlugin.Android.Resource.Styleable.ViewStubCompat_android_id = global::Mastoom.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::CarouselView.FormsPlugin.Android.Resource.Styleable.ViewStubCompat_android_inflatedId = global::Mastoom.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::CarouselView.FormsPlugin.Android.Resource.Styleable.ViewStubCompat_android_layout = global::Mastoom.Droid.Resource.Styleable.ViewStubCompat_android_layout;
-			global::ModernHttpClient.Resource.String.library_name = global::Mastoom.Droid.Resource.String.library_name;
 		}
 		
 		public partial class Animation
@@ -5585,9 +5584,6 @@ namespace Mastoom.Droid
 			
 			// aapt resource value: 0x7f060016
 			public const int character_counter_pattern = 2131099670;
-			
-			// aapt resource value: 0x7f060038
-			public const int library_name = 2131099704;
 			
 			// aapt resource value: 0x7f060000
 			public const int mr_button_content_description = 2131099648;

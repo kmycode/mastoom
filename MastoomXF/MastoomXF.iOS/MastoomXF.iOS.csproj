@@ -104,15 +104,14 @@
     <Reference Include="CarouselView.FormsPlugin.iOS">
       <HintPath>..\packages\CarouselView.FormsPlugin.4.1.2\lib\Xamarin.iOS10\CarouselView.FormsPlugin.iOS.dll</HintPath>
     </Reference>
+    <Reference Include="Mastonet">
+      <HintPath>..\..\ext\Mastonet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MastoomXF\MastoomXF.csproj">
       <Project>{6A172184-A55E-4F45-8058-C869789DC2A0}</Project>
       <Name>MastoomXF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\playground\Mastonet\Mastonet\MastonetPcl.csproj">
-      <Project>{DC6C188F-B867-4321-808F-28260370C531}</Project>
-      <Name>MastonetPcl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
