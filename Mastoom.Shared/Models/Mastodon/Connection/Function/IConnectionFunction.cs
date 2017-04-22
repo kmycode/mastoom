@@ -37,13 +37,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// <summary>
         /// データが新規追加、または更新された時に発行
         /// </summary>
-        event EventHandler<ObjectFunctionEventArgs<T>> Updated;
-
-        /// <summary>
-        /// データが新規追加、または更新された時に発行
-        /// 新規追加の場合は、配列の最後に追加する
-        /// </summary>
-        event EventHandler<ObjectFunctionEventArgs<T>> BottomUpdated;
+        event EventHandler<ObjectFunctionUpdateEventArgs<T>> Updated;
 
         /// <summary>
         /// データが削除された時に発行
@@ -61,10 +55,29 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public T Object { get; set; }
     }
 
+    public class ObjectFunctionUpdateEventArgs<T> : ObjectFunctionEventArgs<T>
+    {
+        public ObjectFunctionAdditionPosition Direction { get; set; }
+                        = ObjectFunctionAdditionPosition.Top;
+    }
+
     public class ObjectFunctionErrorEventArgs : EventArgs
     {
         public ObjectFunctionErrorType Type { get; set; }
         public Exception Exception { get; set; }
+    }
+
+    public enum ObjectFunctionAdditionPosition
+    {
+        /// <summary>
+        /// 上から順に追加
+        /// </summary>
+        Top,
+        
+        /// <summary>
+        /// 下から順に追加
+        /// </summary>
+        Bottom,
     }
 
     public enum ConnectionFunctionType

@@ -22,8 +22,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
         private Timer timer;
 
-        public event EventHandler<ObjectFunctionEventArgs<MastodonStatus>> Updated;
-        public event EventHandler<ObjectFunctionEventArgs<MastodonStatus>> BottomUpdated;
+        public event EventHandler<ObjectFunctionUpdateEventArgs<MastodonStatus>> Updated;
         public event EventHandler<ObjectFunctionEventArgs<MastodonStatus>> Deleted;
         public event EventHandler<ObjectFunctionErrorEventArgs> Errored;
 
@@ -120,7 +119,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         private void Streaming_OnUpdate(object sender, StreamUpdateEventArgs e)
         {
             this.timer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
-            this.Updated?.Invoke(this, new ObjectFunctionEventArgs<MastodonStatus>
+            this.Updated?.Invoke(this, new ObjectFunctionUpdateEventArgs<MastodonStatus>
             {
                 Object = new MastodonStatus(e.Status),
             });
