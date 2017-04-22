@@ -14,7 +14,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// <summary>
         /// すでに保管された認証
         /// </summary>
-        public static Collection<MastodonAuthentication> Authes { get; } = new Collection<MastodonAuthentication>();
+        public static ReadOnlyObservableCollection<MastodonAuthentication> Authes => _authesCollection;
+        private static readonly ReadOnlyObservableCollection<MastodonAuthentication> _authesCollection;
+        private static readonly ObservableCollection<MastodonAuthentication> _authes = new ObservableCollection<MastodonAuthentication>();
+
+        static MastodonAuthenticationHouse()
+        {
+            _authesCollection = new ReadOnlyObservableCollection<MastodonAuthentication>(_authes);
+        }
 
         /// <summary>
         /// マストドンの認証情報を取得。
@@ -26,7 +33,16 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         public static MastodonAuthentication Get(string instanceUri)
         {
             var auth = Authes.SingleOrDefault(a => a.InstanceUri == instanceUri);
-            return auth ?? new MastodonAuthentication(instanceUri);
+            if (auth != null)
+            {
+                return auth;
+            }
+            else
+            {
+                var newAuth = new MastodonAuthentication(instanceUri);
+                _authes.Add(newAuth);
+                return newAuth;
+            }
         }
     }
 }
