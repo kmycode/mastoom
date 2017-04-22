@@ -69,7 +69,6 @@ namespace Mastoom.Behaviors
 			}
 			bindable.BindingContextChanged += OnBindingContextChanged;
 
-			//RegisterEvent(EventName);
 			associatedObject.Navigated += this.WebView_Navigated;
 		}
 
@@ -96,49 +95,6 @@ namespace Mastoom.Behaviors
 			OnBindingContextChanged();
 		}
 
-		//protected override void OnAttachedTo(WebView bindable)
-		//{
-		//	base.OnAttachedTo(bindable);
-		//	this.AttachObject(bindable);
-		//}
-
-		//protected override void OnDetachingFrom(BindableObject bindable)
-		//{
- 	//		bindable.BindingContextChanged -= OnBindingContextChanged;			
-  //          this.DetachObject();
-		//	base.OnDetachingFrom(bindable);
-		//}
-
-		//private void AttachObject(WebView bindable)
-		//{
-		//	this.DetachObject();
-  //          this.attached = bindable;
-
-		//	if (bindable != null)
-		//	{
-		//		bindable.Navigated += this.WebView_Navigated;
-		//		bindable.Source = "http://yahoo.co.jp";
-
-		//		if (bindable.BindingContext != null)
-		//		{
-		//            if (bindable.BindingContext != null)
-		//            {
-		//                BindingContext = bindable.BindingContext;
-		//            }
-		//            bindable.BindingContextChanged += OnBindingContextChanged;
-		//		}
-		//	}
-		//}
-
-		//private void DetachObject()
-		//{
-		//	if (this.attached != null)
-		//	{
-		//		this.attached.Navigated -= this.WebView_Navigated;
-		//		this.attached = null;
-		//	}
-		//}
-
 		private void WebView_Navigated(object sender, WebNavigatedEventArgs e)
 		{
 			this.Helper?.Navigated(e.Url);
@@ -160,17 +116,5 @@ namespace Mastoom.Behaviors
 		{
 			this.associatedObject.IsVisible = false;
 		}
-
-		//protected override void OnBindingContextChanged()
-		//{
-		//	base.OnBindingContextChanged();
-
-		//	BindingContext = attached.BindingContext;
-		//}
-
-		//private void OnBindingContextChanged(object sender, EventArgs e)
-		//{
-		//	OnBindingContextChanged();
-		//}
 	}
 }
