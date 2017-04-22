@@ -19,6 +19,7 @@
     <Page.Resources>
         <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
         <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
+        <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
@@ -141,9 +142,19 @@
                                                 
                                                 <!--コマンド表示部分-->
                                                 <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
-                                                    <ToggleButton Content="ふぁぼる" IsChecked="{Binding IsFavorited,Mode=TwoWay}"
+                                                    
+                                                    <!--ふぁぼる-->
+                                                    <ToggleButton IsChecked="{Binding IsFavorited,Mode=TwoWay}"
+                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
                                                                   Command="{Binding DataContext.Activated.ToggleFavoriteCommand,ElementName=ConnectionGrid}"
-                                                                  CommandParameter="{Binding}"/>
+                                                                  CommandParameter="{Binding}" Background="Transparent">
+                                                        <Grid>
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CE;"
+                                                                      Foreground="Black" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CF;"
+                                                                      Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
+                                                        </Grid>
+                                                    </ToggleButton>
                                                 </StackPanel>
                                             </StackPanel>
                                         </Grid>
