@@ -155,6 +155,19 @@
                                                                       Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
                                                         </Grid>
                                                     </ToggleButton>
+
+                                                    <!--ブースト-->
+                                                    <ToggleButton IsChecked="{Binding IsBoosted,Mode=TwoWay}"
+                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
+                                                                  Command="{Binding DataContext.Activated.ToggleBoostCommand,ElementName=ConnectionGrid}"
+                                                                  CommandParameter="{Binding}" Background="Transparent">
+                                                        <Grid>
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
+                                                                      Foreground="Black" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
+                                                                      Foreground="#045fb4" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2VisibilityConv}}"/>
+                                                        </Grid>
+                                                    </ToggleButton>
                                                 </StackPanel>
                                             </StackPanel>
                                         </Grid>

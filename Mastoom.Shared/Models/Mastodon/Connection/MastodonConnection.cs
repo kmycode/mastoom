@@ -236,6 +236,21 @@ namespace Mastoom.Shared.Models.Mastodon
         }
         private RelayCommand<MastodonStatus> _toggleFavoriteCommand;
 
+        /// <summary>
+        /// ブーストする
+        /// </summary>
+        public RelayCommand<MastodonStatus> ToggleBoostCommand
+        {
+            get
+            {
+                return this._toggleBoostCommand = this._toggleBoostCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    status.ToggleBoostAsync(this.client);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _toggleBoostCommand;
+
         #endregion
     }
 }

@@ -65,6 +65,28 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         }
         private bool _isFavorited;
 
+        /// <summary>
+        /// ブーストされたか
+        /// </summary>
+        public bool IsBoosted
+        {
+            get
+            {
+                return this._isBoosted;
+            }
+            private set
+            {
+                if (this._isBoosted != value)
+                {
+                    this._isBoosted = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+        private bool _isBoosted;
+
+        #region メソッド
+
         public MastodonStatus(int id, MastodonAccount account)
 		{
 			this.Id = id;
@@ -76,6 +98,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			this.Id = status.Id;
 			this.Content = status.Content;
             this.IsFavorited = status.Favourited ?? false;
+            this.IsBoosted = status.Reblogged ?? false;
 			this.Account = new MastodonAccount(status.Account);
 		}
 
@@ -87,7 +110,12 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			}
 			to.Content = this.Content;
             to.IsFavorited = this.IsFavorited;
+            to.IsBoosted = this.IsBoosted;
 		}
+
+        #endregion
+
+        #region サーバと通信し状態を操作するメソッド
 
         /// <summary>
         /// ふぁぼとあんふぁぼを切り替える
@@ -102,18 +130,48 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                 var newStatus = new MastodonStatus(
                     !this.IsFavorited ? await client.Favourite(this.Id) : await client.Unfavourite(this.Id)
                     );
-                newStatus.CopyTo(this);
                 isSucceed = true;
             }
-            catch
+            catch { }
+
+            if (isSucceed)
             {
+                this.IsFavorited ^= true;
             }
+
             return isSucceed;
         }
 
-		#region INotifyPropertyChanged
+        /// <summary>
+        /// ブーストとアンブーストを切り替える
+        /// </summary>
+        /// <param name="client">クライアント</param>
+        /// <returns>成功したかどうか</returns>
+        public async Task<bool> ToggleBoostAsync(MastodonClient client)
+        {
+            bool isSucceed = false;
+            try
+            {
+                var newStatus = new MastodonStatus(
+                    !this.IsBoosted ? await client.Reblog(this.Id) : await client.Unreblog(this.Id)
+                    );
+                isSucceed = true;
+            }
+            catch { }
 
-		public event PropertyChangedEventHandler PropertyChanged;
+            if (isSucceed)
+            {
+                this.IsBoosted ^= true;
+            }
+
+            return isSucceed;
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
