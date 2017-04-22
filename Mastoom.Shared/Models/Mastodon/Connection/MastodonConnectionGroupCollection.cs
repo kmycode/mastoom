@@ -16,6 +16,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             {
                 Name = "Pawoo",
             });
+            this[0].TryAdd(new MastodonConnection("pawoo.net", ConnectionType.HomeTimeline)
+            {
+                Name = "ホーム",
+            });
+            this[0].TryAdd(new MastodonConnection("pawoo.net", ConnectionType.LocalTimeline)
+            {
+                Name = "ローカルタイムライン",
+            });
             this[0].TryAdd(new MastodonConnection("pawoo.net", ConnectionType.PublicTimeline)
             {
                 Name = "公開タイムライン",

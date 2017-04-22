@@ -24,6 +24,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// </summary>
         private AppRegistration appRegistration;
 
+        /// <summary>
+        /// 認証する前のクライアント
+        /// </summary>
+        private AuthenticationClient preClient;
+
         #endregion
 
         #region プロパティ
@@ -153,8 +158,8 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         private async Task CreateClientAsync()
         {
-            this.Client = new MastodonClient(this.appRegistration, this.AccessToken);
-            var auth = await this.Client.ConnectWithCode(this.AccessToken);
+            var auth = await this.preClient.ConnectWithCode(this.AccessToken);
+            this.Client = new MastodonClient(this.appRegistration, auth);
             this.CurrentUser = new MastodonAccount(await this.Client.GetCurrentUser());
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
@@ -172,8 +177,8 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         public void StartOAuthLogin()
         {
             this.OAuthHelper.Show();
-            var preClient = new MastodonClient(this.appRegistration);
-            this.OAuthHelper.NavigateRequest(preClient.OAuthUrl());
+            this.preClient = new AuthenticationClient(this.appRegistration);
+            this.OAuthHelper.NavigateRequest(this.preClient.OAuthUrl());
         }
 
         #endregion
