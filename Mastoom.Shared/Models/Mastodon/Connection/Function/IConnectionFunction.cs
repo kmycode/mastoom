@@ -92,17 +92,6 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
     }
 
     /// <summary>
-    /// IConnectionFunctionの種別。
-    /// １つの種別あたりただ１つのインスタンスを１つの認証ごとに保持するので、
-    /// １つの認証から同じ種別の接続を複数作らないよう、
-    /// 認証オブジェクトと他のオブジェクトとのやり取り時に使用する
-    /// </summary>
-    public enum ConnectionFunctionType
-    {
-        PublicTimeline,
-    }
-
-    /// <summary>
     /// IConnectionFunctionがエラーを返した時、
     /// そのエラーがどのタイミングで発生したどういう種類のエラーなのか
     /// </summary>

@@ -18,6 +18,11 @@ using System.Threading.Tasks;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
+    /// <summary>
+    /// マストドンへのひとつの接続。
+    /// １つの接続は１つのIConnectionFunctionを保持するため、
+    /// 公開タイムラインへの接続や、お気に入り一覧への接続などは、別々の接続としてカウントされる
+    /// </summary>
     public class MastodonConnection : INotifyPropertyChanged
     {
 		#region 変数
@@ -30,7 +35,7 @@ namespace Mastoom.Shared.Models.Mastodon
         
         private IConnectionFunction function;
 
-        private ConnectionFunctionType functionType;
+        private ConnectionType connectionType;
 
         #endregion
 
@@ -112,10 +117,10 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		public MastodonConnection(string instanceUri, ConnectionFunctionType functionType)
+		public MastodonConnection(string instanceUri, ConnectionType functionType)
 		{
             this.InstanceUri = instanceUri;
-            this.functionType = functionType;
+            this.connectionType = functionType;
             this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
 
             if (!this.Auth.HasAuthenticated)
@@ -158,9 +163,9 @@ namespace Mastoom.Shared.Models.Mastodon
                 return;
             }
 
-            switch (this.functionType)
+            switch (this.connectionType)
             {
-                case ConnectionFunctionType.PublicTimeline:
+                case ConnectionType.PublicTimeline:
                     var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
                     func.Updated += this.StatusFunction_OnUpdate;
                     this.function = func;
@@ -177,9 +182,9 @@ namespace Mastoom.Shared.Models.Mastodon
                 return;
             }
 
-            switch (this.functionType)
+            switch (this.connectionType)
             {
-                case ConnectionFunctionType.PublicTimeline:
+                case ConnectionType.PublicTimeline:
                     var func = (IConnectionFunction<MastodonStatus>)this.function;
                     func.Updated -= this.StatusFunction_OnUpdate;
                     await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();

@@ -37,11 +37,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 #if DEBUG
 		public void AddTestConnection()
 		{
-			this.Add(new MastodonConnection("pawoo.net", ConnectionFunctionType.PublicTimeline)
+			this.Add(new MastodonConnection("pawoo.net", ConnectionType.PublicTimeline)
 			{
 				Name = "Pawoo",
 			});
-			this.Add(new MastodonConnection("mstdn.jp", ConnectionFunctionType.PublicTimeline)
+			this.Add(new MastodonConnection("mstdn.jp", ConnectionType.PublicTimeline)
 			{
 				Name = "Mstdn",
 			});
