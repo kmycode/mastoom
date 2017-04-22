@@ -68,6 +68,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// </summary>
         public ConnectionFunctionCounter<MastodonStatus> PublicStreamingFunctionCounter { get; private set; }
 
+        /// <summary>
+        /// ホームタイムラインへアクセスする機能のカウンタ
+        /// </summary>
+        public ConnectionFunctionCounter<MastodonStatus> HomeStreamingFunctionCounter { get; private set; }
+
         #endregion
 
         #region メソッド
@@ -153,6 +158,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this.CurrentUser = new MastodonAccount(await this.Client.GetCurrentUser());
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
+            {
+                Client = this.Client,
+                StreamingInstanceUri = this.StreamingUri,
+            });
+            this.HomeStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new HomeTimelineFunction
             {
                 Client = this.Client,
                 StreamingInstanceUri = this.StreamingUri,

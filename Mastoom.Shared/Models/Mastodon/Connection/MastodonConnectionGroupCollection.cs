@@ -25,6 +25,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             {
                 Name = "Mstdn",
             });
+            this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.HomeTimeline)
+            {
+                Name = "ホーム",
+            });
+            this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.LocalTimeline)
+            {
+                Name = "ローカルタイムライン",
+            });
             this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.PublicTimeline)
             {
                 Name = "公開タイムライン",

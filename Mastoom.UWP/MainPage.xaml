@@ -20,6 +20,7 @@
         <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
         <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
         <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
+        <cvu:ConnectionType2GlyphConverter x:Key="ConnectionType2GlyphConv"/>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
@@ -40,11 +41,36 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <!--Title bar-->
+                        <!--タイトルバー-->
                         <Border Background="#3c48b2" Height="48"
                                 BorderThickness="12,0,0,0" BorderBrush="#54bcce">
-                            <TextBlock Foreground="White" Margin="10,8,10,8" FontSize="20"
-                                       Text="{Binding Name}" VerticalAlignment="Center"/>
+                            <Grid>
+                                
+                                <!--グループの名前-->
+                                <TextBlock Foreground="White" Margin="10,8,10,8" FontSize="20"
+                                           Text="{Binding Name}" VerticalAlignment="Center"/>
+                                
+                                <!--表示する接続の選択-->
+                                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                    <ListBox ItemsSource="{Binding Connections}"
+                                             SelectedItem="{Binding Activated,Mode=TwoWay}"
+                                             Background="Transparent"
+                                             ItemContainerStyle="{StaticResource ConnectionGroupTitleBarListBoxItemStyle}">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                                          FontSize="20" Width="24"
+                                                          Glyph="{Binding ConnectionType,Converter={StaticResource ConnectionType2GlyphConv}}"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                         
                         <!--Space for post status-->

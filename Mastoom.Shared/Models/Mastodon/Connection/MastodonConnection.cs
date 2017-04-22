@@ -36,8 +36,6 @@ namespace Mastoom.Shared.Models.Mastodon
         
         private IConnectionFunction function;
 
-        private ConnectionType connectionType;
-
         #endregion
 
         #region プロパティ
@@ -67,10 +65,16 @@ namespace Mastoom.Shared.Models.Mastodon
 		}
 		private string _name;
 
-		/// <summary>
-		/// インスタンスのURI
-		/// </summary>
-		public string InstanceUri { get; }
+        /// <summary>
+        /// 接続の種類
+        /// </summary>
+        public ConnectionType ConnectionType => this._connectionType;
+        private ConnectionType _connectionType;
+
+        /// <summary>
+        /// インスタンスのURI
+        /// </summary>
+        public string InstanceUri { get; }
 
         /// <summary>
         /// ログインしているユーザ
@@ -121,7 +125,7 @@ namespace Mastoom.Shared.Models.Mastodon
 		public MastodonConnection(string instanceUri, ConnectionType functionType)
 		{
             this.InstanceUri = instanceUri;
-            this.connectionType = functionType;
+            this._connectionType = functionType;
             this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
 
             if (!this.Auth.HasAuthenticated)
@@ -164,13 +168,32 @@ namespace Mastoom.Shared.Models.Mastodon
                 return;
             }
 
-            switch (this.connectionType)
+            switch (this._connectionType)
             {
                 case ConnectionType.PublicTimeline:
-                    var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
-                    func.Updated += this.StatusFunction_OnUpdate;
-                    this.function = func;
+                    {
+                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.function = func;
+                    }
                     break;
+                case ConnectionType.LocalTimeline:
+                    {
+                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.Statuses.Filter = (status) => status.Account.IsLocal;
+                        this.function = func;
+                    }
+                    break;
+                case ConnectionType.HomeTimeline:
+                    {
+                        var func = await this.Auth.HomeStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.function = func;
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
 
             await this.function.StartAsync();
@@ -183,13 +206,25 @@ namespace Mastoom.Shared.Models.Mastodon
                 return;
             }
 
-            switch (this.connectionType)
+            switch (this._connectionType)
             {
                 case ConnectionType.PublicTimeline:
-                    var func = (IConnectionFunction<MastodonStatus>)this.function;
-                    func.Updated -= this.StatusFunction_OnUpdate;
-                    await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();
+                case ConnectionType.LocalTimeline:
+                    {
+                        var func = (IConnectionFunction<MastodonStatus>)this.function;
+                        func.Updated -= this.StatusFunction_OnUpdate;
+                        await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();
+                    }
                     break;
+                case ConnectionType.HomeTimeline:
+                    {
+                        var func = (IConnectionFunction<MastodonStatus>)this.function;
+                        func.Updated -= this.StatusFunction_OnUpdate;
+                        await this.Auth.HomeStreamingFunctionCounter.DecrementAsync();
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
 
             this.function = null;

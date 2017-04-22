@@ -5,6 +5,11 @@
     xmlns:local="using:Mastoom.UWP"
     RequestedTheme="Light">
     <Application.Resources>
-        <ResourceDictionary Source="Styles/TransparentToggleButtonStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/TransparentToggleButtonStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ConnectionGroupTitleBarListBoxItemStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

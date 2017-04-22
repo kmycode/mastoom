@@ -35,6 +35,11 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         private bool _isPageMode;
 
         /// <summary>
+        /// ステータスを追加する時に適用するフィルタ
+        /// </summary>
+        public Predicate<MastodonStatus> Filter { get; set; } = (status) => true;
+
+        /// <summary>
         /// 画面スクロールなどに対応して、実際に表示する要素
         /// </summary>
         public ObservableCollection<MastodonStatus> DynamicLimited { get; } = new ObservableCollection<MastodonStatus>();
@@ -50,6 +55,11 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
 		public void Add(MastodonStatus status)
 		{
+            if (!this.Filter(status))
+            {
+                return;
+            }
+
 			var existing = this.FindById(status.Id);
 			if (existing != null)
 			{

@@ -13,5 +13,15 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 公開タイムライン
         /// </summary>
         PublicTimeline,
+
+        /// <summary>
+        /// ローカルタイムライン
+        /// </summary>
+        LocalTimeline,
+
+        /// <summary>
+        /// ホームタイムライン
+        /// </summary>
+        HomeTimeline,
     }
 }
