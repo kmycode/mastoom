@@ -36,14 +36,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        public Task GetNewerAsync()
+        public async Task GetNewerAsync()
         {
-            throw new NotImplementedException();
         }
 
-        public Task GetPrevAsync()
+        public async Task GetPrevAsync()
         {
-            throw new NotImplementedException();
         }
 
         public async Task StartAsync()
