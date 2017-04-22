@@ -21,6 +21,7 @@
         <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
         <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
         <cvu:ConnectionType2GlyphConverter x:Key="ConnectionType2GlyphConv"/>
+        <cvu:MastodonStatus2BackgroundConverter x:Key="MastodonStatus2BackgroundConv"/>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
@@ -131,7 +132,7 @@
                                           Margin="20,0,20,0">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="0,0,0,12">
+                                        <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="auto"/>
                                                 <ColumnDefinition/>

@@ -25,6 +25,16 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		/// </summary>
 		public MastodonAccount Account { get; }
 
+        /// <summary>
+        /// これはブーストされた書き込みであるか
+        /// </summary>
+        public bool IsBoost { get; }
+
+        /// <summary>
+        /// ブーストされたトゥートのID
+        /// </summary>
+        public int BoostedId { get; }
+
 		/// <summary>
 		/// ステータスの内容
 		/// </summary>
@@ -66,7 +76,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         private bool _isFavorited;
 
         /// <summary>
-        /// ブーストされたか
+        /// 自分がこの書き込みをブーストしたか
         /// </summary>
         public bool IsBoosted
         {
@@ -94,9 +104,20 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		}
         
 		public MastodonStatus(Mastonet.Entities.Status status)
-		{
-			this.Id = status.Id;
-			this.Content = status.Content;
+        {
+            // ブーストされたトゥートの場合でも、ブーストした人が取得したIDを設定する
+            // （元のトゥートとブースト分のトゥート、両方同じTLに表示するため）
+            this.Id = status.Id;
+
+            // ブーストされたトゥートの場合、ここから先はブースト対象のトゥートのデータを設定する
+            if (status.Reblog != null)
+            {
+                this.BoostedId = status.Reblog.Id;
+                status = status.Reblog;
+                this.IsBoost = true;
+            }
+
+            this.Content = status.Content;
             this.IsFavorited = status.Favourited ?? false;
             this.IsBoosted = status.Reblogged ?? false;
 			this.Account = new MastodonAccount(status.Account);
