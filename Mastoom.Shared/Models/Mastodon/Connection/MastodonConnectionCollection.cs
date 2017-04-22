@@ -8,56 +8,7 @@ using System.Text;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
-    public class MastodonConnectionCollection : ObservableCollection<MastodonConnection>, INotifyPropertyChanged
+    public class MastodonConnectionCollection : ObservableCollection<MastodonConnection>
     {
-		#region プロパティ
-
-		/// <summary>
-		/// メインに指定された接続
-		/// </summary>
-		public MastodonConnection Main
-		{
-			get
-			{
-				return this._main;
-			}
-			set
-			{
-				if (this._main != value)
-				{
-					this._main = value;
-					this.OnPropertyChanged();
-				}
-			}
-		}
-		private MastodonConnection _main;
-		
-		#endregion
-
-#if DEBUG
-		public void AddTestConnection()
-		{
-			this.Add(new MastodonConnection("pawoo.net", ConnectionType.PublicTimeline)
-			{
-				Name = "Pawoo",
-			});
-			this.Add(new MastodonConnection("mstdn.jp", ConnectionType.PublicTimeline)
-			{
-				Name = "Mstdn",
-			});
-			this.Main = this[0];
-		}
-#endif
-
-		#region INotifyPropertyChanged
-
-		public new event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		#endregion
-
 	}
 }

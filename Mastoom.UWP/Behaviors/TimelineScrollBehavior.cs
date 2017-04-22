@@ -127,7 +127,7 @@ namespace Mastoom.UWP.Behaviors
             // 一番上へスクロールした状態
             if (scrollLength <= 10)
             {
-                if (collection.PerformPrevPage())
+                if (collection.PreviewPrevPage())
                 {
                     this.isPrevPage = true;
                 }
@@ -140,7 +140,7 @@ namespace Mastoom.UWP.Behaviors
             else if (scrollLength >= scrollLengthMax - viewportHeight - 10)
             {
                 this.isNextPage = true;
-                collection.PerformNextPage();
+                collection.PreviewNextPage();
             }
             // 少しスクロールした状態
             else if (scrollLength > 10 && !collection.IsPageMode)

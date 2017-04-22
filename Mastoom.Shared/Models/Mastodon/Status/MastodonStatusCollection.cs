@@ -80,7 +80,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             if (this.IsPageMode) return;
 
             this.IsPageMode = true;
-            this.PerformNextPage(true);
+            this.PreviewNextPage(true);
         }
 
         public void ExitPageMode()
@@ -93,7 +93,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             this.PageModeExited?.Invoke(this, new EventArgs());
         }
 
-        public void PerformNextPage(bool isEnter = false)
+        public void PreviewNextPage(bool isEnter = false)
         {
             var last = this.DynamicLimited.LastOrDefault();
             var firstIndex = isEnter ? 0 : (last != null ? this.IndexOf(last) + 1 : 0);
@@ -117,7 +117,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             }
         }
 
-        public bool PerformPrevPage()
+        public bool PreviewPrevPage()
         {
             var first = this.DynamicLimited.FirstOrDefault();
             var lastIndex = first != null ? this.IndexOf(first) - 1 : 0;
