@@ -26,7 +26,7 @@ namespace Mastoom.Shared.ViewModels
 
 		#endregion
 
-		#region Commands
+		#region コマンド
 
         /// <summary>
         /// Post new status (toot)
@@ -57,7 +57,6 @@ namespace Mastoom.Shared.ViewModels
             }
         }
         private RelayCommand<MastodonStatusCollection> _exitPageModeCommand;
-
 
         #endregion
     }

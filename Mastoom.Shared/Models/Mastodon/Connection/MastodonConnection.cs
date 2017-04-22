@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Mastoom.Shared.ViewModels.ViewModelBase;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -207,12 +208,34 @@ namespace Mastoom.Shared.Models.Mastodon
 		#region INotifyPropertyChanged
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-		#endregion
+        #endregion
 
-	}
+        #region コマンド
+
+        // MastodonClientとMastodonStatusなど、複数オブジェクトの組み合わせを
+        // 一度にViewModelに渡す方法が分からなかったので、
+        // ここはModel層だけどICommandを実装したMVVM/Xamlに依存したクラスを使う
+
+        /// <summary>
+        /// ふぁぼる
+        /// </summary>
+        public RelayCommand<MastodonStatus> ToggleFavoriteCommand
+        {
+            get
+            {
+                return this._toggleFavoriteCommand = this._toggleFavoriteCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    status.ToggleFavoriteAsync(this.client);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _toggleFavoriteCommand;
+
+        #endregion
+    }
 }

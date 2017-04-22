@@ -31,7 +31,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Width="460">
+                    <Grid Width="460" x:Name="ConnectionGrid">
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
@@ -137,6 +137,13 @@
                                                     <i:Interaction.Behaviors>
                                                         <b:ImageCollectionBehavior Content="{Binding Content}"/>
                                                     </i:Interaction.Behaviors>
+                                                </StackPanel>
+                                                
+                                                <!--コマンド表示部分-->
+                                                <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
+                                                    <ToggleButton Content="ふぁぼる" IsChecked="{Binding IsFavorited,Mode=TwoWay}"
+                                                                  Command="{Binding DataContext.Activated.ToggleFavoriteCommand,ElementName=ConnectionGrid}"
+                                                                  CommandParameter="{Binding}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </Grid>
