@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,11 +22,17 @@ namespace Mastoom.UWP.Behaviors
         private double lastScrollOffsetFromBottom = 0;
         private bool isPrevPage = false;
         private bool isNextPage = false;
-        
+        private bool isNextPage_Completed = false;
+
+        // 連続操作をブロック
+        private bool isContinuityBlocked;
+
+        #region 依存プロパティ
+
         /// <summary>
         /// Collection which displaying in the timeline
         /// </summary>
-		public MastodonStatusCollection Collection
+        public MastodonStatusCollection Collection
         {
             get { return (MastodonStatusCollection)this.GetValue(CollectionProperty); }
             set { this.SetValue(CollectionProperty, value); }
@@ -53,6 +60,8 @@ namespace Mastoom.UWP.Behaviors
                     }
                 })
             );
+
+        #endregion
 
         protected override void OnAttached()
 		{
@@ -104,25 +113,40 @@ namespace Mastoom.UWP.Behaviors
                 this.Collection.PrevPage();
 
                 this.attached.ChangeView(null, scrollLength + (scrollLengthMax - this.lastHeight), null, true);
+                this.isContinuityBlocked = false;
             }
             else if (this.isNextPage)
             {
                 this.isNextPage = false;
-                this.Collection.NextPage();
+                this.isNextPage_Completed = true;
 
-                this.attached.ChangeView(null, scrollLengthMax - this.lastScrollOffsetFromBottom + 30, null, true);
+                this.lastScrollOffsetFromBottom = scrollLengthMax - scrollLength;
+                this.Collection.NextPage();
+            }
+            else if (this.isNextPage_Completed)
+            {
+                this.isNextPage_Completed = false;
+
+                this.attached.ChangeView(null, scrollLengthMax - this.lastScrollOffsetFromBottom, null, true);
+                this.isContinuityBlocked = false;
             }
 
             this.lastHeight = scrollLengthMax;
-            this.lastScrollOffsetFromBottom = scrollLengthMax - scrollLength;
         }
 
         private void Attached_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
+            if (this.isContinuityBlocked)
+            {
+                // 連続動作はブロック。操作と操作の間は少し待ってもらう
+                return;
+            }
+
             var scrollLength = this.attached.VerticalOffset;
             var scrollLengthMax = this.attached.ExtentHeight;
             var viewportHeight = this.attached.ViewportHeight;
             var collection = this.Collection;
+
 
             // 一番上へスクロールした状態
             if (scrollLength <= 10)
@@ -130,6 +154,7 @@ namespace Mastoom.UWP.Behaviors
                 if (collection.PreviewPrevPage())
                 {
                     this.isPrevPage = true;
+                    this.isContinuityBlocked = true;
                 }
                 else
                 {
@@ -139,8 +164,11 @@ namespace Mastoom.UWP.Behaviors
             // 下へスクロールした状態
             else if (scrollLength >= scrollLengthMax - viewportHeight - 10)
             {
-                this.isNextPage = true;
-                collection.PreviewNextPage();
+                if (collection.PreviewNextPage())
+                {
+                    this.isNextPage = true;
+                    this.isContinuityBlocked = true;
+                }
             }
             // 少しスクロールした状態
             else if (scrollLength > 10 && !collection.IsPageMode)

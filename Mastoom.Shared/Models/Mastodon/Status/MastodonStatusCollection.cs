@@ -103,11 +103,11 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             this.PageModeExited?.Invoke(this, new EventArgs());
         }
 
-        public void PreviewNextPage(bool isEnter = false)
+        public bool PreviewNextPage(bool isEnter = false)
         {
             var last = this.DynamicLimited.LastOrDefault();
             var firstIndex = isEnter ? 0 : (last != null ? this.IndexOf(last) + 1 : 0);
-            if (firstIndex >= this.Count) return;
+            if (firstIndex >= this.Count) return false;
 
             int num = 50;
             for (int i = firstIndex; i < this.Count && num > 0; i++, num--)
@@ -117,6 +117,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                     this.DynamicLimited.Add(this[i]);
                 }
             }
+
+            return true;
         }
 
         public void NextPage()
