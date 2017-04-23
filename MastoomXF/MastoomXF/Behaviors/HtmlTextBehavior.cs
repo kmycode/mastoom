@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using CenterCLR.Sgml;
 using Mastoom.Shared.Models.Mastodon.Status;
 using Mastoom.Shared.Parsers;
+using Mastoom.Shared.Converters;
 using Xamarin.Forms;
 
 namespace Mastoom.Behaviors
@@ -15,6 +16,7 @@ namespace Mastoom.Behaviors
 	public class HtmlTextBehavior : Behavior<Label>
 	{
 		private Label associatedObject;
+		private readonly String2EmojiConverter _emojiConverter = new String2EmojiConverter();
 
 		#region 依存プロパティ
 
@@ -104,6 +106,8 @@ namespace Mastoom.Behaviors
 				switch (tootSpan.Type)
 				{
 					case TootSpan.SpanType.Text:
+						// 絵文字変換を忘れない
+						span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, null);
 						inlines.Add(span);
 						break;
 					case TootSpan.SpanType.HyperLink:
