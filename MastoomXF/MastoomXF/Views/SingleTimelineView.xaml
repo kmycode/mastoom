@@ -3,6 +3,7 @@
 	xmlns="http://xamarin.com/schemas/2014/forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     xmlns:b="clr-namespace:Mastoom.Behaviors"
+    xmlns:view="clr-namespace:Mastoom.Views"
     xmlns:m="clr-namespace:Mastoom.Shared.Models.Common"
 	x:Class="Mastoom.Views.SingleTimelineView">
     <ContentPage.Resources>
@@ -13,7 +14,6 @@
 	
 	<ContentView.Content>
 		<Grid
-			BackgroundColor="Gray"
 			HorizontalOptions="FillAndExpand"
 			VerticalOptions="FillAndExpand">
 
@@ -25,16 +25,15 @@
 			
 	        <!--タイムライン-->
 	        <ListView 
-				BackgroundColor="Fuchsia"
 				Grid.Column="0" 
 				Grid.Row="2"
+				HasUnevenRows="true"
 				ItemsSource="{Binding Statuses.DynamicLimited}">
   
-    
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
-							<Label Text="{Binding .}"/>
+							<view:TootStatusView BindingContext="{Binding .}" />
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
@@ -59,7 +58,6 @@
 
 	        <!--OAuthブラウザ -->
 	        <WebView 
-				BackgroundColor="Aqua"
 				Grid.RowSpan="2" 
 				Grid.Row="1">
 	            <WebView.Behaviors>
@@ -68,13 +66,6 @@
 	            </WebView.Behaviors>
 	        </WebView>
 
-<!--			<Label 
-				Text="{Binding Name}"
-				Grid.RowSpan="2" 
-				Grid.Row="1"
-				>
-			</Label>
--->
 		</Grid>
 	</ContentView.Content>
 </ContentView>
