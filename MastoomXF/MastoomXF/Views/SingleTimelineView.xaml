@@ -2,13 +2,14 @@
 <ContentView
 	xmlns="http://xamarin.com/schemas/2014/forms" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:cv="clr-namespace:Mastoom.Converters"
     xmlns:b="clr-namespace:Mastoom.Behaviors"
+    xmlns:ef="clr-namespace:Mastoom.Effects"
     xmlns:view="clr-namespace:Mastoom.Views"
     xmlns:m="clr-namespace:Mastoom.Shared.Models.Common"
 	x:Class="Mastoom.Views.SingleTimelineView">
     <ContentPage.Resources>
         <ResourceDictionary>
-			<m:OAuthModel x:Key="oAuthModel" />
         </ResourceDictionary>
     </ContentPage.Resources>
 	
@@ -22,14 +23,28 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+
+			<!--タイムラインの上へ移動-->
+			<Button
+				Grid.Column="0" 
+				Grid.Row="0"
+				IsVisible="{Binding Statuses.IsPageMode}"
+				HorizontalOptions="FillAndExpand">
+
+				<Button.Behaviors>
+					<b:ExitPageModeBehavior Collection="{Binding Statuses}" />
+				</Button.Behaviors>
+			</Button>
 			
 	        <!--タイムライン-->
 	        <ListView 
+				x:Name="listView"
 				Grid.Column="0" 
 				Grid.Row="2"
 				HasUnevenRows="true"
+				ef:ListViewScrollEffect.Collection="{Binding Statuses}"
 				ItemsSource="{Binding Statuses.DynamicLimited}">
-  
+
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
@@ -38,30 +53,14 @@
 					</DataTemplate>
 				</ListView.ItemTemplate>
 
-<!--	            <ListView.Behaviors>
-	                <b:TimelineScrollBehavior Collection="{Binding Statuses}"/>
-	            </ListView.Behaviors> -->
 	        </ListView>
 	    
-	        <!--タイムラインの上へ移動
-	        <Border 
-				Grid.Row="2" 
-				Background="White" 
-				Margin="40,10,40,0"
-                VerticalAlignment="Top"
-				Visibility="{Binding Statuses.IsPageMode}">
-	            <Button Content="最新のトゥートを表示"
-	                    Command="{Binding DataContext.ExitPageModeCommand, ElementName=Page}"
-	                    CommandParameter="{Binding Statuses}"
-	                    HorizontalAlignment="Stretch" Height="42"/>
-	        </Border> -->
-
 	        <!--OAuthブラウザ -->
+			<!--別画面にしたいな-->
 	        <WebView 
-				Grid.RowSpan="2" 
-				Grid.Row="1">
+				Grid.Row="1"
+				Grid.RowSpan="2" >
 	            <WebView.Behaviors>
-<!--					<b:EventToCommand EventName="{Binding Name}" Helper="{Binding OAuthHelper}" />-->
 	                <b:OAuthWebBehavior Helper="{Binding OAuthHelper}"/>
 	            </WebView.Behaviors>
 	        </WebView>

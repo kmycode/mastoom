@@ -75,6 +75,11 @@
     <Compile Include="Behaviors\HtmlTextBehavior.cs" />
     <Compile Include="Parsers\TootSpan.cs" />
     <Compile Include="Parsers\StatusParser.cs" />
+    <Compile Include="Effects\ListViewScrollEffect.cs" />
+    <Compile Include="Effects\ListViewScrollRoutingEffect.cs" />
+    <Compile Include="Behaviors\NewArrivalStatusesBehavior.cs" />
+    <Compile Include="Converters\PlayConverter.cs" />
+    <Compile Include="Behaviors\BindingContextPassingBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
@@ -103,6 +108,8 @@
     <Folder Include="Views\" />
     <Folder Include="Behaviors\" />
     <Folder Include="Parsers\" />
+    <Folder Include="Effects\" />
+    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="..\..\Mastoom.Shared\Mastoom.Shared.projitems" Label="Shared" Condition="Exists('..\..\Mastoom.Shared\Mastoom.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
