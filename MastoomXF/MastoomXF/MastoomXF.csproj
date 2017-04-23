@@ -42,6 +42,9 @@
     <EmbeddedResource Include="Views\OtherInstancesTimelineView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\TootStatusView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -66,6 +69,12 @@
     </Compile>
     <Compile Include="Behaviors\OAuthWebBehavior.cs" />
     <Compile Include="Behaviors\EventToCommand.cs" />
+    <Compile Include="Views\TootStatusView.xaml.cs">
+      <DependentUpon>TootStatusView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Behaviors\HtmlTextBehavior.cs" />
+    <Compile Include="Parsers\TootSpan.cs" />
+    <Compile Include="Parsers\StatusParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
@@ -83,6 +92,9 @@
     <Reference Include="Mastonet">
       <HintPath>..\..\ext\Mastonet.dll</HintPath>
     </Reference>
+    <Reference Include="CenterCLR.SgmlReader">
+      <HintPath>..\packages\CenterCLR.SgmlReader.2016.3.27.2\lib\portable-net403+sl50+win+WindowsPhoneApp81+wp80+MonoAndroid10+Xamarin.iOS10+MonoTouch10\CenterCLR.SgmlReader.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -90,6 +102,7 @@
   <ItemGroup>
     <Folder Include="Views\" />
     <Folder Include="Behaviors\" />
+    <Folder Include="Parsers\" />
   </ItemGroup>
   <Import Project="..\..\Mastoom.Shared\Mastoom.Shared.projitems" Label="Shared" Condition="Exists('..\..\Mastoom.Shared\Mastoom.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -8,130 +8,126 @@ using System.Xml.Linq;
 using CenterCLR.Sgml;
 using Mastoom.Shared.Models.Mastodon.Status;
 using Mastoom.Shared.Parsers;
-using Mastoom.Shared.Converters;
 using Xamarin.Forms;
 
 namespace Mastoom.Behaviors
 {
-    public class HtmlTextBehavior : Behavior<Label>
-    {
-        private Label associatedObject;
-        private readonly String2EmojiConverter _emojiConverter = new String2EmojiConverter();
+	public class HtmlTextBehavior : Behavior<Label>
+	{
+		private Label associatedObject;
 
-        #region 依存プロパティ
+		#region 依存プロパティ
 
-        public static readonly BindableProperty StatusProperty =
-            BindableProperty.Create(
-                "Status",
-                typeof(MastodonStatus),
-                typeof(HtmlTextBehavior),
-                (MastodonStatus)null,
-                propertyChanged: OnStatusChanged);
+		public static readonly BindableProperty StatusProperty =
+			BindableProperty.Create(
+				"Status",
+				typeof(MastodonStatus),
+				typeof(HtmlTextBehavior),
+				(MastodonStatus)null,
+				propertyChanged: OnStatusChanged);
 
-        /// <summary>
-        /// ブラウザ操作を命令するヘルパ
-        /// </summary>
-        public MastodonStatus Status
-        {
-            get
-            {
-                var obj = GetValue(StatusProperty);
-                return (MastodonStatus)obj;
-            }
-            set
-            {
-                SetValue(StatusProperty, value);
-            }
-        }
+		/// <summary>
+		/// ブラウザ操作を命令するヘルパ
+		/// </summary>
+		public MastodonStatus Status
+		{
+			get
+			{
+				var obj = GetValue(StatusProperty);
+				return (MastodonStatus)obj;
+			}
+			set
+			{
+				SetValue(StatusProperty, value);
+			}
+		}
 
-        static void OnStatusChanged(BindableObject bindable, object oldValue, object newValue)
-        {
+		static void OnStatusChanged(BindableObject bindable, object oldValue, object newValue)
+		{
 
-            var view = bindable as HtmlTextBehavior;
-            view?.UpdateStatus();
-        }
+			var view = bindable as HtmlTextBehavior;
+			view?.UpdateStatus();
+		}
 
-        #endregion
+		#endregion
 
-        protected override void OnAttachedTo(Label bindable)
-        {
-            base.OnAttachedTo(bindable);
+		protected override void OnAttachedTo(Label bindable)
+		{
+			base.OnAttachedTo(bindable);
 
-            associatedObject = bindable;
+			associatedObject = bindable;
 
-            if (bindable.BindingContext != null)
-            {
-                BindingContext = bindable.BindingContext;
-            }
-            bindable.BindingContextChanged += OnBindingContextChanged;
-        }
+			if (bindable.BindingContext != null)
+			{
+				BindingContext = bindable.BindingContext;
+			}
+			bindable.BindingContextChanged += OnBindingContextChanged;
+		}
 
-        protected override void OnDetachingFrom(Label bindable)
-        {
-            bindable.BindingContextChanged -= OnBindingContextChanged;
+		protected override void OnDetachingFrom(Label bindable)
+		{
+			bindable.BindingContextChanged -= OnBindingContextChanged;
 
-            associatedObject = null;
+			associatedObject = null;
 
-            base.OnDetachingFrom(bindable);
-        }
+			base.OnDetachingFrom(bindable);
+		}
 
-        protected override void OnBindingContextChanged()
-        {
-            base.OnBindingContextChanged();
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
 
-            BindingContext = associatedObject.BindingContext;
-        }
+			BindingContext = associatedObject.BindingContext;
+		}
 
-        private void OnBindingContextChanged(object sender, EventArgs e)
-        {
-            OnBindingContextChanged();
-        }
+		private void OnBindingContextChanged(object sender, EventArgs e)
+		{
+			OnBindingContextChanged();
+		}
 
-        private void UpdateStatus()
-        {
-            if (this.associatedObject == null)
-            {
-                return;
-            }
+		private void UpdateStatus()
+		{
+			if (this.associatedObject == null)
+			{
+				return;
+			}
 
-            var formattedString = new FormattedString();
-            var inlines = formattedString.Spans;
+			var formattedString = new FormattedString();
+			var inlines = formattedString.Spans;
 
-            var parser = new StatusParser();
-            var tootSpans = parser.Parse(this.Status);
+			var parser = new StatusParser();
+			var tootSpans = parser.Parse(this.Status);
 
-            foreach (var tootSpan in tootSpans)
-            {
-                var span = new Span { Text = tootSpan.Text };
-                switch (tootSpan.Type)
-                {
-                    case TootSpan.SpanType.Text:
-                        // 絵文字変換を忘れない
-                        span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, (System.Globalization.CultureInfo)null);
-                        inlines.Add(span);
-                        break;
-                    case TootSpan.SpanType.HyperLink:
-                        span.ForegroundColor = Color.Blue;
-                        inlines.Add(span);
-                        break;
-                    case TootSpan.SpanType.Tag:
-                        span.ForegroundColor = Color.Blue;
-                        inlines.Add(span);
-                        break;
-                    case TootSpan.SpanType.LineBreak:
-                        span.Text = Environment.NewLine;
-                        inlines.Add(span);
-                        break;
-                    default:
-                        break;
-                }
+			foreach (var tootSpan in tootSpans)
+			{
+				var span = new Span { Text = tootSpan.Text };
+				switch (tootSpan.Type)
+				{
+					case TootSpan.SpanType.Text:
+						inlines.Add(span);
+						break;
+					case TootSpan.SpanType.HyperLink:
+						span.ForegroundColor = Color.Blue;
+						inlines.Add(span);
+						break;
+					case TootSpan.SpanType.Tag:
+						span.ForegroundColor = Color.Blue;
+						inlines.Add(span);
+						break;
+					case TootSpan.SpanType.LineBreak:
+						span.Text = Environment.NewLine;
+						inlines.Add(span);
+						break;
+					default:
+						break;
+				}
 
-            }
+			}
 
-            this.associatedObject.FormattedText = formattedString;
+			this.associatedObject.FormattedText = formattedString;
 
-            // ついでに表示非表示を決める
-            this.associatedObject.IsVisible = true; // inlines.Count > 0;
-        }
-    }
+			// ついでに表示非表示を決める
+			this.associatedObject.IsVisible = true; // inlines.Count > 0;
+		}
+	}
 }
