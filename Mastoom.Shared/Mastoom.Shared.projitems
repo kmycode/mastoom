@@ -22,5 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\PostStatusModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonTag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonAttachment.cs" />
   </ItemGroup>
 </Project>

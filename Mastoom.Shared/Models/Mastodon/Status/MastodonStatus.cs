@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Mastoom.Shared.Parsers;
+using System.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon.Status
 {
@@ -21,6 +23,29 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		/// アカウント
 		/// </summary>
 		public MastodonAccount Account { get; }
+
+		private IEnumerable<MastodonAttachment> _mediaAttachments;
+		public IEnumerable<MastodonAttachment> MediaAttachments 
+		{ 
+			get { return _mediaAttachments; }
+			private set 
+			{
+				_mediaAttachments = value;
+				this.OnPropertyChanged();
+			}
+		}
+
+		private IEnumerable<MastodonTag> _tags;
+		public IEnumerable<MastodonTag> Tags
+		{ 
+			get { return _tags; }
+			private set 
+			{
+				_tags = value;
+                this.OnPropertyChanged();
+			}
+		}
+
 
 		/// <summary>
 		/// ステータスの内容
@@ -54,6 +79,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			this.Id = status.Id;
 			this.Content = status.Content;
 			this.Account = new MastodonAccount(status.Account);
+            this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
+			this.Tags = status.Tags.Select(x => new MastodonTag(x));
 		}
 
 		public void CopyTo(MastodonStatus to)
@@ -63,6 +90,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 				throw new InvalidOperationException("コピーしようとするStatusのIDが違います");
 			}
 			to.Content = this.Content;
+			to.MediaAttachments = this.MediaAttachments.Select(x => x);
+			to.Tags = this.Tags.Select(x => x);
 		}
 
 		#region INotifyPropertyChanged
