@@ -15,6 +15,8 @@
 	
 	<ContentView.Content>
 		<Grid
+			RowSpacing="0"
+			ColumnSpacing="0"
 			HorizontalOptions="FillAndExpand"
 			VerticalOptions="FillAndExpand">
 
@@ -32,7 +34,7 @@
 				HorizontalOptions="FillAndExpand">
 
 				<Button.Behaviors>
-					<b:ExitPageModeBehavior Collection="{Binding Statuses}" />
+					<b:NewArrivalStatusesBehavior Collection="{Binding Statuses}" />
 				</Button.Behaviors>
 			</Button>
 			

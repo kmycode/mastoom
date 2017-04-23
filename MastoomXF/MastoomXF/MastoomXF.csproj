@@ -80,6 +80,7 @@
     <Compile Include="Behaviors\NewArrivalStatusesBehavior.cs" />
     <Compile Include="Converters\PlayConverter.cs" />
     <Compile Include="Behaviors\BindingContextPassingBehavior.cs" />
+    <Compile Include="Converters\Time2ElapseConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">

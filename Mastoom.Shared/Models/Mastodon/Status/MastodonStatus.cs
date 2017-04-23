@@ -12,8 +12,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 	/// <summary>
 	/// Mastodonのステータス
 	/// </summary>
-    public class MastodonStatus : INotifyPropertyChanged
-    {
+	public class MastodonStatus : INotifyPropertyChanged
+	{
 		/// <summary>
 		/// ステータスのID
 		/// </summary>
@@ -25,10 +25,10 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		public MastodonAccount Account { get; }
 
 		private IEnumerable<MastodonAttachment> _mediaAttachments;
-		public IEnumerable<MastodonAttachment> MediaAttachments 
-		{ 
+		public IEnumerable<MastodonAttachment> MediaAttachments
+		{
 			get { return _mediaAttachments; }
-			private set 
+			private set
 			{
 				_mediaAttachments = value;
 				this.OnPropertyChanged();
@@ -37,15 +37,29 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
 		private IEnumerable<MastodonTag> _tags;
 		public IEnumerable<MastodonTag> Tags
-		{ 
+		{
 			get { return _tags; }
-			private set 
+			private set
 			{
 				_tags = value;
-                this.OnPropertyChanged();
+				this.OnPropertyChanged();
 			}
 		}
 
+		private DateTime _createdAt;
+		public DateTime CreatedAt
+		{
+			get { return _createdAt; }
+			private set
+			{
+				if (_createdAt == value)
+				{
+					return;
+				}
+				_createdAt = value;
+				this.OnPropertyChanged();
+			}
+		}
 
 		/// <summary>
 		/// ステータスの内容
@@ -73,14 +87,15 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			this.Account = account;
 		}
 
-        private static int a = 0;
+		private static int a = 0;
 		public MastodonStatus(Mastonet.Entities.Status status)
 		{
 			this.Id = status.Id;
 			this.Content = status.Content;
 			this.Account = new MastodonAccount(status.Account);
-            this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
+			this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
 			this.Tags = status.Tags.Select(x => new MastodonTag(x));
+			this.CreatedAt = status.CreatedAt;
 		}
 
 		public void CopyTo(MastodonStatus to)
@@ -92,6 +107,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			to.Content = this.Content;
 			to.MediaAttachments = this.MediaAttachments.Select(x => x);
 			to.Tags = this.Tags.Select(x => x);
+			to.CreatedAt = this.CreatedAt;
 		}
 
 		#region INotifyPropertyChanged
