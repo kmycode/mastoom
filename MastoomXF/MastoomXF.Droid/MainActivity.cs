@@ -26,6 +26,9 @@ namespace Mastoom.Droid
 
 			base.OnCreate(bundle);
 
+			// スリープさせないお
+			Window.AddFlags(WindowManagerFlags.KeepScreenOn);
+
 			global::Xamarin.Forms.Forms.Init(this, bundle);
 			CarouselViewRenderer.Init();
             LoadApplication(new App());
