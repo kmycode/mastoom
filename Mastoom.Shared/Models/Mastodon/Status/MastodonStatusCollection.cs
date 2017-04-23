@@ -71,16 +71,16 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                 if (!this.IsPageMode)
                 {
                     this.DynamicLimited.Insert(0, status);
-                    if (this.DynamicLimited.Count > 200)
+                    if (this.DynamicLimited.Count > 100)
                     {
-                        this.DynamicLimited.RemoveAt(200);
+                        this.DynamicLimited.RemoveAt(100);
                     }
                 }
 
                 // メモリに保持する件数の限界
-                if (this.Count > 3000)
+                if (this.Count > 2500)
                 {
-                    this.collection.RemoveAt(3000);
+                    this.collection.RemoveAt(2500);
                 }
 			}
 		}
@@ -109,7 +109,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             var firstIndex = isEnter ? 0 : (last != null ? this.IndexOf(last) + 1 : 0);
             if (firstIndex >= this.Count) return;
 
-            int num = 100;
+            int num = 50;
             for (int i = firstIndex; i < this.Count && num > 0; i++, num--)
             {
                 if (this.DynamicLimited.Contains(this[i]) == false)
@@ -121,7 +121,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
         public void NextPage()
         {
-            while (this.DynamicLimited.Count > 200)
+            while (this.DynamicLimited.Count > 100)
             {
                 this.DynamicLimited.RemoveAt(0);
             }
@@ -136,7 +136,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                 return false;
             }
 
-            int num = 100;
+            int num = 50;
             for (int i = lastIndex; i >= 0 && num > 0; i--, num--)
             {
                 if (this.DynamicLimited.Contains(this[i]) == false)
@@ -150,16 +150,16 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
         public void PrevPage()
         {
-            while (this.DynamicLimited.Count > 200)
+            while (this.DynamicLimited.Count > 100)
             {
-                this.DynamicLimited.RemoveAt(200);
+                this.DynamicLimited.RemoveAt(100);
             }
         }
 
         public void NewestPage()
         {
             this.DynamicLimited.Clear();
-            var first100 = this.Take(200);
+            var first100 = this.Take(100);
             foreach (var item in first100)
             {
                 this.DynamicLimited.Add(item);
