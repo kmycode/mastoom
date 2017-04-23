@@ -1,7 +1,9 @@
-﻿using Microsoft.Xaml.Interactivity;
+﻿using HtmlAgilityPack;
+using Microsoft.Xaml.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -93,94 +95,66 @@ namespace Mastoom.UWP.Behaviors
 			var inlines = this.attached.Inlines;
 			inlines.Clear();
 
-			var doc = new XmlDocument();
+			var doc = new HtmlDocument();
+            string html = WebUtility.HtmlDecode(this.Content);
             try
             {
-                doc.LoadXml("<div>" + this.Content.Replace("<br>", "<br/>") + "</div>");
+                doc.LoadHtml(html);
             }
-            catch
+            catch (Exception e)
             {
+                inlines.Add(new Run
+                {
+                    Text = this.Content,
+                    Foreground = new SolidColorBrush(Colors.Red),
+                });
                 return;
             }
 
-            var root = doc.HasChildNodes ? doc.FirstChild : null;
+            var root = doc.DocumentNode;
 			if (root == null)
 			{
 				return;
 			}
 
-			foreach (XmlNode nodeAtRoot in root.ChildNodes)
+			foreach (var nodeAtRoot in root.ChildNodes)
 			{
-				foreach (XmlNode node in nodeAtRoot.ChildNodes)
+				foreach (var node in nodeAtRoot.ChildNodes)
 				{
-					if (node is XmlElement element)
+					switch (node.Name.ToLower())
 					{
-						switch (element.Name.ToLower())
-						{
-							case "a":
-								if (element.HasAttribute("href"))
+						case "a":
+							if (node.Attributes.Any(item => item.Name == "href"))
+							{
+								var link = node.Attributes["href"].Value;
+								inlines.Add(new Hyperlink
 								{
-									var link = element.Attributes["href"].Value;
-									inlines.Add(new Hyperlink
+									NavigateUri = new Uri(node.Attributes["href"].Value),
+									Inlines =
 									{
-										NavigateUri = new Uri(element.Attributes["href"].Value),
-										Inlines =
+										new Run
 										{
-											new Run
-											{
-												Text = this.GetPlainText(element),
-											},
+											Text = node.InnerText,
 										},
-									});
-								}
-								break;
-							case "br":
-								inlines.Add(new LineBreak());
-								break;
-							case "span":
-								inlines.Add(new Run
-								{
-									Text = element.Value ?? "",
+									},
 								});
-								break;
-							default:
-								inlines.Add(new Run
-								{
-									Text = "[" + element.Name + "]" + element.Value,
-									Foreground = new SolidColorBrush(Colors.Red),
-								});
-								break;
-						}
-					}
-					else
-					{
-						inlines.Add(new Run
-						{
-							Text = node.Value,
-						});
+							}
+							break;
+						case "br":
+							inlines.Add(new LineBreak());
+							break;
+						default:
+							inlines.Add(new Run
+							{
+								Text = node.InnerText,
+							});
+							break;
 					}
 				}
 			}
 
 			// ついでに表示非表示を決める
 			this.attached.Visibility = inlines.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-		}
-
-		private string GetPlainText(XmlElement element)
-		{
-			string value = "";
-			foreach (XmlNode node in element)
-			{
-				if (node.HasChildNodes && node is XmlElement elem)
-				{
-					value += this.GetPlainText(elem);
-				}
-				else
-				{
-					value += node.Value;
-				}
-			}
-			return value;
 		}
 	}
 }
