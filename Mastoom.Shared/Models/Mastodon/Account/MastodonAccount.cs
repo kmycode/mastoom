@@ -80,7 +80,7 @@ namespace Mastoom.Shared.Models.Mastodon.Account
             this.DisplayId = account.AccountName;
             this.InstanceUri = account.AccountName.Split('@').ElementAtOrDefault(1) ??
                                account.ProfileUrl.Split('/').ElementAt(2);
-            this.IsLocal = !account.AccountName.Contains('@');
+            this.IsLocal = !account.AccountName.Contains("@");
 			this.Name = account.DisplayName;
 			this.IconUri = account.AvatarUrl;
 		}
