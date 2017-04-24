@@ -42,7 +42,7 @@
 			
 	        <!--タイムライン-->
 	        <ListView 
-				x:Name="listView"
+				CachingStrategy="RecycleElement"
 				Grid.Column="0" 
 				Grid.Row="2"
 				HasUnevenRows="true"

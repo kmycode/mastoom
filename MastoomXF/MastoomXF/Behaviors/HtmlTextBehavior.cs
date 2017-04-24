@@ -10,6 +10,7 @@ using Mastoom.Shared.Models.Mastodon.Status;
 using Mastoom.Shared.Parsers;
 using Mastoom.Shared.Converters;
 using Xamarin.Forms;
+using Microsoft.Azure.Mobile;
 
 namespace Mastoom.Behaviors
 {
@@ -97,41 +98,48 @@ namespace Mastoom.Behaviors
 			var formattedString = new FormattedString();
 			var inlines = formattedString.Spans;
 
-			var parser = new StatusParser();
-			var tootSpans = parser.Parse(this.Status);
-
-			foreach (var tootSpan in tootSpans)
+			try
 			{
-				var span = new Span { Text = tootSpan.Text };
-				switch (tootSpan.Type)
+				var parser = new StatusParser();
+				var tootSpans = parser.Parse(this.Status);
+
+				foreach (var tootSpan in tootSpans)
 				{
-					case TootSpan.SpanType.Text:
-						// 絵文字変換を忘れない
-						span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, null);
-						inlines.Add(span);
-						break;
-					case TootSpan.SpanType.HyperLink:
-						span.ForegroundColor = Color.Blue;
-						inlines.Add(span);
-						break;
-					case TootSpan.SpanType.Tag:
-						span.ForegroundColor = Color.Blue;
-						inlines.Add(span);
-						break;
-					case TootSpan.SpanType.LineBreak:
-						span.Text = Environment.NewLine;
-						inlines.Add(span);
-						break;
-					default:
-						break;
+					var span = new Span { Text = tootSpan.Text };
+					switch (tootSpan.Type)
+					{
+						case TootSpan.SpanType.Text:
+							// 絵文字変換を忘れない
+							span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, null);
+							inlines.Add(span);
+							break;
+						case TootSpan.SpanType.HyperLink:
+							span.ForegroundColor = Color.Blue;
+							inlines.Add(span);
+							break;
+						case TootSpan.SpanType.Tag:
+							span.ForegroundColor = Color.Blue;
+							inlines.Add(span);
+							break;
+						case TootSpan.SpanType.LineBreak:
+							span.Text = Environment.NewLine;
+							inlines.Add(span);
+							break;
+						default:
+							break;
+					}
+
 				}
 
+				this.associatedObject.FormattedText = formattedString;
+
+				// ついでに表示非表示を決める
+				this.associatedObject.IsVisible = true; // inlines.Count > 0;
 			}
-
-			this.associatedObject.FormattedText = formattedString;
-
-			// ついでに表示非表示を決める
-			this.associatedObject.IsVisible = true; // inlines.Count > 0;
+			catch (Exception ex)
+			{
+				throw new InvalidDataException($"Content parse failed. url= {Status.Url}", ex);
+			}
 		}
 	}
 }
