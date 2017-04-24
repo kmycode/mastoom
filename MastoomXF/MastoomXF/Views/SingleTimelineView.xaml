@@ -10,6 +10,7 @@
 	x:Class="Mastoom.Views.SingleTimelineView">
     <ContentPage.Resources>
         <ResourceDictionary>
+			<cv:PlayConverter x:Key="PlayConv" />
         </ResourceDictionary>
     </ContentPage.Resources>
 	
@@ -30,11 +31,12 @@
 			<Button
 				Grid.Column="0" 
 				Grid.Row="0"
-				IsVisible="{Binding Statuses.IsPageMode}"
+				Text="{Binding ., Converter={StaticResource PlayConv}}"
+				IsVisible="{Binding Activated.Statuses.IsPageMode}"
 				HorizontalOptions="FillAndExpand">
 
 				<Button.Behaviors>
-					<b:NewArrivalStatusesBehavior Collection="{Binding Statuses}" />
+					<b:NewArrivalStatusesBehavior Collection="{Binding Activated.Statuses}" />
 				</Button.Behaviors>
 			</Button>
 			
@@ -44,8 +46,8 @@
 				Grid.Column="0" 
 				Grid.Row="2"
 				HasUnevenRows="true"
-				ef:ListViewScrollEffect.Collection="{Binding Statuses}"
-				ItemsSource="{Binding Statuses.DynamicLimited}">
+				ef:ListViewScrollEffect.Collection="{Binding Activated.Statuses}"
+				ItemsSource="{Binding Activated.Statuses.DynamicLimited}">
 
 				<ListView.ItemTemplate>
 					<DataTemplate>
@@ -63,7 +65,7 @@
 				Grid.Row="1"
 				Grid.RowSpan="2" >
 	            <WebView.Behaviors>
-	                <b:OAuthWebBehavior Helper="{Binding OAuthHelper}"/>
+	                <b:OAuthWebBehavior Helper="{Binding Activated.Auth.OAuthHelper}"/>
 	            </WebView.Behaviors>
 	        </WebView>
 

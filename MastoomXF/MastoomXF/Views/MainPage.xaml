@@ -25,7 +25,7 @@
 		Orientation="Horizontal" 
 		InterPageSpacing="10" 
 		Position="0" 
-		ItemsSource="{Binding Connections}" 
+		ItemsSource="{Binding Groups}" 
 		ItemTemplate="{StaticResource myTemplateSelector}"
 		VerticalOptions="FillAndExpand" 
 		HorizontalOptions="FillAndExpand">

@@ -43,13 +43,15 @@ namespace Mastoom.Behaviors
 				{
 					var authModel = (OAuthModel)oldValue;
 					authModel.UriNavigateRequested -= view.Helper_NavigateRequested;
-					authModel.HiddenRequested -= view.Helper_HiddenRequested;
+					authModel.HideRequested -= view.Helper_HideRequested;
+					authModel.ShowRequested -= view.Helper_ShowRequested;;
 				}
 				if (newValue != null)
 				{
 					var authModel = (OAuthModel)newValue;
 					authModel.UriNavigateRequested += view.Helper_NavigateRequested;
-					authModel.HiddenRequested += view.Helper_HiddenRequested;
+					authModel.ShowRequested += view.Helper_ShowRequested;;
+					authModel.HideRequested += view.Helper_HideRequested;
 					authModel.OnAttached();
 				}
 			}
@@ -112,7 +114,12 @@ namespace Mastoom.Behaviors
 			catch { }
 		}
 
-		private void Helper_HiddenRequested(object sender, EventArgs e)
+		private void Helper_ShowRequested(object sender, EventArgs e)
+		{
+			this.associatedObject.IsVisible = true;
+		}
+
+		private void Helper_HideRequested(object sender, EventArgs e)
 		{
 			this.associatedObject.IsVisible = false;
 		}
