@@ -35,6 +35,11 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         private bool _isPageMode;
 
         /// <summary>
+        /// ステータスを追加する時に適用するフィルタ
+        /// </summary>
+        public Predicate<MastodonStatus> Filter { get; set; } = (status) => true;
+
+        /// <summary>
         /// 画面スクロールなどに対応して、実際に表示する要素
         /// </summary>
         public ObservableCollection<MastodonStatus> DynamicLimited { get; } = new ObservableCollection<MastodonStatus>();
@@ -50,6 +55,11 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
 		public void Add(MastodonStatus status)
 		{
+            if (!this.Filter(status))
+            {
+                return;
+            }
+
 			var existing = this.FindById(status.Id);
 			if (existing != null)
 			{
@@ -61,16 +71,16 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                 if (!this.IsPageMode)
                 {
                     this.DynamicLimited.Insert(0, status);
-                    if (this.DynamicLimited.Count > 200)
+                    if (this.DynamicLimited.Count > 100)
                     {
-                        this.DynamicLimited.RemoveAt(200);
+                        this.DynamicLimited.RemoveAt(100);
                     }
                 }
 
                 // メモリに保持する件数の限界
-                if (this.Count > 3000)
+                if (this.Count > 2500)
                 {
-                    this.collection.RemoveAt(3000);
+                    this.collection.RemoveAt(2500);
                 }
 			}
 		}
@@ -80,7 +90,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             if (this.IsPageMode) return;
 
             this.IsPageMode = true;
-            this.PerformNextPage(true);
+            this.PreviewNextPage(true);
         }
 
         public void ExitPageMode()
@@ -93,13 +103,13 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             this.PageModeExited?.Invoke(this, new EventArgs());
         }
 
-        public void PerformNextPage(bool isEnter = false)
+        public bool PreviewNextPage(bool isEnter = false)
         {
             var last = this.DynamicLimited.LastOrDefault();
             var firstIndex = isEnter ? 0 : (last != null ? this.IndexOf(last) + 1 : 0);
-            if (firstIndex >= this.Count) return;
+            if (firstIndex >= this.Count) return false;
 
-            int num = 100;
+            int num = 50;
             for (int i = firstIndex; i < this.Count && num > 0; i++, num--)
             {
                 if (this.DynamicLimited.Contains(this[i]) == false)
@@ -107,17 +117,19 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                     this.DynamicLimited.Add(this[i]);
                 }
             }
+
+            return true;
         }
 
         public void NextPage()
         {
-            while (this.DynamicLimited.Count > 200)
+            while (this.DynamicLimited.Count > 100)
             {
                 this.DynamicLimited.RemoveAt(0);
             }
         }
 
-        public bool PerformPrevPage()
+        public bool PreviewPrevPage()
         {
             var first = this.DynamicLimited.FirstOrDefault();
             var lastIndex = first != null ? this.IndexOf(first) - 1 : 0;
@@ -126,7 +138,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
                 return false;
             }
 
-            int num = 100;
+            int num = 50;
             for (int i = lastIndex; i >= 0 && num > 0; i--, num--)
             {
                 if (this.DynamicLimited.Contains(this[i]) == false)
@@ -140,16 +152,16 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
         public void PrevPage()
         {
-            while (this.DynamicLimited.Count > 200)
+            while (this.DynamicLimited.Count > 100)
             {
-                this.DynamicLimited.RemoveAt(200);
+                this.DynamicLimited.RemoveAt(100);
             }
         }
 
         public void NewestPage()
         {
             this.DynamicLimited.Clear();
-            var first100 = this.Take(200);
+            var first100 = this.Take(100);
             foreach (var item in first100)
             {
                 this.DynamicLimited.Add(item);

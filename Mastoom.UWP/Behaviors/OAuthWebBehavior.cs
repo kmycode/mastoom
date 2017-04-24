@@ -44,14 +44,16 @@ namespace Mastoom.UWP.Behaviors
 						{
 							var oldValue = (OAuthModel)e.OldValue;
 							oldValue.UriNavigateRequested -= view.Helper_NavigateRequested;
-							oldValue.HiddenRequested -= view.Helper_HiddenRequested;
-						}
+							oldValue.HideRequested -= view.Helper_HideRequested;
+                            oldValue.ShowRequested -= view.Helper_ShowRequested;
+                        }
 						if (e.NewValue != null)
 						{
 							var newValue = (OAuthModel)e.NewValue;
 							newValue.UriNavigateRequested += view.Helper_NavigateRequested;
-							newValue.HiddenRequested += view.Helper_HiddenRequested;
-							newValue.OnAttached();
+							newValue.HideRequested += view.Helper_HideRequested;
+                            newValue.ShowRequested += view.Helper_ShowRequested;
+                            newValue.OnAttached();
 						}
 					}
 				})
@@ -103,9 +105,14 @@ namespace Mastoom.UWP.Behaviors
 				this.attached?.Navigate(new Uri(e.Uri));
 			}
 			catch { }
-		}
+        }
 
-		private void Helper_HiddenRequested(object sender, EventArgs e)
+        private void Helper_ShowRequested(object sender, EventArgs e)
+        {
+            this.attached.Visibility = Visibility.Visible;
+        }
+
+        private void Helper_HideRequested(object sender, EventArgs e)
 		{
 			this.attached.Visibility = Visibility.Collapsed;
 		}

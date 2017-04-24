@@ -100,7 +100,10 @@
     <Compile Include="Behaviors\ImageCollectionBehavior.cs" />
     <Compile Include="Behaviors\OAuthWebBehavior.cs" />
     <Compile Include="Behaviors\TimelineScrollBehavior.cs" />
+    <Compile Include="Converters\Boolean2NegativeVisibilityConverter.cs" />
     <Compile Include="Converters\Boolean2VisibilityConverter.cs" />
+    <Compile Include="Converters\ConnectionType2GlyphConverter.cs" />
+    <Compile Include="Converters\MastodonStatus2BackgroundConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -130,6 +133,16 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ConnectionGroupTitleBarListBoxItemStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Styles\TransparentToggleButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -16,9 +16,14 @@ namespace Mastoom.Shared.Models.Common
 			this.UriNavigated?.Invoke(this, new UriNavigatedEventArgs(uri));
 		}
 
+        public void Show()
+        {
+            this.ShowRequested?.Invoke(this, new EventArgs());
+        }
+
 		public void Hide()
 		{
-			this.HiddenRequested?.Invoke(this, new EventArgs());
+			this.HideRequested?.Invoke(this, new EventArgs());
 		}
 
 		public void OnAttached()
@@ -28,7 +33,8 @@ namespace Mastoom.Shared.Models.Common
 
 		public event UriNavigateRequestedEventHandler UriNavigateRequested;
 		public event UriNavigatedEventHandler UriNavigated;
-		public event EventHandler HiddenRequested;
+        public event EventHandler ShowRequested;
+		public event EventHandler HideRequested;
 		public event EventHandler Attached;
     }
 

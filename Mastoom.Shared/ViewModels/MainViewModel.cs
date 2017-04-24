@@ -10,22 +10,10 @@ namespace Mastoom.Shared.ViewModels
     {
 		#region プロパティ
 
-        public string Test => "sample";
-
-        /// <summary>
-		/// 接続先一覧
-		/// </summary>
-		public MastodonConnectionCollection Connections { get; } = new MastodonConnectionCollection();
-
 		/// <summary>
-		/// メインとなる接続先のステータス一覧
+		/// 接続グループ一覧
 		/// </summary>
-		public MastodonStatusCollection MainStatuses => this.Connections.Main?.Statuses;
-
-		/// <summary>
-		/// ステータス投稿のモデル
-		/// </summary>
-		public PostStatusModel PostStatus => this.Connections.Main?.PostStatus;
+		public MastodonConnectionGroupCollection Groups { get; } = new MastodonConnectionGroupCollection();
 
 		#endregion
 
@@ -33,16 +21,12 @@ namespace Mastoom.Shared.ViewModels
 
 		public MainViewModel()
 		{
-			this.Connections.PropertyChanged += this.RaisePropertyChanged;
-
-			this.Connections.AddTestConnection();
-
-			this.Connections.Main.PropertyChanged += this.RaisePropertyChanged;
+			this.Groups.AddTestConnection();
 		}
 
 		#endregion
 
-		#region Commands
+		#region コマンド
 
         /// <summary>
         /// Post new status (toot)
@@ -73,7 +57,6 @@ namespace Mastoom.Shared.ViewModels
             }
         }
         private RelayCommand<MastodonStatusCollection> _exitPageModeCommand;
-
 
         #endregion
     }

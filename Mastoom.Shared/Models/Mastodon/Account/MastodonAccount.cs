@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -17,6 +18,16 @@ namespace Mastoom.Shared.Models.Mastodon.Account
         /// 実際に表示されるID
         /// </summary>
         public string DisplayId { get; }
+
+        /// <summary>
+        /// インスタンスURI
+        /// </summary>
+        public string InstanceUri { get; }
+
+        /// <summary>
+        /// インスタンスが同じであるか（このアカウントを取得した認証と同じインスタンスであるか）
+        /// </summary>
+        public bool IsLocal { get; }
 
 		/// <summary>
 		/// 名前
@@ -67,6 +78,9 @@ namespace Mastoom.Shared.Models.Mastodon.Account
 		{
 			this.Id = account.Id;
             this.DisplayId = account.AccountName;
+            this.InstanceUri = account.AccountName.Split('@').ElementAtOrDefault(1) ??
+                               account.ProfileUrl.Split('/').ElementAt(2);
+            this.IsLocal = !account.AccountName.Contains('@');
 			this.Name = account.DisplayName;
 			this.IconUri = account.AvatarUrl;
 		}

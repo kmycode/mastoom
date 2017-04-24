@@ -4,6 +4,7 @@ using Mastoom.Shared.Common;
 using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection;
+using Mastoom.Shared.Models.Mastodon.Connection.Function;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,15 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Mastoom.Shared.ViewModels.ViewModelBase;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
+    /// <summary>
+    /// マストドンへのひとつの接続。
+    /// １つの接続は１つのIConnectionFunctionを保持するため、
+    /// 公開タイムラインへの接続や、お気に入り一覧への接続などは、別々の接続としてカウントされる
+    /// </summary>
     public class MastodonConnection : INotifyPropertyChanged
     {
 		#region 変数
@@ -24,18 +31,19 @@ namespace Mastoom.Shared.Models.Mastodon
 		private const string ApplicationName = "Mastoom.Master.Test";
 		
 		private MastodonClient client;
-
-		private TimelineStreaming publicStatusStreaming;
-
-		private AppRegistration appRegistration;
-		private bool isInitialized = false;
+        
 		private string streamingInstance;
-        private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
-        //private Timer StreamingTimer;
+        
+        private IConnectionFunction function;
 
-		#endregion
+        #endregion
 
-		#region プロパティ
+        #region プロパティ
+
+        /// <summary>
+        /// マストドンのひとつの認証
+        /// </summary>
+        public MastodonAuthentication Auth { get; private set; }
 
 		/// <summary>
 		/// 接続の名前
@@ -57,25 +65,16 @@ namespace Mastoom.Shared.Models.Mastodon
 		}
 		private string _name;
 
-		/// <summary>
-		/// インスタンスのURI
-		/// </summary>
-		public string InstanceUri
-		{
-			get
-			{
-				return this._instanceUri;
-			}
-			set
-			{
-				if (this._instanceUri != value)
-				{
-					this._instanceUri = value;
-					this.OnPropertyChanged();
-				}
-			}
-		}
-		private string _instanceUri;
+        /// <summary>
+        /// 接続の種類
+        /// </summary>
+        public ConnectionType ConnectionType => this._connectionType;
+        private ConnectionType _connectionType;
+
+        /// <summary>
+        /// インスタンスのURI
+        /// </summary>
+        public string InstanceUri { get; }
 
         /// <summary>
         /// ログインしているユーザ
@@ -96,11 +95,6 @@ namespace Mastoom.Shared.Models.Mastodon
             }
         }
         private MastodonAccount _account;
-
-		/// <summary>
-		/// OAuthブラウザを操作するヘルパ
-		/// </summary>
-		public OAuthModel OAuthHelper { get; } = new OAuthModel();
 
 		/// <summary>
 		/// ステータスの集まり
@@ -128,163 +122,119 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		public MastodonConnection()
+		public MastodonConnection(string instanceUri, ConnectionType functionType)
 		{
-			this.OAuthHelper.Attached += async (sender, e) =>
-			{
-				await this.InitializeAsync();
-			};
-            //this.InitializeAsync().ConfigureAwait(false);
+            this.InstanceUri = instanceUri;
+            this._connectionType = functionType;
+            this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
 
-            // ストリーミングの更新がタイムアウトした時の処理
-            //this.StreamingTimer = new Timer((sender) =>
-            //{
-            //    this.StopStreamingPublicStatus();
-            //    this.StartStreamingPublicStatus();
-            //}, null, Timeout.Infinite, Timeout.Infinite);
-        }
-
-		private async Task InitializeAsync()
-		{
-			if (this.isInitialized)
-			{
-				return;
-			}
-			this.isInitialized = true;
-
-			this.OAuthHelper.UriNavigated += async (sender, e) =>
-			{
-				if (e.Uri.Contains("/oauth/authorize/"))
-				{
-					var paths = e.Uri.Split('/');
-					var token = paths.ElementAt(paths.Count() - 1);
-					
-					this.client = new MastodonClient(this.appRegistration, token);
-					var auth = await this.client.ConnectWithCode(token);
-
-					this.OAuthHelper.Hide();
-
-					this.PostStatus = new PostStatusModel(this.client);
-					Task.Run(async () =>
-					{
-                        await this.GetCurrentUserAsync();
-						this.StartStreamingPublicStatus();
-					}).Wait();
-				}
-			};
-
-			await this.ConnectAsync();
-		}
-
-		private async Task ConnectAsync()
-		{
-			var data = InstanceAccessProvider.GetWithInstanceUri(this.InstanceUri);
-			this.streamingInstance = data.StreamingInstance;
-			//var appRegistration = await MastodonClient.CreateApp(this.instanceUrl, ApplicationName, Scope.Follow | Scope.Read | Scope.Write, "http://kmycode.net/");
-			this.appRegistration = new AppRegistration
-			{
-				Instance = this.InstanceUri,
-				ClientId = data.ClientId,
-				ClientSecret = data.ClientSecret,
-				Scope = Scope.Follow | Scope.Read | Scope.Write,
-			};
-			var preClient = new MastodonClient(this.appRegistration);
-			this.OAuthHelper.NavigateRequest(preClient.OAuthUrl());
-		}
-
-		private async Task GetNewerStatuses()
-		{
-			var timeline = await this.client.GetPublicTimeline();
-			foreach (var item in timeline)
-			{
-				this.Statuses.Add(new MastodonStatus(item));
-			}
-		}
-
-        private async Task GetCurrentUserAsync(int tryCount = 1)
-        {
-            if (tryCount > 3)
+            if (!this.Auth.HasAuthenticated)
             {
-                return;
-            }
-
-            try
-            {
-                var account = new MastodonAccount(await this.client.GetCurrentUser());
-                Task.Run(() =>
+                // 認証完了した時の処理
+                this.Auth.Completed += (sender, e) =>
                 {
-                    GuiThread.Run(() =>
+                    this.ImportAuthenticationData();
+                    Task.Run(async () =>
                     {
-                        this.Account = account;
-                    });
-                });
+                        await this.StartFunctionAsync();
+                    }).Wait();
+                };
+
+                // 認証開始
+                this.Auth.StartOAuthLogin();
             }
-            catch
+            else
             {
-                await this.GetCurrentUserAsync(tryCount + 1);
+                this.ImportAuthenticationData();
+                Task.Run(async () =>
+                {
+                    await this.StartFunctionAsync();
+                }).Wait();
             }
         }
 
-        private void StartStreamingPublicStatus()
+        private void ImportAuthenticationData()
         {
-            this.StartStreamingPublicStatus(1);
+            this.client = this.Auth.Client;
+            this.streamingInstance = this.Auth.StreamingUri;
+            this.PostStatus = new PostStatusModel(this.client);
+            this.Account = this.Auth.CurrentUser;
         }
 
-		private void StartStreamingPublicStatus(int tryCount)
-		{
-            // 試行回数
-            if (tryCount > 3)
+        private async Task StartFunctionAsync()
+        {
+            if (this.function != null)
             {
                 return;
             }
 
-            try
+            switch (this._connectionType)
             {
-                if (this.publicStatusStreaming == null)
-			    {
-                    if (this.streamingInstance == null)
+                case ConnectionType.PublicTimeline:
                     {
-                        this.publicStatusStreaming = this.client.GetPublicStreaming();
+                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.function = func;
                     }
-                    else
+                    break;
+                case ConnectionType.LocalTimeline:
                     {
-                        this.publicStatusStreaming = this.client.GetPublicStreaming(this.streamingInstance);
+                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.Statuses.Filter = (status) => status.Account.IsLocal;
+                        this.function = func;
                     }
+                    break;
+                case ConnectionType.HomeTimeline:
+                    {
+                        var func = await this.Auth.HomeStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.StatusFunction_OnUpdate;
+                        this.function = func;
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
-                    this.publicStatusStreaming.OnUpdate += this.PublicStatus_OnUpdate;
-                }
+            await this.function.StartAsync();
+        }
 
-                //this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
-                this.publicStatusStreaming.Start();
-			}
-			catch (Exception e)
-			{
-				this.StopStreamingPublicStatus();
-				this.StartStreamingPublicStatus(tryCount + 1);
-			}
-		}
+        private async Task StopFunctionAsync()
+        {
+            if (this.function == null)
+            {
+                return;
+            }
 
-		private void StopStreamingPublicStatus()
+            switch (this._connectionType)
+            {
+                case ConnectionType.PublicTimeline:
+                case ConnectionType.LocalTimeline:
+                    {
+                        var func = (IConnectionFunction<MastodonStatus>)this.function;
+                        func.Updated -= this.StatusFunction_OnUpdate;
+                        await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();
+                    }
+                    break;
+                case ConnectionType.HomeTimeline:
+                    {
+                        var func = (IConnectionFunction<MastodonStatus>)this.function;
+                        func.Updated -= this.StatusFunction_OnUpdate;
+                        await this.Auth.HomeStreamingFunctionCounter.DecrementAsync();
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            this.function = null;
+        }
+
+		private void StatusFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonStatus> e)
 		{
-			if (this.publicStatusStreaming != null)
-			{
-				try
-				{
-					this.publicStatusStreaming.Stop();
-				}
-				catch { }
-				this.publicStatusStreaming.OnUpdate -= this.PublicStatus_OnUpdate;
-				this.publicStatusStreaming = null;
-                //this.StreamingTimer.Change(Timeout.Infinite, Timeout.Infinite);
-			}
-		}
-
-		private void PublicStatus_OnUpdate(object sender, StreamUpdateEventArgs e)
-		{
-            //this.StreamingTimer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
 			GuiThread.Run(() =>
 			{
-				this.Statuses.Add(new MastodonStatus(e.Status));
+				this.Statuses.Add(e.Object);
 			});
 		}
 
@@ -293,12 +243,49 @@ namespace Mastoom.Shared.Models.Mastodon
 		#region INotifyPropertyChanged
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-		#endregion
+        #endregion
 
-	}
+        #region コマンド
+
+        // MastodonClientとMastodonStatusなど、複数オブジェクトの組み合わせを
+        // 一度にViewModelに渡す方法が分からなかったので、
+        // ここはModel層だけどICommandを実装したMVVM/Xamlに依存したクラスを使う
+
+        /// <summary>
+        /// ふぁぼる
+        /// </summary>
+        public RelayCommand<MastodonStatus> ToggleFavoriteCommand
+        {
+            get
+            {
+                return this._toggleFavoriteCommand = this._toggleFavoriteCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    status.ToggleFavoriteAsync(this.client);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _toggleFavoriteCommand;
+
+        /// <summary>
+        /// ブーストする
+        /// </summary>
+        public RelayCommand<MastodonStatus> ToggleBoostCommand
+        {
+            get
+            {
+                return this._toggleBoostCommand = this._toggleBoostCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    status.ToggleBoostAsync(this.client);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _toggleBoostCommand;
+
+        #endregion
+    }
 }
