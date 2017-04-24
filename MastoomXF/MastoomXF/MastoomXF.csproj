@@ -95,11 +95,11 @@
     <Reference Include="CarouselView.FormsPlugin.Abstractions">
       <HintPath>..\packages\CarouselView.FormsPlugin.4.1.2\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid10+Xamarin.iOS10\CarouselView.FormsPlugin.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Mastonet">
-      <HintPath>..\..\ext\Mastonet.dll</HintPath>
-    </Reference>
     <Reference Include="CenterCLR.SgmlReader">
       <HintPath>..\packages\CenterCLR.SgmlReader.2016.3.27.2\lib\portable-net403+sl50+win+WindowsPhoneApp81+wp80+MonoAndroid10+Xamarin.iOS10+MonoTouch10\CenterCLR.SgmlReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Mastonet">
+      <HintPath>..\ext\Mastonet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
