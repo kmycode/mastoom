@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon.Status
 {
@@ -95,6 +96,51 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         }
         private bool _isBoosted;
 
+		/// <summary>
+		/// 添付メディア(画像など)群
+		/// </summary>
+		/// <value>The media attachments.</value>
+		public IEnumerable<MastodonAttachment> MediaAttachments
+		{
+			get { return _mediaAttachments; }
+			private set
+			{
+				_mediaAttachments = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private IEnumerable<MastodonAttachment> _mediaAttachments;
+
+		/// <summary>
+		/// タグ群
+		/// </summary>
+		/// <value>The tags.</value>
+		public IEnumerable<MastodonTag> Tags
+		{
+			get { return _tags; }
+			private set
+			{
+				_tags = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private IEnumerable<MastodonTag> _tags;
+
+		private DateTime _createdAt;
+		public DateTime CreatedAt
+		{
+			get { return _createdAt; }
+			private set
+			{
+				if (_createdAt == value)
+				{
+					return;
+				}
+				_createdAt = value;
+				this.OnPropertyChanged();
+			}
+		}
+
         #region メソッド
 
         public MastodonStatus(int id, MastodonAccount account)
@@ -121,6 +167,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             this.IsFavorited = status.Favourited ?? false;
             this.IsBoosted = status.Reblogged ?? false;
 			this.Account = new MastodonAccount(status.Account);
+			this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
+            this.Tags = status.Tags.Select(x => new MastodonTag(x));
 		}
 
 		public void CopyTo(MastodonStatus to)
@@ -132,6 +180,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			to.Content = this.Content;
             to.IsFavorited = this.IsFavorited;
             to.IsBoosted = this.IsBoosted;
+            to.MediaAttachments = this.MediaAttachments.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
+            to.Tags = this.Tags.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
 		}
 
         #endregion
