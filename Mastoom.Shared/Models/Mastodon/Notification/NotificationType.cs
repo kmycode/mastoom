@@ -7,7 +7,7 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
     /// <summary>
     /// 通知の種別
     /// </summary>
-    enum NotificationType
+    public enum NotificationType
     {
         /// <summary>
         /// 不明
