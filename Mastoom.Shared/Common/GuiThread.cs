@@ -13,6 +13,11 @@ namespace Mastoom.Shared.Common
 			{
 				action();
 			});
+#else
+			Xamarin.Forms.Device.BeginInvokeOnMainThread(() => 
+			{
+                action();
+			});
 #endif
 		}
     }
