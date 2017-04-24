@@ -31,8 +31,8 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 
         public override async Task StopAsync()
         {
-            await base.StopAsync();
             this.Streaming.OnNotification -= this.Streaming_OnNotification;
+            await base.StopAsync();
         }
 
         private void Streaming_OnNotification(object sender, StreamNotificationEventArgs e)
