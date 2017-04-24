@@ -15,8 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Common\OAuthModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Account\MastodonAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\ConnectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCompositionCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\HomeTimelineFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\NotificationTimelineFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\TimelineFunctionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\InstanceAccessProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonAuthentication.cs" />
@@ -27,6 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\PublicTimelineFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroupCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\MastodonNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\NotificationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatusCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\PostStatusModel.cs" />

@@ -16,7 +16,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public MastodonClient Client { protected get; set; }
         public string StreamingInstanceUri { get; set; }
 
-        private TimelineStreaming streaming;
+        protected TimelineStreaming Streaming { get; private set; }
         private bool isStreaming;
 
         private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
@@ -40,7 +40,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         {
         }
 
-        public async Task GetPrevAsync()
+        public async Task GetPrevAsync(int maxId)
         {
         }
 
@@ -71,16 +71,16 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 
             try
             {
-                if (this.streaming == null)
+                if (this.Streaming == null)
                 {
-                    this.streaming = this.GetTimelineStreaming(this.StreamingInstanceUri);
+                    this.Streaming = this.GetTimelineStreaming(this.StreamingInstanceUri);
 
-                    this.streaming.OnUpdate += this.Streaming_OnUpdate;
-                    this.streaming.OnDelete += this.Streaming_OnDelete;
+                    this.Streaming.OnUpdate += this.Streaming_OnUpdate;
+                    this.Streaming.OnDelete += this.Streaming_OnDelete;
                 }
 
                 this.timer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
-                this.streaming.Start();
+                this.Streaming.Start();
 
                 this.isStreaming = true;
             }
@@ -91,18 +91,18 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             }
         }
 
-        public async Task StopAsync()
+        public virtual async Task StopAsync()
         {
             if (this.isStreaming)
             {
                 try
                 {
-                    this.streaming.Stop();
+                    this.Streaming.Stop();
                 }
                 catch { }
-                this.streaming.OnUpdate -= this.Streaming_OnUpdate;
-                this.streaming.OnDelete -= this.Streaming_OnDelete;
-                this.streaming = null;
+                this.Streaming.OnUpdate -= this.Streaming_OnUpdate;
+                this.Streaming.OnDelete -= this.Streaming_OnDelete;
+                this.Streaming = null;
                 this.timer.Change(Timeout.Infinite, Timeout.Infinite);
 
                 this.isStreaming = false;

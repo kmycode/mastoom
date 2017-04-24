@@ -192,6 +192,12 @@ namespace Mastoom.Shared.Models.Mastodon
                         this.function = func;
                     }
                     break;
+                case ConnectionType.Notification:
+                    {
+                        var func = await this.Auth.NotificationStreamingFunctionCounter.IncrementAsync();
+                        this.function = func;
+                    }
+                    break;
                 default:
                     throw new NotImplementedException();
             }

@@ -3,6 +3,7 @@ using Mastonet.Entities;
 using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using Mastoom.Shared.Models.Mastodon.Notification;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// ホームタイムラインへアクセスする機能のカウンタ
         /// </summary>
         public ConnectionFunctionCounter<MastodonStatus> HomeStreamingFunctionCounter { get; private set; }
+
+        /// <summary>
+        /// 通知へアクセスする機能のカウンタ
+        /// </summary>
+        public ConnectionFunctionCounterBase<MastodonNotification> NotificationStreamingFunctionCounter { get; private set; }
 
         #endregion
 
@@ -167,11 +173,17 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
                 Client = this.Client,
                 StreamingInstanceUri = this.StreamingUri,
             });
-            this.HomeStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new HomeTimelineFunction
+
+            var homeFunc = new HomeTimelineFunction
             {
                 Client = this.Client,
                 StreamingInstanceUri = this.StreamingUri,
-            });
+            };
+            this.HomeStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(homeFunc);
+
+            this.NotificationStreamingFunctionCounter = new ConnectionFunctionCompositionCounter<MastodonNotification, MastodonStatus>(
+                new NotificationTimelineFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
+                );
         }
 
         public void StartOAuthLogin()
