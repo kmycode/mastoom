@@ -93,13 +93,13 @@ namespace Mastoom.Shared.Parsers
 
 			// mediaAttachments に含まれる URL なら何も表示しない
 			// TODO Remote Instanse の画像は URL が一致しなくてここで認識できないみたいだけどとりあえず無視
-			if (mediaAttachments.Any(arg => string.Compare(arg.TextUrl, link, StringComparison.Ordinal) == 0))
+			if (mediaAttachments != null && mediaAttachments.Any(arg => string.Compare(arg.TextUrl, link, StringComparison.Ordinal) == 0))
 			{
 				return TootSpan.MakeMedia();
 			}
 
 			// tags に含まれる URL なら tags名だけ表示する
-			var tag = tags.FirstOrDefault(arg => string.Compare(arg.Url, link, StringComparison.Ordinal) == 0);
+			var tag = tags?.FirstOrDefault(arg => string.Compare(arg.Url, link, StringComparison.Ordinal) == 0) ?? null;
 			if (tag != null)
 			{
 				return TootSpan.MakeTag(tag.Name);
