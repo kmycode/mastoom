@@ -34,5 +34,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonAttachment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Timer.cs" />
   </ItemGroup>
 </Project>
