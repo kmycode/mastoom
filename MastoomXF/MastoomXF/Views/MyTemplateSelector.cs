@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mastoom.Shared.Models.Mastodon;
+using Mastoom.Shared.Models.Mastodon.Connection;
 using Xamarin.Forms;
 
 namespace Mastoom.Views
@@ -25,7 +26,7 @@ namespace Mastoom.Views
 			// TODO: Favourtites や Notifications などへの分岐条件となるフラグが
 			// MastodonConnection もしくはそれに代わるものに要りそう
 
-			var cnn = item as MastodonConnection;
+			var cnn = item as MastodonConnectionGroup;
 			if (cnn == null)
 			{
 				throw new InvalidOperationException("item is invalid as View");

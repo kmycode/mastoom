@@ -91,7 +91,7 @@ namespace Mastoom.Behaviors
 		{
 			if (this.Collection != null)
 			{
-				this.Collection.PerformPrevPage();
+				this.Collection.PreviewPrevPage();
 				this.Collection.ExitPageMode();
 			}
 		}
