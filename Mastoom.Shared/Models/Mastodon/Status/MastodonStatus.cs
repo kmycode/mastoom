@@ -126,6 +126,22 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		}
 		private IEnumerable<MastodonTag> _tags;
 
+		/// <summary>
+		/// URL
+		/// </summary>
+		/// <value>The URL.</value>
+		public string Url
+		{
+			get { return _url; }
+			private set
+			{
+				_url = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private string _url;
+
+
 		private DateTime _createdAt;
 		public DateTime CreatedAt
 		{
@@ -169,6 +185,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			this.Account = new MastodonAccount(status.Account);
 			this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
             this.Tags = status.Tags.Select(x => new MastodonTag(x));
+			this.Url = status.Url;
 		}
 
 		public void CopyTo(MastodonStatus to)
@@ -182,6 +199,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             to.IsBoosted = this.IsBoosted;
             to.MediaAttachments = this.MediaAttachments.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
             to.Tags = this.Tags.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
+			to.Url = this.Url;
 		}
 
         #endregion
