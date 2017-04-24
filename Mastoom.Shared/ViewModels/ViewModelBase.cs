@@ -44,8 +44,9 @@ namespace Mastoom.Shared.ViewModels
 
 			public void Execute(object parameter)
 			{
-				if (parameter is T obj)
+				if (parameter is T)
 				{
+					var obj = (T)parameter;
 					this.action.Invoke(obj);
 				}
 			}
