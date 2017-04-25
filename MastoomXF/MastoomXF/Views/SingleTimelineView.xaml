@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentView
-	xmlns="http://xamarin.com/schemas/2014/forms" 
-	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     xmlns:cv="clr-namespace:Mastoom.Converters"
     xmlns:b="clr-namespace:Mastoom.Behaviors"
     xmlns:ef="clr-namespace:Mastoom.Effects"
     xmlns:view="clr-namespace:Mastoom.Views"
     xmlns:m="clr-namespace:Mastoom.Shared.Models.Common"
-	x:Class="Mastoom.Views.SingleTimelineView">
+    x:Class="Mastoom.Views.SingleTimelineView">
     <ContentPage.Resources>
         <ResourceDictionary>
-			<cv:PlayConverter x:Key="PlayConv" />
+            <cv:PlayConverter x:Key="PlayConv" />
         </ResourceDictionary>
     </ContentPage.Resources>
-	
-	<ContentView.Content>
-		<Grid
-			RowSpacing="0"
-			ColumnSpacing="0"
-			HorizontalOptions="FillAndExpand"
-			VerticalOptions="FillAndExpand">
+    
+    <ContentView.Content>
+        <Grid
+            RowSpacing="0"
+            ColumnSpacing="0"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -27,48 +27,48 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-			<!--タイムラインの上へ移動-->
-			<Button
-				Grid.Column="0" 
-				Grid.Row="0"
-				Text="{Binding ., Converter={StaticResource PlayConv}}"
-				IsVisible="{Binding Activated.Statuses.IsPageMode}"
-				HorizontalOptions="FillAndExpand">
+            <!--タイムラインの上へ移動-->
+            <Button
+                Grid.Column="0" 
+                Grid.Row="0"
+                Text="{Binding ., Converter={StaticResource PlayConv}}"
+                IsVisible="{Binding Activated.Statuses.IsPageMode}"
+                HorizontalOptions="FillAndExpand">
 
-				<Button.Behaviors>
-					<b:NewArrivalStatusesBehavior Collection="{Binding Activated.Statuses}" />
-				</Button.Behaviors>
-			</Button>
-			
-	        <!--タイムライン-->
-	        <ListView 
-				x:Name="listView"
-				Grid.Column="0" 
-				Grid.Row="2"
-				HasUnevenRows="true"
-				ef:ListViewScrollEffect.Collection="{Binding Activated.Statuses}"
-				ItemsSource="{Binding Activated.Statuses.DynamicLimited}">
+                <Button.Behaviors>
+                    <b:NewArrivalStatusesBehavior Collection="{Binding Activated.Statuses}" />
+                </Button.Behaviors>
+            </Button>
+            
+            <!--タイムライン-->
+            <ListView 
+                x:Name="listView"
+                Grid.Column="0" 
+                Grid.Row="2"
+                HasUnevenRows="true"
+                ef:ListViewScrollEffect.Collection="{Binding Activated.Statuses}"
+                ItemsSource="{Binding Activated.Statuses.DynamicLimited}">
 
-				<ListView.ItemTemplate>
-					<DataTemplate>
-						<ViewCell>
-							<view:TootStatusView BindingContext="{Binding .}" />
-						</ViewCell>
-					</DataTemplate>
-				</ListView.ItemTemplate>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <view:TootStatusView BindingContext="{Binding .}" />
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
 
-	        </ListView>
-	    
-	        <!--OAuthブラウザ -->
-			<!--別画面にしたいな-->
-	        <WebView 
-				Grid.Row="1"
-				Grid.RowSpan="2" >
-	            <WebView.Behaviors>
-	                <b:OAuthWebBehavior Helper="{Binding Activated.Auth.OAuthHelper}"/>
-	            </WebView.Behaviors>
-	        </WebView>
+            </ListView>
+        
+            <!--OAuthブラウザ -->
+            <!--別画面にしたいな-->
+            <WebView 
+                Grid.Row="1"
+                Grid.RowSpan="2" >
+                <WebView.Behaviors>
+                    <b:OAuthWebBehavior Helper="{Binding Activated.Auth.OAuthHelper}"/>
+                </WebView.Behaviors>
+            </WebView>
 
-		</Grid>
-	</ContentView.Content>
+        </Grid>
+    </ContentView.Content>
 </ContentView>
