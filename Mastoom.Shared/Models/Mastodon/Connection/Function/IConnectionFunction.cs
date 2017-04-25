@@ -64,31 +64,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 
     public class ObjectFunctionUpdateEventArgs<T> : ObjectFunctionEventArgs<T>
     {
-        public ObjectFunctionAdditionPosition Direction { get; set; }
-                        = ObjectFunctionAdditionPosition.Top;
     }
 
     public class ObjectFunctionErrorEventArgs : EventArgs
     {
         public ObjectFunctionErrorType Type { get; set; }
         public Exception Exception { get; set; }
-    }
-
-    /// <summary>
-    /// IConnectionFunctionがサーバから取得したオブジェクトについて、
-    /// もし新しく追加されたデータであれば、そのデータを追加する位置
-    /// </summary>
-    public enum ObjectFunctionAdditionPosition
-    {
-        /// <summary>
-        /// 上から順に追加
-        /// </summary>
-        Top,
-        
-        /// <summary>
-        /// 下から順に追加
-        /// </summary>
-        Bottom,
     }
 
     /// <summary>
