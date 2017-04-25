@@ -23,23 +23,15 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 			}
 			else if (uri == "mstdn.jp")
 			{
-			    return new InstanceAccessData
-			    {
-			        ClientId = "aab460c852b5b1db3370934353b587170c7b741972195f6fda4afa6b91dab3fc",
-			        ClientSecret = "02267c02950cab8f2fab731376e56bb6015b790c1344e644a102b32b98fd9606",
-			        StreamingInstance = "streaming.mstdn.jp",
-			    };
-			}
-			else if (uri == "mastodon.cloud")
-			{
-			    return new InstanceAccessData
-			    {
-			        ClientId = "3b7a7f9a3e243aaaaa19d6fcdf18a090c34434f1a510af49d520f9b0a6533ae7",
-			        ClientSecret = "20e436f32ab88be72e2ff2d0492f02dbf624cae55018d58768ae0fa8aff89c54"
-                };
+				return new InstanceAccessData
+				{
+					ClientId = "aab460c852b5b1db3370934353b587170c7b741972195f6fda4afa6b91dab3fc",
+					ClientSecret = "02267c02950cab8f2fab731376e56bb6015b790c1344e644a102b32b98fd9606",
+					StreamingInstance = "streaming.mstdn.jp",
+				};
 			}
 
-            return null;
+			return null;
 		}
 
 		public class InstanceAccessData
