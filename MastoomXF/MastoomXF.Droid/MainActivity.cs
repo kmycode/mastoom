@@ -24,13 +24,13 @@ namespace Mastoom.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
-			base.OnCreate(bundle);
+            base.OnCreate(bundle);
 
-			// スリープさせないお
-			Window.AddFlags(WindowManagerFlags.KeepScreenOn);
+            // スリープさせないお
+            Window.AddFlags(WindowManagerFlags.KeepScreenOn);
 
-			global::Xamarin.Forms.Forms.Init(this, bundle);
-			CarouselViewRenderer.Init();
+            global::Xamarin.Forms.Forms.Init(this, bundle);
+            CarouselViewRenderer.Init();
             LoadApplication(new App());
         }
     }
