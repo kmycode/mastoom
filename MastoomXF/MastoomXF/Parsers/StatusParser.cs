@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using CenterCLR.Sgml;
 using Mastonet.Entities;
 using Mastoom.Shared.Models.Mastodon.Status;
 
@@ -21,7 +22,7 @@ namespace Mastoom.Shared.Parsers
 
 			// なんか一応 div で囲ってみてる(今のところ <p></p> で囲まれてるtootしかみたことないけど)
 			using (var stream = new MemoryStream(encoding.GetBytes("<div>" + content.Replace("<br>", "<br/>") + "</div>")))
-			using (var reader = XmlReader.Create(stream))
+			using (var reader = new SgmlReader(stream))
 			{
 				XDocument doc = XDocument.Load(reader);
 
@@ -34,8 +35,8 @@ namespace Mastoom.Shared.Parsers
 				//var firstTextNode = doc.DescendantNodes().FirstOrDefault(node => node is XText);
 				//var contentRoot = firstTextNode?.Parent?.Nodes()
 
-				// しょうがないので決め打ち;
-				var contentRoot = doc.Element("div").Element("p");
+				// しょうがないので決め打ち;(SgmlReader にしたら勝手に <html></html> が付いた)
+				var contentRoot = doc?.Element("html")?.Element("div")?.Element("p") ?? null;
 				foreach (var node in contentRoot?.Nodes() ?? new XNode[0])
 				{
 					if (node.NodeType == XmlNodeType.Text)

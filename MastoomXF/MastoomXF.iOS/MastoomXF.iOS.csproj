@@ -112,6 +112,9 @@
     <Reference Include="Mastonet">
       <HintPath>..\ext\Mastonet.dll</HintPath>
     </Reference>
+    <Reference Include="CenterCLR.SgmlReader">
+      <HintPath>..\packages\CenterCLR.SgmlReader.2016.3.27.2\lib\portable-net45+dnxcore+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\CenterCLR.SgmlReader.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MastoomXF\MastoomXF.csproj">
