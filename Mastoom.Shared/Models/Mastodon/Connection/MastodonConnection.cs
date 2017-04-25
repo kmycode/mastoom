@@ -5,6 +5,7 @@ using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection;
 using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using Mastoom.Shared.Models.Mastodon.Notification;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -101,6 +102,11 @@ namespace Mastoom.Shared.Models.Mastodon
 		/// </summary>
 		public MastodonStatusCollection Statuses { get; } = new MastodonStatusCollection();
 
+        /// <summary>
+        /// 通知の集まり
+        /// </summary>
+        public MastodonNotificationCollection Notifications { get; } = new MastodonNotificationCollection();
+
 		/// <summary>
 		/// ステータスを投稿するモデル
 		/// </summary>
@@ -195,6 +201,7 @@ namespace Mastoom.Shared.Models.Mastodon
                 case ConnectionType.Notification:
                     {
                         var func = await this.Auth.NotificationStreamingFunctionCounter.IncrementAsync();
+                        func.Updated += this.NotificationFunction_OnUpdate;
                         this.function = func;
                     }
                     break;
@@ -229,6 +236,13 @@ namespace Mastoom.Shared.Models.Mastodon
                         await this.Auth.HomeStreamingFunctionCounter.DecrementAsync();
                     }
                     break;
+                case ConnectionType.Notification:
+                    {
+                        var func = (IConnectionFunction<MastodonNotification>)this.function;
+                        func.Updated -= this.NotificationFunction_OnUpdate;
+                        await this.Auth.NotificationStreamingFunctionCounter.DecrementAsync();
+                    }
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -243,6 +257,14 @@ namespace Mastoom.Shared.Models.Mastodon
 				this.Statuses.Add(e.Object);
 			});
 		}
+
+        private void NotificationFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonNotification> e)
+        {
+            GuiThread.Run(() =>
+            {
+                this.Notifications.Add(e.Object);
+            });
+        }
 
 		#endregion
 

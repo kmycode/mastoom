@@ -23,16 +23,6 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// 受信を停止する
         /// </summary>
         Task StopAsync();
-
-        /// <summary>
-        /// １まとまり前のデータをサーバから取得する
-        /// </summary>
-        Task GetPrevAsync(int maxId);
-
-        /// <summary>
-        /// １まとまり分、最新のデータをサーバから取得する
-        /// </summary>
-        Task GetNewerAsync();
     }
 
     /// <summary>
@@ -55,6 +45,16 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// エラーが発生した時に発行
         /// </summary>
         event EventHandler<ObjectFunctionErrorEventArgs> Errored;
+
+        /// <summary>
+        /// １まとまり前のデータをサーバから取得する
+        /// </summary>
+        Task<IEnumerable<T>> GetPrevAsync(int maxId);
+
+        /// <summary>
+        /// １まとまり分、最新のデータをサーバから取得する
+        /// </summary>
+        Task<IEnumerable<T>> GetNewerAsync();
     }
 
     public class ObjectFunctionEventArgs<T> : EventArgs

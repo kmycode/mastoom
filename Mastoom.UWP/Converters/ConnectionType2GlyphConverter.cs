@@ -24,6 +24,8 @@ namespace Mastoom.UWP.Converters
                         return "\uE7C1";
                     case ConnectionType.HomeTimeline:
                         return "\uE80F";
+                    case ConnectionType.Notification:
+                        return "\uED0D";
                 }
             }
             throw new NotSupportedException();

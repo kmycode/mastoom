@@ -34,12 +34,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             };
         }
 
-        public async Task GetNewerAsync()
+        public async Task<IEnumerable<MastodonNotification>> GetNewerAsync()
         {
+            return null;
         }
 
-        public async Task GetPrevAsync(int maxId)
+        public async Task<IEnumerable<MastodonNotification>> GetPrevAsync(int maxId)
         {
+            return null;
         }
 
         public async Task StartAsync()

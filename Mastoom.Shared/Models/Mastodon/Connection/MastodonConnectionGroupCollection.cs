@@ -20,6 +20,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             {
                 Name = "ホーム",
             });
+            this[0].TryAdd(new MastodonConnection("pawoo.net", ConnectionType.Notification)
+            {
+                Name = "通知",
+            });
             this[0].TryAdd(new MastodonConnection("pawoo.net", ConnectionType.LocalTimeline)
             {
                 Name = "ローカルタイムライン",
@@ -36,6 +40,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.HomeTimeline)
             {
                 Name = "ホーム",
+            });
+            this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.Notification)
+            {
+                Name = "通知",
             });
             this[1].TryAdd(new MastodonConnection("mstdn.jp", ConnectionType.LocalTimeline)
             {

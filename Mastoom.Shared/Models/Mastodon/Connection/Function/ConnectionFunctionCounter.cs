@@ -61,7 +61,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public int Count { get; }
 
         /// <summary>
-        /// Countが0になったときに、サーバとの通信を止めてもかまわないか
+        /// 接続数のCountが0になったときに、サーバとの通信を止めてもかまわないか
         /// </summary>
         public bool CanStop { get; set; } = true;
 

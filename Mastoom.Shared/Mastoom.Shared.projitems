@@ -29,7 +29,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\PublicTimelineFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroupCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Generic\MastodonObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Generic\MastodonObjectCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\MastodonNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\MastodonNotificationCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\NotificationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatusCollection.cs" />

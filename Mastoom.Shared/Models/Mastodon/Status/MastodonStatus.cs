@@ -1,6 +1,7 @@
 ﻿using Mastonet;
 using Mastoom.Shared.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
+using Mastoom.Shared.Models.Mastodon.Generic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,13 +14,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 	/// <summary>
 	/// Mastodonのステータス
 	/// </summary>
-    public class MastodonStatus : INotifyPropertyChanged
+    public class MastodonStatus : MastodonObject, INotifyPropertyChanged
     {
-		/// <summary>
-		/// ステータスのID
-		/// </summary>
-		public int Id { get; }
-
 		/// <summary>
 		/// アカウント
 		/// </summary>
@@ -97,17 +93,15 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
         #region メソッド
 
-        public MastodonStatus(int id, MastodonAccount account)
+        public MastodonStatus(int id, MastodonAccount account) : base(id)
 		{
-			this.Id = id;
 			this.Account = account;
 		}
         
-		public MastodonStatus(Mastonet.Entities.Status status)
+		public MastodonStatus(Mastonet.Entities.Status status) : base(status.Id)
         {
             // ブーストされたトゥートの場合でも、ブーストした人が取得したIDを設定する
             // （元のトゥートとブースト分のトゥート、両方同じTLに表示するため）
-            this.Id = status.Id;
 
             // ブーストされたトゥートの場合、ここから先はブースト対象のトゥートのデータを設定する
             if (status.Reblog != null)
