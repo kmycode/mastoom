@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Mastoom.Shared.Models.Mastodon.Generic
 {
-    public class MastodonObjectCollection<T> : ReadOnlyObservableCollection<T>, INotifyPropertyChanged
+    public class MastodonObjectCollection<T> : ReadOnlyObservableCollection<T>, INotifyPropertyChanged, ITimelineCollection
         where T : MastodonObject
     {
         protected ObservableCollection<T> Collection { get; }
@@ -120,13 +120,18 @@ namespace Mastoom.Shared.Models.Mastodon.Generic
             this.PageModeExited?.Invoke(this, new EventArgs());
         }
 
+        public bool PreviewNextPage()
+        {
+            return this.PreviewNextPage(false);
+        }
+
         /// <summary>
         /// 次のページ（古い投稿）を画面に表示させる。
         /// 目的は、次のページを表示することによって、画面のスクロール量がどれだけ増えるか計算すること
         /// </summary>
         /// <param name="isEnter">PageMode開始直後に呼び出したものであるか。このパラメータは通常は本クラス内部からの呼び出し時に設定される</param>
         /// <returns></returns>
-        public bool PreviewNextPage(bool isEnter = false)
+        public bool PreviewNextPage(bool isEnter)
         {
             var last = this.DynamicLimited.LastOrDefault();
             var firstIndex = isEnter ? 0 : (last != null ? this.IndexOf(last) + 1 : 0);

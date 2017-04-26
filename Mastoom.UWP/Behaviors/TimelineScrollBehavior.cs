@@ -1,4 +1,5 @@
-﻿using Mastoom.Shared.Models.Mastodon.Status;
+﻿using Mastoom.Shared.Models.Mastodon.Generic;
+using Mastoom.Shared.Models.Mastodon.Status;
 using Microsoft.Xaml.Interactivity;
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,15 @@ namespace Mastoom.UWP.Behaviors
         /// <summary>
         /// Collection which displaying in the timeline
         /// </summary>
-        public MastodonStatusCollection Collection
+        public ITimelineCollection Collection
         {
-            get { return (MastodonStatusCollection)this.GetValue(CollectionProperty); }
+            get { return (ITimelineCollection)this.GetValue(CollectionProperty); }
             set { this.SetValue(CollectionProperty, value); }
         }
         public static readonly DependencyProperty CollectionProperty =
             DependencyProperty.RegisterAttached(
                 nameof(Collection),
-                typeof(MastodonStatusCollection),
+                typeof(ITimelineCollection),
                 typeof(TimelineScrollBehavior),
                 new PropertyMetadata(null, (sender, e) =>
                 {
@@ -49,12 +50,12 @@ namespace Mastoom.UWP.Behaviors
                     {
                         if (e.OldValue != null)
                         {
-                            var collection = (MastodonStatusCollection)e.OldValue;
+                            var collection = (ITimelineCollection)e.OldValue;
                             collection.PageModeExited -= b.Collection_PageModeExited;
                         }
                         if (e.NewValue != null)
                         {
-                            var collection = (MastodonStatusCollection)e.NewValue;
+                            var collection = (ITimelineCollection)e.NewValue;
                             collection.PageModeExited += b.Collection_PageModeExited;
                         }
                     }
