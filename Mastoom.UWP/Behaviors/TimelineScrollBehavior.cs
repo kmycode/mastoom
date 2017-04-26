@@ -85,8 +85,8 @@ namespace Mastoom.UWP.Behaviors
 				this.attached = this.AssociatedObject;
                 this.attached.ViewChanged += this.Attached_ViewChanged;
 
-				var itemsControl = (ItemsControl)this.attached.Content;
-				itemsControl.LayoutUpdated += this.Content_HeightChanged;
+                var itemsControl = (FrameworkElement)this.attached.Content;
+                itemsControl.LayoutUpdated += this.Content_HeightChanged;
 			}
 		}
 
@@ -94,8 +94,8 @@ namespace Mastoom.UWP.Behaviors
 		{
 			if (this.attached != null)
 			{
-				var itemsControl = (ItemsControl)this.attached.Content;
-				itemsControl.LayoutUpdated -= this.Content_HeightChanged;
+                var itemsControl = (FrameworkElement)this.attached.Content;
+                itemsControl.LayoutUpdated -= this.Content_HeightChanged;
 
                 this.attached.ViewChanged -= this.Attached_ViewChanged;
 				this.attached = null;

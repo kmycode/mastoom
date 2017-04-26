@@ -22,6 +22,7 @@
         <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
         <cvu:ConnectionType2GlyphConverter x:Key="ConnectionType2GlyphConv"/>
         <cvu:MastodonStatus2BackgroundConverter x:Key="MastodonStatus2BackgroundConv"/>
+        <cvu:ConnectionType2VisibilityConverter x:Key="ConnectionType2VisibilityConv"/>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
@@ -127,83 +128,127 @@
                         <!--タイムライン-->
                         <ScrollViewer Grid.Column="0" Grid.Row="2"
                                      VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
-                            <ItemsControl
-                                          ItemsSource="{Binding Activated.Statuses.DynamicLimited}"
-                                          Margin="20,0,20,0">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
+                            <Grid>
 
-                                            <!--アイコン表示-->
-                                            <Image Grid.Column="0" Grid.RowSpan="3"
-                                                    Width="72" Height="72" VerticalAlignment="Top"
-                                                    Source="{Binding Account.IconUri}"/>
+                                <!--Statusを表示-->
+                                <ItemsControl Visibility="{Binding Activated.ConnectionType,Converter={StaticResource ConnectionType2VisibilityConv},ConverterParameter=Status}"
+                                              ItemsSource="{Binding Activated.Statuses.DynamicLimited}"
+                                              Margin="20,0,20,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
 
-                                            <StackPanel Grid.Column="1">
-                                                <!--名前表示-->
-                                                <StackPanel Margin="12,4,0,8"
-                                                            Orientation="Horizontal">
-                                                    <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
-                                                               Text="{Binding Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                                                <!--アイコン表示-->
+                                                <Image Grid.Column="0" Grid.RowSpan="3"
+                                                        Width="72" Height="72" VerticalAlignment="Top"
+                                                        Source="{Binding Account.IconUri}"/>
+
+                                                <StackPanel Grid.Column="1">
+                                                    <!--名前表示-->
+                                                    <StackPanel Margin="12,4,0,8"
+                                                                Orientation="Horizontal">
+                                                        <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
+                                                                   Text="{Binding Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                                                    </StackPanel>
+
+                                                    <!--コンテンツ表示部分-->
+                                                    <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
+                                                               TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                                                               FontFamily="Meiryo">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:HtmlTextBehavior Content="{Binding Content,Converter={StaticResource String2EmojiConv}}"/>
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBlock>
+
+                                                    <!--画像表示部分-->
+                                                    <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:ImageCollectionBehavior Content="{Binding Content}"/>
+                                                        </i:Interaction.Behaviors>
+                                                    </StackPanel>
+
+                                                    <!--コマンド表示部分-->
+                                                    <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
+
+                                                        <!--ふぁぼる-->
+                                                        <ToggleButton IsChecked="{Binding IsFavorited,Mode=TwoWay}"
+                                                                      Style="{StaticResource TransparentToggleButtonStyle}"
+                                                                      Command="{Binding DataContext.Activated.ToggleFavoriteCommand,ElementName=ConnectionGrid}"
+                                                                      CommandParameter="{Binding}" Background="Transparent">
+                                                            <Grid>
+                                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CE;"
+                                                                          Foreground="Black" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
+                                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CF;"
+                                                                          Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
+                                                            </Grid>
+                                                        </ToggleButton>
+
+                                                        <!--ブースト-->
+                                                        <ToggleButton IsChecked="{Binding IsBoosted,Mode=TwoWay}"
+                                                                      Style="{StaticResource TransparentToggleButtonStyle}"
+                                                                      Command="{Binding DataContext.Activated.ToggleBoostCommand,ElementName=ConnectionGrid}"
+                                                                      CommandParameter="{Binding}" Background="Transparent">
+                                                            <Grid>
+                                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
+                                                                          Foreground="Black" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
+                                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
+                                                                          Foreground="#045fb4" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2VisibilityConv}}"/>
+                                                            </Grid>
+                                                        </ToggleButton>
+                                                    </StackPanel>
                                                 </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
 
-                                                <!--コンテンツ表示部分-->
-                                                <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
-                                                           TextWrapping="Wrap" IsTextSelectionEnabled="True"
-                                                           FontFamily="Meiryo">
-                                                    <i:Interaction.Behaviors>
-                                                        <b:HtmlTextBehavior Content="{Binding Content,Converter={StaticResource String2EmojiConv}}"/>
-                                                    </i:Interaction.Behaviors>
-                                                </TextBlock>
+                                <!--Notificationを表示-->
+                                <ItemsControl Visibility="{Binding Activated.ConnectionType,Converter={StaticResource ConnectionType2VisibilityConv},ConverterParameter=Notification}"
+                                              ItemsSource="{Binding Activated.Notifications.DynamicLimited}"
+                                              Margin="20,0,20,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
 
-                                                <!--画像表示部分-->
-                                                <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
-                                                    <i:Interaction.Behaviors>
-                                                        <b:ImageCollectionBehavior Content="{Binding Content}"/>
-                                                    </i:Interaction.Behaviors>
+                                                <!--アイコン表示-->
+                                                <Image Grid.Column="0" Grid.RowSpan="3"
+                                                        Width="72" Height="72" VerticalAlignment="Top"
+                                                        Source="{Binding Status.Account.IconUri}"/>
+
+                                                <StackPanel Grid.Column="1">
+                                                    <!--名前表示-->
+                                                    <StackPanel Margin="12,4,0,8"
+                                                                Orientation="Horizontal">
+                                                        <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
+                                                                   Text="{Binding Status.Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                                                    </StackPanel>
+
+                                                    <!--コンテンツ表示部分-->
+                                                    <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
+                                                               TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                                                               FontFamily="Meiryo">
+                                                        <i:Interaction.Behaviors>
+                                                            <b:HtmlTextBehavior Content="{Binding Status.Content,Converter={StaticResource String2EmojiConv}}"/>
+                                                        </i:Interaction.Behaviors>
+                                                    </TextBlock>
                                                 </StackPanel>
-                                                
-                                                <!--コマンド表示部分-->
-                                                <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
-                                                    
-                                                    <!--ふぁぼる-->
-                                                    <ToggleButton IsChecked="{Binding IsFavorited,Mode=TwoWay}"
-                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
-                                                                  Command="{Binding DataContext.Activated.ToggleFavoriteCommand,ElementName=ConnectionGrid}"
-                                                                  CommandParameter="{Binding}" Background="Transparent">
-                                                        <Grid>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CE;"
-                                                                      Foreground="Black" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CF;"
-                                                                      Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
-                                                        </Grid>
-                                                    </ToggleButton>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
 
-                                                    <!--ブースト-->
-                                                    <ToggleButton IsChecked="{Binding IsBoosted,Mode=TwoWay}"
-                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
-                                                                  Command="{Binding DataContext.Activated.ToggleBoostCommand,ElementName=ConnectionGrid}"
-                                                                  CommandParameter="{Binding}" Background="Transparent">
-                                                        <Grid>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
-                                                                      Foreground="Black" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
-                                                                      Foreground="#045fb4" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2VisibilityConv}}"/>
-                                                        </Grid>
-                                                    </ToggleButton>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
+                            </Grid>
+                            
                             <i:Interaction.Behaviors>
-                                <b:TimelineScrollBehavior Collection="{Binding Activated.Statuses}"/>
+                                <b:TimelineScrollBehavior Collection="{Binding Activated.TimelineObjects}"/>
                             </i:Interaction.Behaviors>
                         </ScrollViewer>
                     

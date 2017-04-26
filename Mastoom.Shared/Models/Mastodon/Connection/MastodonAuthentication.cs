@@ -182,7 +182,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this.HomeStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(homeFunc);
 
             this.NotificationStreamingFunctionCounter = new ConnectionFunctionCompositionCounter<MastodonNotification, MastodonStatus>(
-                new NotificationTimelineFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
+                new NotificationFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
                 );
         }
 

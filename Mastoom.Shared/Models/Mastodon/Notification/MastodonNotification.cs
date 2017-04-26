@@ -28,8 +28,14 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
 
         public MastodonNotification(Mastonet.Entities.Notification notification) : base(notification.Id)
         {
-            this._accounts.Add(new MastodonAccount(notification.Account));
-            this.Status = new MastodonStatus(notification.Status);
+            if (notification.Account != null)
+            {
+                this._accounts.Add(new MastodonAccount(notification.Account));
+            }
+            if (notification.Status != null)
+            {
+                this.Status = new MastodonStatus(notification.Status);
+            }
 
             switch (notification.Type)
             {

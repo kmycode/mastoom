@@ -98,6 +98,26 @@ namespace Mastoom.Shared.Models.Mastodon
         }
         private MastodonAccount _account;
 
+        /// <summary>
+        /// タイムラインに表示するオブジェクト
+        /// </summary>
+        public ITimelineCollection TimelineObjects
+        {
+            get
+            {
+                switch (this.ConnectionType)
+                {
+                    case ConnectionType.HomeTimeline:
+                    case ConnectionType.LocalTimeline:
+                    case ConnectionType.PublicTimeline:
+                        return this.Statuses;
+                    case ConnectionType.Notification:
+                        return this.Notifications;
+                }
+                throw new InvalidOperationException();
+            }
+        }
+
 		/// <summary>
 		/// ステータスの集まり
 		/// </summary>
@@ -258,10 +278,10 @@ namespace Mastoom.Shared.Models.Mastodon
         private async Task GetNewerItemsAsync<T>(IConnectionFunction<T> function, MastodonObjectCollection<T> collection)
             where T : MastodonObject
         {
-            var items = await function.GetNewestAsync();
-
             try
             {
+                var items = await function.GetNewestAsync();
+
                 GuiThread.Run(() =>
                 {
                     foreach (var item in items)

@@ -12,7 +12,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
     /// 通知を知らせるファンクション。
     /// HomeTimelineのFunctionを乗っ取る
     /// </summary>
-    class NotificationTimelineFunction : IConnectionFunction<MastodonNotification>
+    class NotificationFunction : IConnectionFunction<MastodonNotification>
     {
         private readonly HomeTimelineFunction homeFunction;
         private readonly MastodonClient client;
@@ -21,7 +21,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public event EventHandler<ObjectFunctionEventArgs<MastodonNotification>> Deleted;
         public event EventHandler<ObjectFunctionErrorEventArgs> Errored;
 
-        public NotificationTimelineFunction(MastodonClient client, HomeTimelineFunction homeFunc)
+        public NotificationFunction(MastodonClient client, HomeTimelineFunction homeFunc)
         {
             this.client = client;
 

@@ -24,7 +24,7 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
                 return;
             }
 
-            var existing = this.FindNotification(obj.Status.Id, obj.Type);
+            var existing = this.FindNotification(obj.Status?.Id, obj.Type);
             if (existing != null)
             {
                 this.CopyObject(obj, existing);
@@ -40,9 +40,15 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private MastodonNotification FindNotification(int id, NotificationType type)
+        private MastodonNotification FindNotification(int? id, NotificationType type)
         {
-            return this.SingleOrDefault(noti => noti.Status.Id == id && noti.Type == type);
+            return this.SingleOrDefault(noti =>
+            {
+                if (id != null && noti.Status != null)
+                    return noti.Status.Id == id && noti.Type == type;
+                else
+                    return false;
+            });
         }
     }
 }
