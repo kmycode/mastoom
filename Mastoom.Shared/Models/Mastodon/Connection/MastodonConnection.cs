@@ -26,6 +26,9 @@ namespace Mastoom.Shared.Models.Mastodon
     /// １つの接続は１つのIConnectionFunctionを保持するため、
     /// 公開タイムラインへの接続や、お気に入り一覧への接続などは、別々の接続としてカウントされる
     /// </summary>
+    /// <remarks>
+    /// 後で追加する機能に制約がかからないよう、型引数はあえてつけない
+    /// </remarks>
     public class MastodonConnection : INotifyPropertyChanged
     {
 		#region 変数
