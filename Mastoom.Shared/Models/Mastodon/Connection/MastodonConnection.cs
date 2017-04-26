@@ -5,6 +5,7 @@ using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection;
 using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using Mastoom.Shared.Models.Mastodon.Generic;
 using Mastoom.Shared.Models.Mastodon.Notification;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
@@ -180,6 +181,7 @@ namespace Mastoom.Shared.Models.Mastodon
                     {
                         var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
                         func.Updated += this.StatusFunction_OnUpdate;
+                        this.GetNewerItemsAsync(func, this.Statuses);
                         this.function = func;
                     }
                     break;
@@ -188,6 +190,7 @@ namespace Mastoom.Shared.Models.Mastodon
                         var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
                         func.Updated += this.StatusFunction_OnUpdate;
                         this.Statuses.Filter = (status) => status.Account.IsLocal;
+                        this.GetNewerItemsAsync(func, this.Statuses);
                         this.function = func;
                     }
                     break;
@@ -195,6 +198,7 @@ namespace Mastoom.Shared.Models.Mastodon
                     {
                         var func = await this.Auth.HomeStreamingFunctionCounter.IncrementAsync();
                         func.Updated += this.StatusFunction_OnUpdate;
+                        this.GetNewerItemsAsync(func, this.Statuses);
                         this.function = func;
                     }
                     break;
@@ -202,6 +206,7 @@ namespace Mastoom.Shared.Models.Mastodon
                     {
                         var func = await this.Auth.NotificationStreamingFunctionCounter.IncrementAsync();
                         func.Updated += this.NotificationFunction_OnUpdate;
+                        this.GetNewerItemsAsync(func, this.Notifications);
                         this.function = func;
                     }
                     break;
@@ -248,6 +253,27 @@ namespace Mastoom.Shared.Models.Mastodon
             }
 
             this.function = null;
+        }
+
+        private async Task GetNewerItemsAsync<T>(IConnectionFunction<T> function, MastodonObjectCollection<T> collection)
+            where T : MastodonObject
+        {
+            var items = await function.GetNewestAsync();
+
+            try
+            {
+                GuiThread.Run(() =>
+                {
+                    foreach (var item in items)
+                    {
+                        collection.Add(item);
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                // TODO: とりあえず何もしない
+            }
         }
 
 		private void StatusFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonStatus> e)

@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Mastonet;
 using Mastoom.Shared.Models.Mastodon.Notification;
+using Mastoom.Shared.Models.Mastodon.Status;
+using System.Collections.ObjectModel;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 {
@@ -12,6 +14,17 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
     /// </summary>
     class HomeTimelineFunction : TimelineFunctionBase
     {
+        public override async Task<IEnumerable<MastodonStatus>> GetNewestAsync()
+        {
+            var nativeStatuses = await this.Client.GetHomeTimeline();
+            var statuses = new Collection<MastodonStatus>();
+            foreach (var s in nativeStatuses)
+            {
+                statuses.Add(new MastodonStatus(s));
+            }
+            return statuses;
+        }
+
         protected override TimelineStreaming GetTimelineStreaming(string streamInstanceUri = null)
         {
             TimelineStreaming streaming;

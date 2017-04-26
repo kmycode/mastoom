@@ -2,6 +2,7 @@
 using Mastoom.Shared.Models.Mastodon.Notification;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,9 +35,15 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             };
         }
 
-        public async Task<IEnumerable<MastodonNotification>> GetNewerAsync()
+        public async Task<IEnumerable<MastodonNotification>> GetNewestAsync()
         {
-            return null;
+            var nativeNotifications = await this.client.GetNotifications();
+            var notifications = new Collection<MastodonNotification>();
+            foreach (var n in nativeNotifications)
+            {
+                notifications.Add(new MastodonNotification(n));
+            }
+            return notifications;
         }
 
         public async Task<IEnumerable<MastodonNotification>> GetPrevAsync(int maxId)

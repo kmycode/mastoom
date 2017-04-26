@@ -54,7 +54,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// <summary>
         /// １まとまり分、最新のデータをサーバから取得する
         /// </summary>
-        Task<IEnumerable<T>> GetNewerAsync();
+        Task<IEnumerable<T>> GetNewestAsync();
     }
 
     public class ObjectFunctionEventArgs<T> : EventArgs

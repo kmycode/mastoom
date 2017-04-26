@@ -36,10 +36,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             }, null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        public async Task<IEnumerable<MastodonStatus>> GetNewerAsync()
-        {
-            return null;
-        }
+        public abstract Task<IEnumerable<MastodonStatus>> GetNewestAsync();
 
         public async Task<IEnumerable<MastodonStatus>> GetPrevAsync(int maxId)
         {
