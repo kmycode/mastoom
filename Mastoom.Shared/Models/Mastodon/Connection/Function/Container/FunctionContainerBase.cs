@@ -91,23 +91,24 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
 
         public async Task GetPrevAsync()
         {
-            try
-            {
-                int maxId = -1;
-                var items = await this._function.GetPrevAsync(maxId);
+            throw new NotImplementedException();
+            //try
+            //{
+            //    int maxId = -1;
+            //    var items = await this._function.GetPrevAsync(maxId);
 
-                GuiThread.Run(() =>
-                {
-                    foreach (var item in items)
-                    {
-                        this._objects.Add(item);
-                    }
-                });
-            }
-            catch
-            {
+            //    GuiThread.Run(() =>
+            //    {
+            //        foreach (var item in items)
+            //        {
+            //            this._objects.Add(item);
+            //        }
+            //    });
+            //}
+            //catch
+            //{
 
-            }
+            //}
         }
 
         private void Function_OnUpdate(object sender, ObjectFunctionEventArgs<T> e)
