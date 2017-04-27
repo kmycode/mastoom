@@ -160,7 +160,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         {
             var auth = await this.preClient.ConnectWithCode(this.AccessToken);
             this.Client = new MastodonClient(this.appRegistration, auth);
-            this.CurrentUser = new MastodonAccount(await this.Client.GetCurrentUser());
+            this.CurrentUser = (await this.Client.GetCurrentUser()).ToMastodonAccount();
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
             {
