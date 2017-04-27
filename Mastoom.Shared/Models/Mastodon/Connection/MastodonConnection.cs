@@ -5,6 +5,7 @@ using Mastoom.Shared.Models.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Connection;
 using Mastoom.Shared.Models.Mastodon.Connection.Function;
+using Mastoom.Shared.Models.Mastodon.Connection.Function.Container;
 using Mastoom.Shared.Models.Mastodon.Generic;
 using Mastoom.Shared.Models.Mastodon.Notification;
 using Mastoom.Shared.Models.Mastodon.Status;
@@ -38,8 +39,8 @@ namespace Mastoom.Shared.Models.Mastodon
 		private MastodonClient client;
         
 		private string streamingInstance;
-        
-        private IConnectionFunction function;
+
+        private IFunctionContainer container;
 
         #endregion
 
@@ -49,6 +50,11 @@ namespace Mastoom.Shared.Models.Mastodon
         /// マストドンのひとつの認証
         /// </summary>
         public MastodonAuthentication Auth { get; private set; }
+
+        /// <summary>
+        /// 接続の種類
+        /// </summary>
+        public ConnectionType ConnectionType => this.container.ConnectionType;
 
 		/// <summary>
 		/// 接続の名前
@@ -69,12 +75,6 @@ namespace Mastoom.Shared.Models.Mastodon
 			}
 		}
 		private string _name;
-
-        /// <summary>
-        /// 接続の種類
-        /// </summary>
-        public ConnectionType ConnectionType => this._connectionType;
-        private ConnectionType _connectionType;
 
         /// <summary>
         /// インスタンスのURI
@@ -104,32 +104,7 @@ namespace Mastoom.Shared.Models.Mastodon
         /// <summary>
         /// タイムラインに表示するオブジェクト
         /// </summary>
-        public ITimelineCollection TimelineObjects
-        {
-            get
-            {
-                switch (this.ConnectionType)
-                {
-                    case ConnectionType.HomeTimeline:
-                    case ConnectionType.LocalTimeline:
-                    case ConnectionType.PublicTimeline:
-                        return this.Statuses;
-                    case ConnectionType.Notification:
-                        return this.Notifications;
-                }
-                throw new InvalidOperationException();
-            }
-        }
-
-		/// <summary>
-		/// ステータスの集まり
-		/// </summary>
-		public MastodonStatusCollection Statuses { get; } = new MastodonStatusCollection();
-
-        /// <summary>
-        /// 通知の集まり
-        /// </summary>
-        public MastodonNotificationCollection Notifications { get; } = new MastodonNotificationCollection();
+        public ITimelineCollection TimelineObjects => this.container.Objects;
 
 		/// <summary>
 		/// ステータスを投稿するモデル
@@ -152,11 +127,11 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		public MastodonConnection(string instanceUri, ConnectionType functionType)
+		internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer)
 		{
             this.InstanceUri = instanceUri;
-            this._connectionType = functionType;
             this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
+            this.container = functionContainer;
 
             if (!this.Auth.HasAuthenticated)
             {
@@ -176,10 +151,7 @@ namespace Mastoom.Shared.Models.Mastodon
             else
             {
                 this.ImportAuthenticationData();
-                Task.Run(async () =>
-                {
-                    await this.StartFunctionAsync();
-                }).Wait();
+                this.StartFunctionAsync();
             }
         }
 
@@ -193,126 +165,24 @@ namespace Mastoom.Shared.Models.Mastodon
 
         private async Task StartFunctionAsync()
         {
-            if (this.function != null)
+            if (this.container.Function != null)
             {
                 return;
             }
 
-            switch (this._connectionType)
-            {
-                case ConnectionType.PublicTimeline:
-                    {
-                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
-                        func.Updated += this.StatusFunction_OnUpdate;
-                        this.GetNewerItemsAsync(func, this.Statuses);
-                        this.function = func;
-                    }
-                    break;
-                case ConnectionType.LocalTimeline:
-                    {
-                        var func = await this.Auth.PublicStreamingFunctionCounter.IncrementAsync();
-                        func.Updated += this.StatusFunction_OnUpdate;
-                        this.Statuses.Filter = (status) => status.Account.IsLocal;
-                        this.GetNewerItemsAsync(func, this.Statuses);
-                        this.function = func;
-                    }
-                    break;
-                case ConnectionType.HomeTimeline:
-                    {
-                        var func = await this.Auth.HomeStreamingFunctionCounter.IncrementAsync();
-                        func.Updated += this.StatusFunction_OnUpdate;
-                        this.GetNewerItemsAsync(func, this.Statuses);
-                        this.function = func;
-                    }
-                    break;
-                case ConnectionType.Notification:
-                    {
-                        var func = await this.Auth.NotificationStreamingFunctionCounter.IncrementAsync();
-                        func.Updated += this.NotificationFunction_OnUpdate;
-                        this.GetNewerItemsAsync(func, this.Notifications);
-                        this.function = func;
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            await this.function.StartAsync();
+            await this.container.AllocateFunctionAsync(this.Auth);
+            this.container.GetNewestItemsAsync();
+            await this.container.Function.StartAsync();
         }
 
         private async Task StopFunctionAsync()
         {
-            if (this.function == null)
+            if (this.container.Function == null)
             {
                 return;
             }
 
-            switch (this._connectionType)
-            {
-                case ConnectionType.PublicTimeline:
-                case ConnectionType.LocalTimeline:
-                    {
-                        var func = (IConnectionFunction<MastodonStatus>)this.function;
-                        func.Updated -= this.StatusFunction_OnUpdate;
-                        await this.Auth.PublicStreamingFunctionCounter.DecrementAsync();
-                    }
-                    break;
-                case ConnectionType.HomeTimeline:
-                    {
-                        var func = (IConnectionFunction<MastodonStatus>)this.function;
-                        func.Updated -= this.StatusFunction_OnUpdate;
-                        await this.Auth.HomeStreamingFunctionCounter.DecrementAsync();
-                    }
-                    break;
-                case ConnectionType.Notification:
-                    {
-                        var func = (IConnectionFunction<MastodonNotification>)this.function;
-                        func.Updated -= this.NotificationFunction_OnUpdate;
-                        await this.Auth.NotificationStreamingFunctionCounter.DecrementAsync();
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            this.function = null;
-        }
-
-        private async Task GetNewerItemsAsync<T>(IConnectionFunction<T> function, MastodonObjectCollection<T> collection)
-            where T : MastodonObject
-        {
-            try
-            {
-                var items = await function.GetNewestAsync();
-
-                GuiThread.Run(() =>
-                {
-                    foreach (var item in items)
-                    {
-                        collection.Add(item);
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                // TODO: とりあえず何もしない
-            }
-        }
-
-		private void StatusFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonStatus> e)
-		{
-			GuiThread.Run(() =>
-			{
-				this.Statuses.Add(e.Object);
-			});
-		}
-
-        private void NotificationFunction_OnUpdate(object sender, ObjectFunctionEventArgs<MastodonNotification> e)
-        {
-            GuiThread.Run(() =>
-            {
-                this.Notifications.Add(e.Object);
-            });
+            await this.container.ReleaseFunctionAsync();
         }
 
 		#endregion

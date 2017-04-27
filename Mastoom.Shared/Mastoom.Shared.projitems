@@ -17,6 +17,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\ConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCompositionCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCounter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\FunctionContainerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\IFunctionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\NotificationFunctionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\TimelineStreamFunctionContainers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\HomeTimelineFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\NotificationFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\TimelineFunctionBase.cs" />

@@ -9,6 +9,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/TransparentToggleButtonStyle.xaml"/>
                 <ResourceDictionary Source="Styles/ConnectionGroupTitleBarListBoxItemStyle.xaml"/>
+
+                <ResourceDictionary Source="Views/Parts/Converters.xaml"/>
+                <ResourceDictionary Source="Views/Parts/TimelineStatusTemplate.xaml"/>
+                <ResourceDictionary Source="Views/Parts/NotificationStatusTemplate.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
