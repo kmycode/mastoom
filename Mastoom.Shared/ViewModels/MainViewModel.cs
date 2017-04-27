@@ -1,4 +1,5 @@
 ﻿using Mastoom.Shared.Models.Mastodon.Connection;
+using Mastoom.Shared.Models.Mastodon.Generic;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -46,17 +47,17 @@ namespace Mastoom.Shared.ViewModels
         /// <summary>
         /// Exit page mode
         /// </summary>
-        public RelayCommand<MastodonStatusCollection> ExitPageModeCommand
+        public RelayCommand<ITimelineCollection> ExitPageModeCommand
         {
             get
             {
-                return this._exitPageModeCommand = this._exitPageModeCommand ?? new RelayCommand<MastodonStatusCollection>((collection) =>
+                return this._exitPageModeCommand = this._exitPageModeCommand ?? new RelayCommand<ITimelineCollection>((collection) =>
                 {
                     collection.ExitPageMode();
                 });
             }
         }
-        private RelayCommand<MastodonStatusCollection> _exitPageModeCommand;
+        private RelayCommand<ITimelineCollection> _exitPageModeCommand;
 
         #endregion
     }
