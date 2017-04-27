@@ -35,7 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonAttachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Timer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StatusExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\MastonetEntitiesExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />

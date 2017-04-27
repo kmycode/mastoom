@@ -6,10 +6,10 @@ using Mastoom.Shared.Models.Mastodon.Status;
 namespace Mastoom.Shared
 {
     /// <summary>
-    /// Mastonet.Entities.Status の拡張メソッド。
+    /// Mastonet.Entities 関連クラスの拡張メソッド。
     /// 主に Mastoom.Shared.Models.Mastodon.Status などへの変換を行う。
     /// </summary>
-    public static class StatusExtensions
+    public static class MastonetEntitiesExtensions
 	{
         /// <summary>
         /// Mastonet の Status を MastodonStatus に変換する
