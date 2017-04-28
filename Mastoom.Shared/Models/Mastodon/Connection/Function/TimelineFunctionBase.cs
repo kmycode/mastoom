@@ -20,7 +20,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         private bool isStreaming;
 
         private const int StreamingTimeOut = 10;    // 一定時間ストリーミングの更新がない時に接続し直す（バグ？）
-        private Timer timer;
+        private Shared.Common.Timer timer;
 
         public event EventHandler<ObjectFunctionUpdateEventArgs<MastodonStatus>> Updated;
         public event EventHandler<ObjectFunctionEventArgs<MastodonStatus>> Deleted;
@@ -29,7 +29,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         public TimelineFunctionBase()
         {
             // ストリーミングの更新がタイムアウトした時の処理
-            this.timer = new Timer(async (sender) =>
+            this.timer = new Shared.Common.Timer(async (sender) =>
             {
                 await this.StopAsync();
                 await this.StartAsync();

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+             xmlns:local="clr-namespace:Mastoom"
+             xmlns:view="clr-namespace:Mastoom.Views"
+             x:Class="Mastoom.Views.MainPage"
+             xmlns:vm="clr-namespace:Mastoom.Shared.ViewModels"
+             xmlns:cv="clr-namespace:Mastoom.Shared.Converters">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+             <view:MyTemplateSelector x:Key="myTemplateSelector" />
+            <cv:String2EmojiConverter x:Key="String2EmojiConv" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <controls:CarouselViewControl 
+        BackgroundColor="Teal"
+        Orientation="Horizontal" 
+        InterPageSpacing="10" 
+        Position="0" 
+        ItemsSource="{Binding Groups}" 
+        ItemTemplate="{StaticResource myTemplateSelector}"
+        VerticalOptions="FillAndExpand" 
+        HorizontalOptions="FillAndExpand">
+    </controls:CarouselViewControl>
+</ContentPage>
