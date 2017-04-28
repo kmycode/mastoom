@@ -97,6 +97,21 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         /// </summary>
         public MastodonStatus Boost { get; }
 
+        /// <summary>
+        /// リプライであるか
+        /// </summary>
+        public bool IsReply { get; }
+
+        /// <summary>
+        /// リプライ先のStatusのID
+        /// </summary>
+        public int ReplyToId { get; }
+
+        /// <summary>
+        /// リプライ先のアカウントのID
+        /// </summary>
+        public int ReplyToAccountId { get; }
+
 		/// <summary>
 		/// 添付メディア(画像など)群
 		/// </summary>
@@ -123,6 +138,7 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 
         internal MastodonStatus(int id, MastodonAccount account, string content,
                                 bool reblogged, bool favorited, MastodonStatus reblog,
+                                int? replyToId, int? replyToAccountId,
                                 IEnumerable<MastodonAttachment> mediaAttachments, IEnumerable<MastodonTag> tags,
                                 DateTime createdAt) : this(id, account)
         {
@@ -137,6 +153,9 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         	this.IsBoosted = reblogged;
             this.Boost = reblog;
             this.Account = account;
+            this.IsReply = replyToAccountId != null || replyToId != null;
+            this.ReplyToId = replyToId ?? 0;
+            this.ReplyToAccountId = replyToAccountId ?? 0;
             this.MediaAttachments = mediaAttachments;
             this.Tags = tags;
             this.CreatedAt = createdAt;

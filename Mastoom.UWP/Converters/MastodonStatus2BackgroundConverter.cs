@@ -14,6 +14,7 @@ namespace Mastoom.UWP.Converters
     class MastodonStatus2BackgroundConverter : IValueConverter
     {
         private static readonly Brush RebootBrush = new SolidColorBrush(new Color { R = 0x00, G = 0x80, B = 0x00, A = 0x20, });
+        private static readonly Brush ReplyBrush = new SolidColorBrush(new Color { R = 0x00, G = 0xc0, B = 0xf0, A = 0x20, });
         private static readonly Brush FavoriteBrush = new SolidColorBrush(new Color { R = 0xa0, G = 0xa0, B = 0x00, A = 0x20, });
 
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -27,6 +28,10 @@ namespace Mastoom.UWP.Converters
                     {
                         return RebootBrush;
                     }
+                    else if (status.IsReply)
+                    {
+                        return ReplyBrush;
+                    }
                     return null;
                 }
                 var notification = value as MastodonNotification;
@@ -39,6 +44,10 @@ namespace Mastoom.UWP.Converters
                     else if (notification.Type == NotificationType.Favorite)
                     {
                         return FavoriteBrush;
+                    }
+                    else if (notification.Type == NotificationType.Mention)
+                    {
+                        return ReplyBrush;
                     }
                     return null;
                 }

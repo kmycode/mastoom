@@ -26,6 +26,8 @@ namespace Mastoom.Shared
                 favorited: self.Favourited ?? false,
                 reblogged: self.Reblogged ?? false,
                 account: self.Account.ToMastodonAccount(),
+                replyToId: self.InReplyToId,
+                replyToAccountId: self.InReplyToAccountId,
                 mediaAttachments: self.MediaAttachments.Select(x => x.ToMastodonAttachment()),
                 tags: self.Tags.Select(x => x.ToMastodonTag()),
                 createdAt: self.CreatedAt
