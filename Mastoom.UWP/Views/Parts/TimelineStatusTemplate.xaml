@@ -14,16 +14,14 @@
             </Grid.ColumnDefinitions>
 
             <!--アイコン表示-->
-            <Image Grid.Column="0" Grid.RowSpan="3" Visibility="{Binding IsBoost,Converter={StaticResource Boolean2NegativeVisibilityConv}}"
+            <Image Grid.Column="0" Grid.RowSpan="3"
                    Width="72" Height="72" VerticalAlignment="Top"
-                   Source="{Binding Account.IconUri}"/>
-            <Image Grid.Column="0" Grid.RowSpan="3" Visibility="{Binding IsBoost,Converter={StaticResource Boolean2VisibilityConv}}"
-                   Width="72" Height="72" VerticalAlignment="Top"
-                   Source="{Binding Boost.Account.IconUri}"/>
+                   Source="{Binding Account.IconUri}"
+                   DataContext="{Binding Converter={StaticResource DisplayTootSelectConv}}"/>
 
-            <StackPanel Grid.Column="1">
+            <StackPanel Grid.Column="1" DataContext="{Binding Converter={StaticResource DisplayTootSelectConv}}">
 
-                <StackPanel Visibility="{Binding IsBoost,Converter={StaticResource Boolean2NegativeVisibilityConv}}">
+                <StackPanel>
                     <!--名前表示-->
                     <StackPanel Margin="12,4,0,8" Orientation="Horizontal">
                         <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
@@ -43,30 +41,6 @@
                     <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
                         <i:Interaction.Behaviors>
                             <b:ImageCollectionBehavior Content="{Binding Content}"/>
-                        </i:Interaction.Behaviors>
-                    </StackPanel>
-                </StackPanel>
-
-                <StackPanel Visibility="{Binding IsBoost,Converter={StaticResource Boolean2VisibilityConv}}">
-                    <!--名前表示-->
-                    <StackPanel Margin="12,4,0,8" Orientation="Horizontal">
-                        <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
-                               Text="{Binding Boost.Account.Name,Converter={StaticResource String2EmojiConv}}"/>
-                    </StackPanel>
-
-                    <!--コンテンツ表示部分-->
-                    <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
-                           TextWrapping="Wrap" IsTextSelectionEnabled="True"
-                           FontFamily="Meiryo">
-                     <i:Interaction.Behaviors>
-                         <b:HtmlTextBehavior Content="{Binding Boost.Content,Converter={StaticResource String2EmojiConv}}"/>
-                     </i:Interaction.Behaviors>
-                    </TextBlock>
-
-                    <!--画像表示部分-->
-                    <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
-                        <i:Interaction.Behaviors>
-                            <b:ImageCollectionBehavior Content="{Binding Boost.Content}"/>
                         </i:Interaction.Behaviors>
                     </StackPanel>
                 </StackPanel>

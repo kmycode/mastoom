@@ -1,7 +1,7 @@
 ﻿using System;
 using Mastonet.Entities;
 
-namespace Mastoom.Shared
+namespace Mastoom.Shared.Models.Mastodon.Status
 {
     /// <summary>
     /// トゥートへの添付メディア

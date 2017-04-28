@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Common\Emoji.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\GuiThread.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DisplayTootSelectConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\SharedConverterBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\String2EmojiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Common\OAuthModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Account\MastodonAccount.cs" />
