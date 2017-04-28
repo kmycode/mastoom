@@ -20,7 +20,15 @@ namespace Mastoom.UWP.Views.Helpers
             }
             else if (item is MastodonNotification)
             {
-                return (DataTemplate)Application.Current.Resources["NotificationStatusTemplate"];
+                var n = (MastodonNotification)item;
+                if (n.Type == NotificationType.Boost || n.Type == NotificationType.Favorite || n.Type == NotificationType.Mention)
+                {
+                    return (DataTemplate)Application.Current.Resources["NotificationStatusTemplate"];
+                }
+                else
+                {
+                    return (DataTemplate)Application.Current.Resources["NotificationAccountTemplate"];
+                }
             }
             return null;
         }
