@@ -1,4 +1,5 @@
-﻿using Microsoft.Xaml.Interactivity;
+﻿using Mastoom.Shared.Models.Mastodon.Status;
+using Microsoft.Xaml.Interactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,21 +22,21 @@ namespace Mastoom.UWP.Behaviors
 		/// <summary>
 		/// 表示するコンテンツ内容
 		/// </summary>
-		public string Content
+		public IEnumerable<MastodonAttachment> Attachments
 		{
 			get
 			{
-				return (string)this.GetValue(ContentProperty);
+				return (IEnumerable<MastodonAttachment>)this.GetValue(AttachmentsProperty);
 			}
 			set
 			{
-				this.SetValue(ContentProperty, value);
+				this.SetValue(AttachmentsProperty, value);
 			}
 		}
-		public static readonly DependencyProperty ContentProperty =
+		public static readonly DependencyProperty AttachmentsProperty =
 			DependencyProperty.RegisterAttached(
-				"Content",
-				typeof(string),
+                "Attachments",
+				typeof(IEnumerable<MastodonAttachment>),
 				typeof(ImageCollectionBehavior),
 				new PropertyMetadata(null, (s, e) =>
 				{
@@ -89,49 +90,20 @@ namespace Mastoom.UWP.Behaviors
 			var images = this.attached.Children;
 			images.Clear();
 
-			var doc = new XmlDocument();
-            try
-            {
-                doc.LoadXml("<div>" + this.Content.Replace("<br>", "<br/>") + "</div>");
-            }
-            catch
+            if (this.Attachments == null)
             {
                 return;
             }
 
-            var root = doc.HasChildNodes ? doc.FirstChild : null;
-			if (root == null)
-			{
-				return;
-			}
-
-			foreach (XmlNode nodeAtRoot in root.ChildNodes)
-			{
-				foreach (XmlNode node in nodeAtRoot.ChildNodes)
-				{
-					if (node is XmlElement element)
-					{
-						switch (element.Name.ToLower())
-						{
-							case "a":
-								if (element.HasAttribute("href"))
-								{
-									var link = element.Attributes["href"].Value;
-									if (link.Contains("/media/"))
-									{
-										images.Add(new Image
-										{
-											MaxHeight = 100,
-											Margin = new Thickness(0, 0, 8, 0),
-											Source = new BitmapImage(new Uri(link)),
-										});
-									}
-								}
-								break;
-						}
-					}
-				}
-			}
+            foreach (var item in this.Attachments)
+            {
+                images.Add(new Image
+                {
+                    MaxHeight = 100,
+                    Margin = new Thickness(0, 0, 8, 0),
+                    Source = new BitmapImage(new Uri(item.PreviewUrl)),
+                });
+            }
 
 			// ついでに表示非表示を決める
 			this.attached.Visibility = images.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

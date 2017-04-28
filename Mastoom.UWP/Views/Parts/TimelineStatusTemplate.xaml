@@ -40,7 +40,7 @@
                     <!--画像表示部分-->
                     <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
                         <i:Interaction.Behaviors>
-                            <b:ImageCollectionBehavior Content="{Binding Content}"/>
+                            <b:ImageCollectionBehavior Attachments="{Binding MediaAttachments}"/>
                         </i:Interaction.Behaviors>
                     </StackPanel>
                 </StackPanel>
