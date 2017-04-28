@@ -1,4 +1,4 @@
-﻿using Mastoom.Shared.Models.Mastodon.Generic;
+using Mastoom.Shared.Models.Mastodon.Generic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,15 +68,14 @@ namespace Mastoom.Shared.Models.Mastodon.Account
 		public MastodonAccount(int id) : base(id)
 		{
 		}
-
-		public MastodonAccount(Mastonet.Entities.Account account) : base(account.Id)
+        
+        internal MastodonAccount(int id, string accountName, string instanceUrl, bool isLocal, string displayName, string avatarUrl) : this(id)
 		{
-            this.DisplayId = account.AccountName;
-            this.InstanceUri = account.AccountName.Split('@').ElementAtOrDefault(1) ??
-                               account.ProfileUrl.Split('/').ElementAt(2);
-            this.IsLocal = !account.AccountName.Contains("@");
-			this.Name = account.DisplayName;
-			this.IconUri = account.AvatarUrl;
+            this.DisplayId = accountName;
+            this.InstanceUri = instanceUrl;
+            this.IsLocal = isLocal;
+            this.Name = displayName;
+            this.IconUri = avatarUrl;
 		}
 
 		#region INotifyPropertyChanged

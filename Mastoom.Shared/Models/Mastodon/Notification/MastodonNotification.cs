@@ -30,11 +30,11 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
         {
             if (notification.Account != null)
             {
-                this._accounts.Add(new MastodonAccount(notification.Account));
+                this._accounts.Add(notification.Account.ToMastodonAccount());
             }
             if (notification.Status != null)
             {
-                this.Status = new MastodonStatus(notification.Status);
+                this.Status = notification.Status.ToMastodonStatus();
             }
 
             switch (notification.Type)

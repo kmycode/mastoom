@@ -143,27 +143,20 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		{
 			this.Account = account;
 		}
-        
-		public MastodonStatus(Mastonet.Entities.Status status) : base(status.Id)
+
+        internal MastodonStatus(int id, int boostedId, string content, bool isFavorited, 
+                                bool isBoosted, MastodonAccount account, 
+                                IEnumerable<MastodonAttachment> mediaAttachments, IEnumerable<MastodonTag> tags) : this(id, account)
         {
-            // ブーストされたトゥートの場合でも、ブーストした人が取得したIDを設定する
-            // （元のトゥートとブースト分のトゥート、両方同じTLに表示するため）
-
-            // ブーストされたトゥートの場合、ここから先はブースト対象のトゥートのデータを設定する
-            if (status.Reblog != null)
-            {
-                this.BoostedId = status.Reblog.Id;
-                status = status.Reblog;
-                this.IsBoost = true;
-            }
-
-            this.Content = status.Content;
-            this.IsFavorited = status.Favourited ?? false;
-            this.IsBoosted = status.Reblogged ?? false;
-			this.Account = new MastodonAccount(status.Account);
-			this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
-            this.Tags = status.Tags.Select(x => new MastodonTag(x));
-		}
+            this.BoostedId = boostedId;
+            this.IsBoost = isBoosted;
+        	this.Content = content;
+        	this.IsFavorited = isFavorited;
+        	this.IsBoosted = isBoosted;
+            this.Account = account;
+            this.MediaAttachments = mediaAttachments;
+            this.Tags = tags;
+        }
 
 		public void CopyTo(MastodonStatus to)
 		{
@@ -192,9 +185,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             bool isSucceed = false;
             try
             {
-                var newStatus = new MastodonStatus(
-                    !this.IsFavorited ? await client.Favourite(this.Id) : await client.Unfavourite(this.Id)
-                    );
+                var newStatus = 
+                    (!this.IsFavorited ? await client.Favourite(this.Id) : await client.Unfavourite(this.Id)).ToMastodonStatus();
                 isSucceed = true;
             }
             catch { }
@@ -217,9 +209,8 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             bool isSucceed = false;
             try
             {
-                var newStatus = new MastodonStatus(
-                    !this.IsBoosted ? await client.Reblog(this.Id) : await client.Unreblog(this.Id)
-                    );
+                var newStatus = 
+                    (!this.IsBoosted ? await client.Reblog(this.Id) : await client.Unreblog(this.Id)).ToMastodonStatus();
                 isSucceed = true;
             }
             catch { }

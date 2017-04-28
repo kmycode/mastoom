@@ -113,7 +113,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             this.timer.Change(1000 * StreamingTimeOut, Timeout.Infinite);
             this.Updated?.Invoke(this, new ObjectFunctionUpdateEventArgs<MastodonStatus>
             {
-                Object = new MastodonStatus(e.Status),
+                Object = e.Status.ToMastodonStatus(),
             });
         }
 

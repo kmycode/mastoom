@@ -20,7 +20,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             var statuses = new Collection<MastodonStatus>();
             foreach (var s in nativeStatuses)
             {
-                statuses.Add(new MastodonStatus(s));
+                statuses.Add(s.ToMastodonStatus());
             }
             return statuses;
         }
