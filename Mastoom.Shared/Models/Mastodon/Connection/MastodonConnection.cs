@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Mastoom.Shared.ViewModels.ViewModelBase;
+using Akavache;
+using System.Reactive.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -26,14 +28,14 @@ namespace Mastoom.Shared.Models.Mastodon
     /// </summary>
     public class MastodonConnection : INotifyPropertyChanged
     {
-		#region 変数
+        #region 変数
 
-		private const string ApplicationName = "Mastoom.Master.Test";
-		
-		private MastodonClient client;
-        
-		private string streamingInstance;
-        
+        private const string ApplicationName = "Mastoom.Master.Test";
+
+        private MastodonClient client;
+
+        private string streamingInstance;
+
         private IConnectionFunction function;
 
         #endregion
@@ -45,25 +47,25 @@ namespace Mastoom.Shared.Models.Mastodon
         /// </summary>
         public MastodonAuthentication Auth { get; private set; }
 
-		/// <summary>
-		/// 接続の名前
-		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return this._name;
-			}
-			set
-			{
-				if (this._name != value)
-				{
-					this._name = value;
-					this.OnPropertyChanged();
-				}
-			}
-		}
-		private string _name;
+        /// <summary>
+        /// 接続の名前
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return this._name;
+            }
+            set
+            {
+                if (this._name != value)
+                {
+                    this._name = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+        private string _name;
 
         /// <summary>
         /// 接続の種類
@@ -96,62 +98,70 @@ namespace Mastoom.Shared.Models.Mastodon
         }
         private MastodonAccount _account;
 
-		/// <summary>
-		/// ステータスの集まり
-		/// </summary>
-		public MastodonStatusCollection Statuses { get; } = new MastodonStatusCollection();
+        /// <summary>
+        /// ステータスの集まり
+        /// </summary>
+        public MastodonStatusCollection Statuses { get; } = new MastodonStatusCollection();
 
-		/// <summary>
-		/// ステータスを投稿するモデル
-		/// </summary>
-		public PostStatusModel PostStatus
-		{
-			get
-			{
-				return this._postStatus;
-			}
-			set
-			{
-				this._postStatus = value;
-				this.OnPropertyChanged();
-			}
-		}
-		private PostStatusModel _postStatus;
-
-		#endregion
-
-		#region メソッド
-
-		public MastodonConnection(string instanceUri, ConnectionType functionType)
-		{
-            this.InstanceUri = instanceUri;
-            this._connectionType = functionType;
-            this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
-
-            if (!this.Auth.HasAuthenticated)
+        /// <summary>
+        /// ステータスを投稿するモデル
+        /// </summary>
+        public PostStatusModel PostStatus
+        {
+            get
             {
-                // 認証完了した時の処理
-                this.Auth.Completed += (sender, e) =>
-                {
-                    this.ImportAuthenticationData();
-                    Task.Run(async () =>
-                    {
-                        await this.StartFunctionAsync();
-                    }).Wait();
-                };
-
-                // 認証開始
-                this.Auth.StartOAuthLogin();
+                return this._postStatus;
             }
-            else
+            set
             {
-                this.ImportAuthenticationData();
-                Task.Run(async () =>
-                {
-                    await this.StartFunctionAsync();
-                }).Wait();
+                this._postStatus = value;
+                this.OnPropertyChanged();
             }
         }
+        private PostStatusModel _postStatus;
+
+        #endregion
+
+        #region メソッド
+
+        public MastodonConnection(string instanceUri, ConnectionType functionType)
+        {
+            this.InstanceUri = instanceUri;
+            this._connectionType = functionType;
+
+            InitializeAuthAsync();
+        }
+
+        private async void InitializeAuthAsync()
+        {
+            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri);
+
+            if (!this.Auth.HasAuthenticated)
+			{
+            	// 認証完了した時の処理
+            	this.Auth.Completed += (sender, e) =>
+            	{
+                    this.ImportAuthenticationData();
+
+            		Task.Run(async () =>
+            		{
+            			await this.StartFunctionAsync();
+            		});
+            	};
+
+            	// 認証開始
+            	this.Auth.StartOAuthLogin();
+            }
+            else
+			{
+            	this.ImportAuthenticationData();
+            	Task.Run(async () =>
+            	{
+            		await this.StartFunctionAsync();
+            	}).Wait();
+            }
+        }
+        
 
         private void ImportAuthenticationData()
         {

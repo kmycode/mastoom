@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Akavache;
+using System.Reactive.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -37,6 +39,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 認証が完了したか
         /// </summary>
         public bool HasAuthenticated { get; private set; }
+
+        /// <summary>
+        /// 認可コード。OAuth認証でリダイレクトされたURLに付いてくるやつ。
+        /// </summary>
+        public string AuthorizationCode { get; private set; }
 
         /// <summary>
         /// アクセストークン
@@ -82,7 +89,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         #region メソッド
 
-        public MastodonAuthentication(string instanceUri, string accessToken = null)
+        public MastodonAuthentication(string instanceUri, string accessToken)
         {
             this.InstanceUri = instanceUri;
             this.AccessToken = accessToken;
@@ -110,7 +117,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
                     {
                         this.HasAuthenticated = false;
                     }
-                });
+                }).Wait();
             }
 
             // ブラウザのURIが変わった時
@@ -121,7 +128,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
                     if (e.Uri.Contains("/oauth/authorize/"))
                     {
                         var paths = e.Uri.Split('/');
-                        this.AccessToken = paths.Last();
+                        this.AuthorizationCode = paths.Last();
 
                         await this.CreateClientAsync();
 
@@ -158,9 +165,28 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         private async Task CreateClientAsync()
         {
-            var auth = await this.preClient.ConnectWithCode(this.AccessToken);
+            Auth auth;
+            if (!string.IsNullOrEmpty(this.AuthorizationCode))
+            {
+                auth = await this.preClient.ConnectWithCode(this.AuthorizationCode);
+                await BlobCache.LocalMachine.InsertObject(this.InstanceUri, auth.AccessToken);
+                await BlobCache.LocalMachine.Flush();
+            }
+            else
+            {
+                auth = new Auth
+                {
+                    AccessToken = this.AccessToken,
+                    TokenType = "bearer",
+                    Scope = "read write follow",
+                    CreatedAt = "1493312030"
+                };
+            }
+
             this.Client = new MastodonClient(this.appRegistration, auth);
-            this.CurrentUser = (await this.Client.GetCurrentUser()).ToMastodonAccount();
+
+            var user = await this.Client.GetCurrentUser();
+            this.CurrentUser = user.ToMastodonAccount();
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
             {
