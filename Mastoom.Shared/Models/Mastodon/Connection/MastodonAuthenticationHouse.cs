@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using Akavache;
+using System.Reactive.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -17,6 +20,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         public static ReadOnlyObservableCollection<MastodonAuthentication> Authes { get; }
         private static readonly ObservableCollection<MastodonAuthentication> _authes = new ObservableCollection<MastodonAuthentication>();
 
+
         static MastodonAuthenticationHouse()
         {
             Authes = new ReadOnlyObservableCollection<MastodonAuthentication>(_authes);
@@ -29,7 +33,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// </summary>
         /// <param name="instanceUri">インスタンスURI</param>
         /// <returns>認証情報</returns>
-        public static MastodonAuthentication Get(string instanceUri)
+        public async static Task<MastodonAuthentication> Get(string instanceUri)
         {
             var auth = Authes.SingleOrDefault(a => a.InstanceUri == instanceUri);
             if (auth != null)
@@ -38,7 +42,8 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             }
             else
             {
-                var newAuth = new MastodonAuthentication(instanceUri);
+                var accessToken = await BlobCache.LocalMachine.GetOrCreateObject<string>(instanceUri, ()=>string.Empty);
+                var newAuth = new MastodonAuthentication(instanceUri, accessToken);
                 _authes.Add(newAuth);
                 return newAuth;
             }
