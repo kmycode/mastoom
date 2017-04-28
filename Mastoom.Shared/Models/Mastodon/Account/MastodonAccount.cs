@@ -69,11 +69,12 @@ namespace Mastoom.Shared.Models.Mastodon.Account
 		{
 		}
         
-        internal MastodonAccount(int id, string accountName, string instanceUrl, bool isLocal, string displayName, string avatarUrl) : this(id)
+        internal MastodonAccount(int id, string accountName, string url, string displayName, string avatarUrl) : this(id)
 		{
             this.DisplayId = accountName;
-            this.InstanceUri = instanceUrl;
-            this.IsLocal = isLocal;
+            this.InstanceUri = accountName.Split('@').ElementAtOrDefault(1) ??
+                               url.Split('/').ElementAt(2);
+            this.IsLocal = !accountName.Contains('@');
             this.Name = displayName;
             this.IconUri = avatarUrl;
 		}

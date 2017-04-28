@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Mastoom.Shared.Models.Mastodon.Account;
 using Mastoom.Shared.Models.Mastodon.Status;
+using Mastoom.Shared.Models.Mastodon.Notification;
 
 namespace Mastoom.Shared
 {
@@ -16,45 +17,68 @@ namespace Mastoom.Shared
         /// </summary>
         public static MastodonStatus ToMastodonStatus(this Mastonet.Entities.Status self)
         {
-            var status = self;
-
-            // ブーストされたトゥートの場合でも、ブーストした人が取得したIDを設定する
-            // （元のトゥートとブースト分のトゥート、両方同じTLに表示するため）
-            var id = status.Id;
-
-            var boostedId = 0;
-            var isBoost = false;
-
-            // ブーストされたトゥートの場合、ここから先はブースト対象のトゥートのデータを設定する
-            if (self.Reblog != null)
-            {
-                boostedId = status.Reblog.Id;
-                status = self.Reblog;
-                isBoost = true;
-			}
+            if (self == null) return null;
 
             return new MastodonStatus(
-                id,
-                boostedId,
-                self.Content, self.Favourited ?? false, isBoost,
-                self.Account.ToMastodonAccount(),
-                self.MediaAttachments.Select(x => new MastodonAttachment(x)),
-                self.Tags.Select(x => new MastodonTag(x))
+                id: self.Id,
+                reblog: self.Reblog.ToMastodonStatus(),
+                content: self.Content,
+                favorited: self.Favourited ?? false,
+                reblogged: self.Reblogged ?? false,
+                account: self.Account.ToMastodonAccount(),
+                mediaAttachments: self.MediaAttachments.Select(x => x.ToMastodonAttachment()),
+                tags: self.Tags.Select(x => x.ToMastodonTag()),
+                createdAt: self.CreatedAt
             );
         }
 
         public static MastodonAccount ToMastodonAccount(this Mastonet.Entities.Account self)
         {
+            if (self == null) return null;
+
             return new MastodonAccount(
-                self.Id,
-                self.AccountName,
-                self.AccountName.Split('@').ElementAtOrDefault(1) ??
-                self.ProfileUrl.Split('/').ElementAt(2),
-                !self.AccountName.Contains("@"),
-                self.DisplayName,
-                self.AvatarUrl
+                id: self.Id,
+                accountName: self.AccountName,
+                url: self.ProfileUrl,
+                displayName: self.DisplayName,
+                avatarUrl: self.AvatarUrl
             );
-            
+        }
+
+        public static MastodonAttachment ToMastodonAttachment(this Mastonet.Entities.Attachment self)
+        {
+            if (self == null) return null;
+
+            return new MastodonAttachment(
+                id: self.Id,
+                previewUrl: self.PreviewUrl,
+                remoteUrl: self.RemoteUrl,
+                textUrl: self.TextUrl,
+                url: self.Url,
+                type: self.Type
+            );
+        }
+
+        public static MastodonTag ToMastodonTag(this Mastonet.Entities.Tag self)
+        {
+            if (self == null) return null;
+
+            return new MastodonTag(
+                name: self.Name,
+                url: self.Url
+            );
+        }
+
+        public static MastodonNotification ToMastodonNotification(this Mastonet.Entities.Notification self)
+        {
+            if (self == null) return null;
+
+            return new MastodonNotification(
+                id: self.Id,
+                type: self.Type,
+                account: self.Account.ToMastodonAccount(),
+                status: self.Status.ToMastodonStatus()
+            );
         }
 	}
 }

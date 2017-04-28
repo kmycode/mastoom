@@ -26,18 +26,18 @@ namespace Mastoom.Shared.Models.Mastodon.Notification
         /// </summary>
         public NotificationType Type { get; }
 
-        public MastodonNotification(Mastonet.Entities.Notification notification) : base(notification.Id)
+        public MastodonNotification(int id, string type, MastodonAccount account, MastodonStatus status) : base(id)
         {
-            if (notification.Account != null)
+            if (account != null)
             {
-                this._accounts.Add(notification.Account.ToMastodonAccount());
+                this._accounts.Add(account);
             }
-            if (notification.Status != null)
+            if (status != null)
             {
-                this.Status = notification.Status.ToMastodonStatus();
+                this.Status = status;
             }
 
-            switch (notification.Type)
+            switch (type)
             {
                 case "mention":
                     this.Type = NotificationType.Mention;

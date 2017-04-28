@@ -41,7 +41,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
             var notifications = new Collection<MastodonNotification>();
             foreach (var n in nativeNotifications)
             {
-                notifications.Add(new MastodonNotification(n));
+                notifications.Add(n.ToMastodonNotification());
             }
             return notifications;
         }

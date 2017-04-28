@@ -52,7 +52,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         {
             this.Notificated?.Invoke(this, new ObjectFunctionUpdateEventArgs<MastodonNotification>
             {
-                Object = new MastodonNotification(e.Notification),
+                Object = e.Notification.ToMastodonNotification(),
             });
         }
 

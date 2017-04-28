@@ -92,72 +92,56 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         }
         private bool _isBoosted;
 
+        /// <summary>
+        /// ブーストしたトゥート
+        /// </summary>
+        public MastodonStatus Boost { get; }
+
 		/// <summary>
 		/// 添付メディア(画像など)群
 		/// </summary>
 		/// <value>The media attachments.</value>
-		public IEnumerable<MastodonAttachment> MediaAttachments
-		{
-			get { return _mediaAttachments; }
-			private set
-			{
-				_mediaAttachments = value;
-				this.OnPropertyChanged();
-			}
-		}
-		private IEnumerable<MastodonAttachment> _mediaAttachments;
+		public IEnumerable<MastodonAttachment> MediaAttachments { get; }
 
 		/// <summary>
 		/// タグ群
 		/// </summary>
 		/// <value>The tags.</value>
-		public IEnumerable<MastodonTag> Tags
-		{
-			get { return _tags; }
-			private set
-			{
-				_tags = value;
-				this.OnPropertyChanged();
-			}
-		}
-		private IEnumerable<MastodonTag> _tags;
-
-		private DateTime _createdAt;
-		public DateTime CreatedAt
-		{
-			get { return _createdAt; }
-			private set
-			{
-				if (_createdAt == value)
-				{
-					return;
-				}
-				_createdAt = value;
-				this.OnPropertyChanged();
-			}
-		}
+		public IEnumerable<MastodonTag> Tags { get; }
+        
+        /// <summary>
+        /// 投稿日時
+        /// </summary>
+		public DateTime CreatedAt { get; }
 
         #region メソッド
 
-        public MastodonStatus(int id, MastodonAccount account) : base(id)
+        internal MastodonStatus(int id, MastodonAccount account) : base(id)
 		{
 			this.Account = account;
 		}
 
-        internal MastodonStatus(int id, int boostedId, string content, bool isFavorited, 
-                                bool isBoosted, MastodonAccount account, 
-                                IEnumerable<MastodonAttachment> mediaAttachments, IEnumerable<MastodonTag> tags) : this(id, account)
+        internal MastodonStatus(int id, MastodonAccount account, string content,
+                                bool reblogged, bool favorited, MastodonStatus reblog,
+                                IEnumerable<MastodonAttachment> mediaAttachments, IEnumerable<MastodonTag> tags,
+                                DateTime createdAt) : this(id, account)
         {
-            this.BoostedId = boostedId;
-            this.IsBoost = isBoosted;
+            if (reblog != null)
+            {
+                this.BoostedId = reblog.Id;
+                this.IsBoost = true;
+            }
+
         	this.Content = content;
-        	this.IsFavorited = isFavorited;
-        	this.IsBoosted = isBoosted;
+        	this.IsFavorited = favorited;
+        	this.IsBoosted = reblogged;
+            this.Boost = reblog;
             this.Account = account;
             this.MediaAttachments = mediaAttachments;
             this.Tags = tags;
+            this.CreatedAt = createdAt;
         }
-
+        
 		public void CopyTo(MastodonStatus to)
 		{
 			if (to.Id != this.Id)
@@ -167,8 +151,6 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			to.Content = this.Content;
             to.IsFavorited = this.IsFavorited;
             to.IsBoosted = this.IsBoosted;
-            to.MediaAttachments = this.MediaAttachments.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
-            to.Tags = this.Tags.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
 		}
 
         #endregion
