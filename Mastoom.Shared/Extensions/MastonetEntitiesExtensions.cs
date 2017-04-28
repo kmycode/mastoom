@@ -45,12 +45,14 @@ namespace Mastoom.Shared
 
         public static MastodonAccount ToMastodonAccount(this Mastonet.Entities.Account self)
         {
+            var left = self?.AccountName?.Split('@')?.ElementAtOrDefault(1);
+            var right = self?.ProfileUrl?.Split('/')?.ElementAt(2);
+
             return new MastodonAccount(
                 self.Id,
                 self.AccountName,
-                self.AccountName.Split('@').ElementAtOrDefault(1) ??
-                self.ProfileUrl.Split('/').ElementAt(2),
-                !self.AccountName.Contains("@"),
+                left ?? right,
+                !self.AccountName?.Contains("@") ?? false,
                 self.DisplayName,
                 self.AvatarUrl
             );
