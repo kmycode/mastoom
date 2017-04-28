@@ -2,6 +2,7 @@
 using Mastoom.Shared.Models.Mastodon.Generic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -73,7 +74,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
         {
             try
             {
-                var items = await this._function.GetNewestAsync();
+                var items = (await this._function.GetNewestAsync()).Reverse();
 
                 GuiThread.Run(() =>
                 {
