@@ -233,6 +233,21 @@ namespace Mastoom.Shared.Models.Mastodon
         }
         private RelayCommand<MastodonStatus> _toggleBoostCommand;
 
+        /// <summary>
+        /// 削除する
+        /// </summary>
+        public RelayCommand<MastodonStatus> DeleteCommand
+        {
+            get
+            {
+                return this._deleteCommand = this._deleteCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    status.DeleteAsync(this.client);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _deleteCommand;
+
         #endregion
     }
 }

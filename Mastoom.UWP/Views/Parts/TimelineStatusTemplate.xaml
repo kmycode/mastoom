@@ -73,6 +73,18 @@
                                       Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
                         </Grid>
                     </ToggleButton>
+
+                    <!--削除-->
+                    <ToggleButton IsChecked="False"
+                                  Style="{StaticResource TransparentToggleButtonStyle}"
+                                  Command="{Binding DataContext.Activated.DeleteCommand,ElementName=ConnectionGrid}"
+                                  CommandParameter="{Binding}" Background="Transparent"
+                                  Visibility="{Binding IsMyStatus,Converter={StaticResource Boolean2VisibilityConv}}">
+                        <Grid>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;"
+                                      Foreground="Black"/>
+                        </Grid>
+                    </ToggleButton>
                 </StackPanel>
             </StackPanel>
         </Grid>

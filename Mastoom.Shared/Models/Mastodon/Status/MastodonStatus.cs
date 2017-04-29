@@ -23,6 +23,26 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 		public MastodonAccount Account { get; }
 
         /// <summary>
+        /// 自分の発言であるか
+        /// </summary>
+        public bool IsMyStatus
+        {
+            get
+            {
+                return this._isMyStatus;
+            }
+            set
+            {
+                if (this._isMyStatus != value)
+                {
+                    this._isMyStatus = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+        private bool _isMyStatus;
+
+        /// <summary>
         /// これはブーストされた書き込みであるか
         /// </summary>
         public bool IsBoost { get; }
@@ -220,6 +240,24 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             {
                 this.IsBoosted ^= true;
             }
+
+            return isSucceed;
+        }
+
+        /// <summary>
+        /// 発言を削除する
+        /// </summary>
+        /// <param name="client">クライアント</param>
+        /// <returns>成功したかどうか</returns>
+        public async Task<bool> DeleteAsync(MastodonClient client)
+        {
+            bool isSucceed = false;
+            try
+            {
+                await client.DeleteStatus(this.Id);
+                isSucceed = true;
+            }
+            catch { }
 
             return isSucceed;
         }

@@ -8,7 +8,25 @@ using Mastoom.Shared.Common;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
 {
-    class PublicTimelineFunctionContainer : FunctionContainerBase<MastodonStatus>
+    abstract class TimelineFunctionContainerBase : FunctionContainerBase<MastodonStatus>
+    {
+        public TimelineFunctionContainerBase(MastodonObjectCollection<MastodonStatus> collection, ConnectionType type) : base(collection, type)
+        {
+        }
+
+        protected override void OnFunctionUpdated(object sender, ObjectFunctionEventArgs<MastodonStatus> e)
+        {
+            base.OnFunctionUpdated(sender, e);
+
+            // 自分の発言にマークを付ける
+            if (e.Object.Account.Id == this.Auth.CurrentUser.Id)
+            {
+                e.Object.IsMyStatus = true;
+            }
+        }
+    }
+
+    class PublicTimelineFunctionContainer : TimelineFunctionContainerBase
     {
         public PublicTimelineFunctionContainer() : this(ConnectionType.PublicTimeline) { }
 
@@ -29,7 +47,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
         }
     }
 
-    class HomeTimelineFunctionContainer : FunctionContainerBase<MastodonStatus>
+    class HomeTimelineFunctionContainer : TimelineFunctionContainerBase
     {
         public HomeTimelineFunctionContainer() : base(new MastodonStatusCollection(), ConnectionType.HomeTimeline) { }
 

@@ -20,6 +20,8 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
         public ConnectionType ConnectionType => this._connectionType;
         private readonly ConnectionType _connectionType;
 
+        protected MastodonAuthentication Auth { get; private set; }
+
         /// <summary>
         /// 認証オブジェクトから取得できるカウンタをここに置く。
         /// Allocateで値が入り、Releaseでnullになる
@@ -48,10 +50,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
 
         public async Task AllocateFunctionAsync(MastodonAuthentication auth)
         {
+            this.Auth = auth;
             this.Counter = this.GetFunctionCounter(auth);
             this._function = await this.Counter.IncrementAsync();
             this.OnFunctionAllocated();
-            this._function.Updated += this.Function_OnUpdate;
+            this._function.Updated += this.OnFunctionUpdated;
         }
 
         /// <summary>
@@ -65,9 +68,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
         {
             await this.Counter.DecrementAsync();
             this.OnFunctionReleased();
-            this._function.Updated -= this.Function_OnUpdate;
+            this._function.Updated -= this.OnFunctionUpdated;
             this.Counter = null;
             this._function = null;
+            this.Auth = null;
         }
 
         public async Task GetNewestItemsAsync()
@@ -112,7 +116,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
             //}
         }
 
-        private void Function_OnUpdate(object sender, ObjectFunctionEventArgs<T> e)
+        /// <summary>
+        /// FunctionからOnUpdateイベントが呼び出される時に発行。
+        /// オーバーライド可能だが、コレクションへの追加処理のためにbase呼び出しを強く推奨
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void OnFunctionUpdated(object sender, ObjectFunctionEventArgs<T> e)
         {
             GuiThread.Run(() =>
             {
