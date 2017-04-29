@@ -74,7 +74,7 @@ namespace Mastoom.Shared.Models.Mastodon.Account
             this.DisplayId = accountName;
             this.InstanceUri = accountName.Split('@').ElementAtOrDefault(1) ??
                                url.Split('/').ElementAt(2);
-            this.IsLocal = !accountName.Contains('@');
+            this.IsLocal = !accountName.Contains("@");
             this.Name = displayName;
             this.IconUri = avatarUrl;
 		}
