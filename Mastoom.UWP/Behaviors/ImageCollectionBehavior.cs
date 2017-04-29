@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -97,12 +98,24 @@ namespace Mastoom.UWP.Behaviors
 
             foreach (var item in this.Attachments)
             {
-                images.Add(new Image
+                try
                 {
-                    MaxHeight = 100,
-                    Margin = new Thickness(0, 0, 8, 0),
-                    Source = new BitmapImage(new Uri(item.PreviewUrl)),
-                });
+                    images.Add(new Image
+                    {
+                        MaxHeight = 100,
+                        Margin = new Thickness(0, 0, 8, 0),
+                        Source = new BitmapImage(new Uri(item.PreviewUrl)),
+                    });
+                }
+                catch
+                {
+                    images.Add(new TextBlock
+                    {
+                        Foreground = new SolidColorBrush(Colors.Red),
+                        Text = "Error",
+                        Margin = new Thickness(0, 0, 8, 0),
+                    });
+                }
             }
 
 			// ついでに表示非表示を決める
