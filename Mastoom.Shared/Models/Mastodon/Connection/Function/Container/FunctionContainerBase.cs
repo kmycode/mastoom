@@ -55,6 +55,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
             this._function = await this.Counter.IncrementAsync();
             this.OnFunctionAllocated();
             this._function.Updated += this.OnFunctionUpdated;
+            this._function.Deleted += this.OnFunctionDeleted;
         }
 
         /// <summary>
@@ -127,6 +128,20 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
             GuiThread.Run(() =>
             {
                 this._objects.Add(e.Object);
+            });
+        }
+
+        /// <summary>
+        /// FunctionからOnDeleteイベントが呼び出される時に発行。
+        /// オーバーライド可能だが、コレクションへの追加処理のためにbase呼び出しを強く推奨
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected virtual void OnFunctionDeleted(object sender, ObjectFunctionEventArgs<T> e)
+        {
+            GuiThread.Run(() =>
+            {
+                this._objects.RemoveId(e.Object.Id);
             });
         }
     }

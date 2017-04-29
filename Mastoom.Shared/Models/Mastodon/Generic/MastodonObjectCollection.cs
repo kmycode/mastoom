@@ -96,6 +96,18 @@ namespace Mastoom.Shared.Models.Mastodon.Generic
             }
         }
 
+        public bool RemoveId(int id)
+        {
+            var existing = this.FindById(id);
+            if (existing != null)
+            {
+                this.Collection.Remove(existing);
+                this.DynamicLimited.Remove(existing);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// PageModeに入る
         /// </summary>
