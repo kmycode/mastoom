@@ -19,11 +19,11 @@ namespace Mastoom.Shared.Converters
 #else
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return this.Convert(value, targetType, parameter, culture.Name);
+            return this.Convert(value, targetType, parameter, culture?.Name);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return this.ConvertBack(value, targetType, parameter, culture.Name);
+            return this.ConvertBack(value, targetType, parameter, culture?.Name);
         }
 #endif
     }

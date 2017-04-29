@@ -107,7 +107,7 @@ namespace Mastoom.Behaviors
                 {
                     case TootSpan.SpanType.Text:
                         // 絵文字変換を忘れない
-                        span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, null);
+                        span.Text = (string)_emojiConverter.Convert(tootSpan.Text, typeof(string), null, (System.Globalization.CultureInfo)null);
                         inlines.Add(span);
                         break;
                     case TootSpan.SpanType.HyperLink:

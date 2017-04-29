@@ -1,8 +1,5 @@
 ﻿using Mastoom.Shared.Models.Mastodon.Status;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Windows.UI.Xaml.Data;
 
 namespace Mastoom.Shared.Converters
 {
