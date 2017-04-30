@@ -127,11 +127,16 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer)
-		{
+        internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer)
+        {
             this.InstanceUri = instanceUri;
-            this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
             this.container = functionContainer;
+            InitializeAsync();
+        }
+
+        private async void InitializeAsync()
+        {
+            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri);
 
             if (!this.Auth.HasAuthenticated)
             {
