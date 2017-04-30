@@ -23,5 +23,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// ホームタイムライン
         /// </summary>
         HomeTimeline,
+
+        /// <summary>
+        /// 通知
+        /// </summary>
+        Notification,
     }
 }

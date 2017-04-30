@@ -1,0 +1,39 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Mastoom.UWP.Views.Parts"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:b="using:Mastoom.UWP.Behaviors">
+
+    <!--通知で表示されるステータス（ふぁぼ、BT）-->
+    <DataTemplate x:Key="NotificationStatusTemplate">
+        <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!--アイコン表示-->
+            <Image Grid.Column="0" Grid.RowSpan="3"
+                   Width="72" Height="72" VerticalAlignment="Top"
+                   Source="{Binding Status.Account.IconUri}"/>
+
+            <StackPanel Grid.Column="1">
+                <!--名前表示-->
+                <StackPanel Margin="12,4,0,8" Orientation="Horizontal">
+                    <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
+                               Text="{Binding Status.Account.Name,Converter={StaticResource String2EmojiConv}}"/>
+                </StackPanel>
+
+                <!--コンテンツ表示部分-->
+                <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
+                           TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                           FontFamily="Meiryo">
+                     <i:Interaction.Behaviors>
+                         <b:HtmlTextBehavior Content="{Binding Status.Content,Converter={StaticResource String2EmojiConv}}"/>
+                     </i:Interaction.Behaviors>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

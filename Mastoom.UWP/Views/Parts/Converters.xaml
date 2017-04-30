@@ -1,0 +1,16 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Mastoom.UWP.Views.Parts"
+    xmlns:cv="using:Mastoom.Shared.Converters"
+    xmlns:cvu="using:Mastoom.UWP.Converters">
+
+    <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
+    <cv:DisplayTootSelectConverter x:Key="DisplayTootSelectConv"/>
+    <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
+    <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
+    <cvu:ConnectionType2GlyphConverter x:Key="ConnectionType2GlyphConv"/>
+    <cvu:MastodonStatus2BackgroundConverter x:Key="MastodonStatus2BackgroundConv"/>
+    <cvu:ConnectionType2VisibilityConverter x:Key="ConnectionType2VisibilityConv"/>
+    
+</ResourceDictionary>

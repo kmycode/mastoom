@@ -4,31 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace Mastoom.UWP.Converters
 {
-    class ConnectionType2GlyphConverter : IValueConverter
+    class ConnectionType2VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is ConnectionType && targetType == typeof(string))
+            if (value is ConnectionType && targetType == typeof(Visibility))
             {
-                var type = (ConnectionType)value;
-
-                switch (type)
+                switch ((ConnectionType)value)
                 {
-                    case ConnectionType.PublicTimeline:
-                        return "\uE128";
-                    case ConnectionType.LocalTimeline:
-                        return "\uE7C1";
                     case ConnectionType.HomeTimeline:
-                        return "\uE80F";
+                    case ConnectionType.LocalTimeline:
+                    case ConnectionType.PublicTimeline:
+                        return parameter.ToString() == "Status";
                     case ConnectionType.Notification:
-                        return "\uED0D";
+                        return parameter.ToString() == "Notification";
                 }
             }
-            throw new NotSupportedException();
+            throw new NotImplementedException();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

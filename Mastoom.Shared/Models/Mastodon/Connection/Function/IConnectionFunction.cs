@@ -23,16 +23,6 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// 受信を停止する
         /// </summary>
         Task StopAsync();
-
-        /// <summary>
-        /// １まとまり前のデータをサーバから取得する
-        /// </summary>
-        Task GetPrevAsync();
-
-        /// <summary>
-        /// １まとまり分、最新のデータをサーバから取得する
-        /// </summary>
-        Task GetNewerAsync();
     }
 
     /// <summary>
@@ -55,6 +45,16 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
         /// エラーが発生した時に発行
         /// </summary>
         event EventHandler<ObjectFunctionErrorEventArgs> Errored;
+
+        /// <summary>
+        /// １まとまり前のデータをサーバから取得する
+        /// </summary>
+        Task<IEnumerable<T>> GetPrevAsync(int maxId);
+
+        /// <summary>
+        /// １まとまり分、最新のデータをサーバから取得する
+        /// </summary>
+        Task<IEnumerable<T>> GetNewestAsync();
     }
 
     public class ObjectFunctionEventArgs<T> : EventArgs
@@ -64,31 +64,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function
 
     public class ObjectFunctionUpdateEventArgs<T> : ObjectFunctionEventArgs<T>
     {
-        public ObjectFunctionAdditionPosition Direction { get; set; }
-                        = ObjectFunctionAdditionPosition.Top;
     }
 
     public class ObjectFunctionErrorEventArgs : EventArgs
     {
         public ObjectFunctionErrorType Type { get; set; }
         public Exception Exception { get; set; }
-    }
-
-    /// <summary>
-    /// IConnectionFunctionがサーバから取得したオブジェクトについて、
-    /// もし新しく追加されたデータであれば、そのデータを追加する位置
-    /// </summary>
-    public enum ObjectFunctionAdditionPosition
-    {
-        /// <summary>
-        /// 上から順に追加
-        /// </summary>
-        Top,
-        
-        /// <summary>
-        /// 下から順に追加
-        /// </summary>
-        Bottom,
     }
 
     /// <summary>

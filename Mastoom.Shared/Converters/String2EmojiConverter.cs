@@ -3,23 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-#if WINDOWS_UWP
-using Windows.UI.Xaml.Data;
-#else
-using Xamarin.Forms;
-#endif
 
 namespace Mastoom.Shared.Converters
 {
-    public class String2EmojiConverter : IValueConverter
+    public class String2EmojiConverter : SharedConverterBase
     {
 		private static readonly Dictionary<String, EmojiSharp.Emoji> dic = EmojiSharp.Emoji.All;
 
-#if WINDOWS_UWP
-		public object Convert(object value, Type targetType, object parameter, string language)
-#else
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo info)
-#endif
+		public override object Convert(object value, Type targetType, object parameter, string language)
 		{
 			string text = value as string;
 			if (text != null && targetType == typeof(string))
@@ -58,11 +49,7 @@ namespace Mastoom.Shared.Converters
 			throw new NotSupportedException();
 		}
 
-#if WINDOWS_UWP
-		public object ConvertBack(object value, Type targetType, object parameter, string language)
-#else
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo info)
-#endif
+		public override object ConvertBack(object value, Type targetType, object parameter, string language)
 		{
 			throw new NotImplementedException();
 		}

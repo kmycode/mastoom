@@ -17,14 +17,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// <summary>
         /// すでに保管された認証
         /// </summary>
-        public static ReadOnlyObservableCollection<MastodonAuthentication> Authes => _authesCollection;
-        private static readonly ReadOnlyObservableCollection<MastodonAuthentication> _authesCollection;
+        public static ReadOnlyObservableCollection<MastodonAuthentication> Authes { get; }
         private static readonly ObservableCollection<MastodonAuthentication> _authes = new ObservableCollection<MastodonAuthentication>();
 
 
         static MastodonAuthenticationHouse()
         {
-            _authesCollection = new ReadOnlyObservableCollection<MastodonAuthentication>(_authes);
+            Authes = new ReadOnlyObservableCollection<MastodonAuthentication>(_authes);
         }
 
         /// <summary>

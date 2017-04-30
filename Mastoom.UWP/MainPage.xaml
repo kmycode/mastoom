@@ -5,11 +5,10 @@
     xmlns:local="using:Mastoom.UWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:cv="using:Mastoom.Shared.Converters"
-    xmlns:cvu="using:Mastoom.UWP.Converters"
     xmlns:vm="using:Mastoom.Shared.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:b="using:Mastoom.UWP.Behaviors"
+    xmlns:hp="using:Mastoom.UWP.Views.Helpers"
     mc:Ignorable="d">
 
     <Page.DataContext>
@@ -17,11 +16,6 @@
     </Page.DataContext>
 
     <Page.Resources>
-        <cv:String2EmojiConverter x:Key="String2EmojiConv"/>
-        <cvu:Boolean2VisibilityConverter x:Key="Boolean2VisibilityConv"/>
-        <cvu:Boolean2NegativeVisibilityConverter x:Key="Boolean2NegativeVisibilityConv"/>
-        <cvu:ConnectionType2GlyphConverter x:Key="ConnectionType2GlyphConv"/>
-        <cvu:MastodonStatus2BackgroundConverter x:Key="MastodonStatus2BackgroundConv"/>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
@@ -127,93 +121,30 @@
                         <!--タイムライン-->
                         <ScrollViewer Grid.Column="0" Grid.Row="2"
                                      VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
-                            <ItemsControl
-                                          ItemsSource="{Binding Activated.Statuses.DynamicLimited}"
-                                          Margin="20,0,20,0">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,0,0,12" Background="{Binding Converter={StaticResource MastodonStatus2BackgroundConv}}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
+                            <Grid>
 
-                                            <!--アイコン表示-->
-                                            <Image Grid.Column="0" Grid.RowSpan="3"
-                                                    Width="72" Height="72" VerticalAlignment="Top"
-                                                    Source="{Binding Account.IconUri}"/>
+                                <!--タイムラインの中身を表示-->
+                                <ItemsControl ItemsSource="{Binding Activated.TimelineObjects.DynamicLimited}"
+                                              Margin="20,0,20,0">
+                                    <ItemsControl.ItemTemplateSelector>
+                                        <hp:TimelineDataTemplateSelector/>
+                                    </ItemsControl.ItemTemplateSelector>
+                                </ItemsControl>
 
-                                            <StackPanel Grid.Column="1">
-                                                <!--名前表示-->
-                                                <StackPanel Margin="12,4,0,8"
-                                                            Orientation="Horizontal">
-                                                    <TextBlock Margin="0,0,12,0" FontWeight="Bold" FontSize="22"
-                                                               Text="{Binding Account.Name,Converter={StaticResource String2EmojiConv}}"/>
-                                                </StackPanel>
-
-                                                <!--コンテンツ表示部分-->
-                                                <TextBlock Margin="16,0,12,0" FontSize="20" VerticalAlignment="Top"
-                                                           TextWrapping="Wrap" IsTextSelectionEnabled="True"
-                                                           FontFamily="Meiryo">
-                                                    <i:Interaction.Behaviors>
-                                                        <b:HtmlTextBehavior Content="{Binding Content,Converter={StaticResource String2EmojiConv}}"/>
-                                                    </i:Interaction.Behaviors>
-                                                </TextBlock>
-
-                                                <!--画像表示部分-->
-                                                <StackPanel Margin="32,8,0,12" Orientation="Horizontal">
-                                                    <i:Interaction.Behaviors>
-                                                        <b:ImageCollectionBehavior Content="{Binding Content}"/>
-                                                    </i:Interaction.Behaviors>
-                                                </StackPanel>
-                                                
-                                                <!--コマンド表示部分-->
-                                                <StackPanel Margin="0,4,0,8" Orientation="Horizontal">
-                                                    
-                                                    <!--ふぁぼる-->
-                                                    <ToggleButton IsChecked="{Binding IsFavorited,Mode=TwoWay}"
-                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
-                                                                  Command="{Binding DataContext.Activated.ToggleFavoriteCommand,ElementName=ConnectionGrid}"
-                                                                  CommandParameter="{Binding}" Background="Transparent">
-                                                        <Grid>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CE;"
-                                                                      Foreground="Black" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE1CF;"
-                                                                      Foreground="#d7df01" Visibility="{Binding IsFavorited,Converter={StaticResource Boolean2VisibilityConv}}"/>
-                                                        </Grid>
-                                                    </ToggleButton>
-
-                                                    <!--ブースト-->
-                                                    <ToggleButton IsChecked="{Binding IsBoosted,Mode=TwoWay}"
-                                                                  Style="{StaticResource TransparentToggleButtonStyle}"
-                                                                  Command="{Binding DataContext.Activated.ToggleBoostCommand,ElementName=ConnectionGrid}"
-                                                                  CommandParameter="{Binding}" Background="Transparent">
-                                                        <Grid>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
-                                                                      Foreground="Black" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2NegativeVisibilityConv}}"/>
-                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8EB;"
-                                                                      Foreground="#045fb4" Visibility="{Binding IsBoosted,Converter={StaticResource Boolean2VisibilityConv}}"/>
-                                                        </Grid>
-                                                    </ToggleButton>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
+                            </Grid>
+                            
                             <i:Interaction.Behaviors>
-                                <b:TimelineScrollBehavior Collection="{Binding Activated.Statuses}"/>
+                                <b:TimelineScrollBehavior Collection="{Binding Activated.TimelineObjects}"/>
                             </i:Interaction.Behaviors>
                         </ScrollViewer>
                     
                         <!--タイムラインの上へ移動-->
                         <Border Grid.Row="2" Background="White" Margin="40,10,40,0"
                                 VerticalAlignment="Top"
-                                Visibility="{Binding Activated.Statuses.IsPageMode,Converter={StaticResource Boolean2VisibilityConv}}">
+                                Visibility="{Binding Activated.TimelineObjects.IsPageMode,Converter={StaticResource Boolean2VisibilityConv}}">
                             <Button Content="最新のトゥートを表示"
                                     Command="{Binding DataContext.ExitPageModeCommand,ElementName=Page}"
-                                    CommandParameter="{Binding Activated.Statuses}"
+                                    CommandParameter="{Binding Activated.TimelineObjects}"
                                     HorizontalAlignment="Stretch" Height="42"/>
                         </Border>
 

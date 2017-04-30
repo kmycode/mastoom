@@ -1,3 +1,4 @@
+using Mastoom.Shared.Models.Mastodon.Generic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,13 +8,8 @@ using System.Text;
 
 namespace Mastoom.Shared.Models.Mastodon.Account
 {
-    public class MastodonAccount : INotifyPropertyChanged
+    public class MastodonAccount : MastodonObject, INotifyPropertyChanged
     {
-		/// <summary>
-		/// ID（固有の数値）
-		/// </summary>
-		public int Id { get; }
-
         /// <summary>
         /// 実際に表示されるID
         /// </summary>
@@ -69,17 +65,16 @@ namespace Mastoom.Shared.Models.Mastodon.Account
 		}
 		private string _iconUri;
 
-		public MastodonAccount(int id)
+		public MastodonAccount(int id) : base(id)
 		{
-			this.Id = id;
 		}
-
-        internal MastodonAccount(int id, string accountName, string instanceUrl, bool isLocal, string displayName, string avatarUrl)
+        
+        internal MastodonAccount(int id, string accountName, string url, string displayName, string avatarUrl) : this(id)
 		{
-            this.Id = id;
             this.DisplayId = accountName;
-            this.InstanceUri = instanceUrl;
-            this.IsLocal = isLocal;
+            this.InstanceUri = accountName.Split('@').ElementAtOrDefault(1) ??
+                               url.Split('/').ElementAt(2);
+            this.IsLocal = !accountName.Contains("@");
             this.Name = displayName;
             this.IconUri = avatarUrl;
 		}

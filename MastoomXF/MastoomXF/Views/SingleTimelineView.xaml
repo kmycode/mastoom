@@ -32,11 +32,11 @@
                 Grid.Column="0" 
                 Grid.Row="0"
                 Text="{Binding ., Converter={StaticResource PlayConv}}"
-                IsVisible="{Binding Activated.Statuses.IsPageMode}"
+                IsVisible="{Binding Activated.TimelineObjects.IsPageMode}"
                 HorizontalOptions="FillAndExpand">
 
                 <Button.Behaviors>
-                    <b:NewArrivalStatusesBehavior Collection="{Binding Activated.Statuses}" />
+                    <b:NewArrivalStatusesBehavior Collection="{Binding Activated.TimelineObjects}" />
                 </Button.Behaviors>
             </Button>
             
@@ -46,8 +46,8 @@
                 Grid.Column="0" 
                 Grid.Row="2"
                 HasUnevenRows="true"
-                ef:ListViewScrollEffect.Collection="{Binding Activated.Statuses}"
-                ItemsSource="{Binding Activated.Statuses.DynamicLimited}">
+                ef:ListViewScrollEffect.Collection="{Binding Activated.TimelineObjects}"
+                ItemsSource="{Binding Activated.TimelineObjects.DynamicLimited}">
 
                 <ListView.ItemTemplate>
                     <DataTemplate>

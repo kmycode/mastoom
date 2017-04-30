@@ -1,4 +1,5 @@
-﻿using Mastoom.Shared.Models.Mastodon.Status;
+﻿using Mastoom.Shared.Models.Mastodon.Notification;
+using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +14,43 @@ namespace Mastoom.UWP.Converters
     class MastodonStatus2BackgroundConverter : IValueConverter
     {
         private static readonly Brush RebootBrush = new SolidColorBrush(new Color { R = 0x00, G = 0x80, B = 0x00, A = 0x20, });
+        private static readonly Brush ReplyBrush = new SolidColorBrush(new Color { R = 0x00, G = 0xc0, B = 0xf0, A = 0x20, });
+        private static readonly Brush FavoriteBrush = new SolidColorBrush(new Color { R = 0xa0, G = 0xa0, B = 0x00, A = 0x20, });
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var status = value as MastodonStatus;
-            if (status != null && targetType == typeof(Brush))
+            if (targetType == typeof(Brush))
             {
-                if (status.IsBoost)
+                var status = value as MastodonStatus;
+                if (status != null)
                 {
-                    return RebootBrush;
+                    if (status.IsBoost)
+                    {
+                        return RebootBrush;
+                    }
+                    else if (status.IsReply)
+                    {
+                        return ReplyBrush;
+                    }
+                    return null;
                 }
-                return null;
+                var notification = value as MastodonNotification;
+                if (notification != null)
+                {
+                    if (notification.Type == NotificationType.Boost)
+                    {
+                        return RebootBrush;
+                    }
+                    else if (notification.Type == NotificationType.Favorite)
+                    {
+                        return FavoriteBrush;
+                    }
+                    else if (notification.Type == NotificationType.Mention)
+                    {
+                        return ReplyBrush;
+                    }
+                    return null;
+                }
             }
             throw new NotSupportedException();
         }
