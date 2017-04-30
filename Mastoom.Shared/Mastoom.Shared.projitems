@@ -11,12 +11,36 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Common\Emoji.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\GuiThread.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DisplayTootSelectConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\SharedConverterBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\String2EmojiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Common\OAuthModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Account\MastodonAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\ConnectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCompositionCounter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\ConnectionFunctionCounter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\FunctionContainerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\IFunctionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\NotificationFunctionContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\Container\TimelineStreamFunctionContainers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\HomeTimelineFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\NotificationFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\TimelineFunctionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\InstanceAccessProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonAuthentication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonAuthenticationHouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\IConnectionFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\Function\PublicTimelineFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Connection\MastodonConnectionGroupCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Generic\ITimelineCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Generic\MastodonObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Generic\MastodonObjectCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\MastodonNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\MastodonNotificationCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Notification\NotificationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonStatusCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\PostStatusModel.cs" />
@@ -25,5 +49,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonAttachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Timer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\MastonetEntitiesExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OAuthAccessTokenRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Repositories\" />
   </ItemGroup>
 </Project>
