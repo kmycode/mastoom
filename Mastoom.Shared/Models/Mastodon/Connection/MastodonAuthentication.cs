@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Akavache;
-using System.Reactive.Linq;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -31,6 +29,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 認証する前のクライアント
         /// </summary>
         private AuthenticationClient preClient;
+
+        /// <summary>
+        /// 認証済 OAuth の AccessToken を保持するレポジトリ
+        /// </summary>
+        private readonly Mastoom.Shared.Repositories.OAuthAccessTokenRepository tokenRepo;
 
         #endregion
 
@@ -95,11 +98,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         #region メソッド
 
-        public MastodonAuthentication(string instanceUri, string accessToken)
+        public MastodonAuthentication(string instanceUri, string accessToken, Mastoom.Shared.Repositories.OAuthAccessTokenRepository tokenRepo)
         {
             this.InstanceUri = instanceUri;
             this.AccessToken = accessToken;
             this.appRegistration = this.GetAppRegistration();
+            this.tokenRepo = tokenRepo;
 
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -175,17 +179,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             if (!string.IsNullOrEmpty(this.AuthorizationCode))
             {
                 auth = await this.preClient.ConnectWithCode(this.AuthorizationCode);
-                await BlobCache.LocalMachine.InsertObject(this.InstanceUri, auth.AccessToken);
-                await BlobCache.LocalMachine.Flush();
+                await this.tokenRepo.Save(this.InstanceUri, auth.AccessToken);
             }
             else
             {
                 auth = new Auth
                 {
-                    AccessToken = this.AccessToken,
-                    TokenType = "bearer",
-                    Scope = "read write follow",
-                    CreatedAt = "1493312030"
+                    AccessToken = this.AccessToken
                 };
             }
 

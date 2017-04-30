@@ -50,8 +50,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Mastodon\Status\MastodonAttachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\MastonetEntitiesExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OAuthAccessTokenRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Repositories\" />
   </ItemGroup>
 </Project>

@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Mastoom.Shared.ViewModels.ViewModelBase;
+using Mastoom.Shared.Repositories;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -127,16 +128,16 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-        internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer)
+        internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer, OAuthAccessTokenRepository tokenRepo)
         {
             this.InstanceUri = instanceUri;
             this.container = functionContainer;
-            InitializeAsync();
+            InitializeAsync(tokenRepo);
         }
 
-        private async void InitializeAsync()
+        private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
         {
-            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri);
+            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
 
             if (!this.Auth.HasAuthenticated)
             {
