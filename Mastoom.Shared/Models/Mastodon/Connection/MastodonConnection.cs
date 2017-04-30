@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Mastoom.Shared.ViewModels.ViewModelBase;
+using Mastoom.Shared.Repositories;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -127,32 +128,27 @@ namespace Mastoom.Shared.Models.Mastodon
 
 		#region メソッド
 
-		internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer)
-		{
+        internal MastodonConnection(string instanceUri, IFunctionContainer functionContainer, OAuthAccessTokenRepository tokenRepo)
+        {
             this.InstanceUri = instanceUri;
-            this.Auth = MastodonAuthenticationHouse.Get(this.InstanceUri);
             this.container = functionContainer;
+            InitializeAsync(tokenRepo);
+        }
 
-            if (!this.Auth.HasAuthenticated)
-            {
-                // 認証完了した時の処理
-                this.Auth.Completed += (sender, e) =>
-                {
-                    this.ImportAuthenticationData();
-                    Task.Run(async () =>
-                    {
-                        await this.StartFunctionAsync();
-                    }).Wait();
-                };
+        private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
+        {
+            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
 
-                // 認証開始
-                this.Auth.StartOAuthLogin();
-            }
-            else
+            while (!this.Auth.HasAuthenticated)
             {
-                this.ImportAuthenticationData();
-                this.StartFunctionAsync();
+                await this.Auth.DoAuth(tokenRepo);
+
+                // TODO AccessToken が無効になってた場合にのみここに来るはず。
+                // AccessToken をクリアして、WebView で OAuth 認証からやり直す必要あり。
             }
+
+            this.ImportAuthenticationData();
+            await this.StartFunctionAsync();
         }
 
         private void ImportAuthenticationData()
@@ -171,7 +167,7 @@ namespace Mastoom.Shared.Models.Mastodon
             }
 
             await this.container.AllocateFunctionAsync(this.Auth);
-            this.container.GetNewestItemsAsync();
+            await this.container.GetNewestItemsAsync();
             await this.container.Function.StartAsync();
         }
 

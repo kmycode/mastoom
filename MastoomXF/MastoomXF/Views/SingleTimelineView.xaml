@@ -63,7 +63,8 @@
             <!--別画面にしたいな-->
             <WebView 
                 Grid.Row="1"
-                Grid.RowSpan="2" >
+                Grid.RowSpan="2" 
+				IsVisible="false">
                 <WebView.Behaviors>
                     <b:OAuthWebBehavior Helper="{Binding Activated.Auth.OAuthHelper}"/>
                 </WebView.Behaviors>

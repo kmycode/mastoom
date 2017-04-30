@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mastoom.Shared.Repositories;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -38,6 +39,11 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 認証が完了したか
         /// </summary>
         public bool HasAuthenticated { get; private set; }
+
+        /// <summary>
+        /// 認可コード。OAuth認証でリダイレクトされたURLに付いてくるやつ。
+        /// </summary>
+        public string AuthorizationCode { get; private set; }
 
         /// <summary>
         /// アクセストークン
@@ -88,61 +94,60 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         #region メソッド
 
-        public MastodonAuthentication(string instanceUri, string accessToken = null)
+        public MastodonAuthentication(string instanceUri, string accessToken)
         {
             this.InstanceUri = instanceUri;
             this.AccessToken = accessToken;
             this.appRegistration = this.GetAppRegistration();
+        }
 
-            if (string.IsNullOrEmpty(accessToken))
+        public Task DoAuth(OAuthAccessTokenRepository tokenRepo)
+        {
+            if (string.IsNullOrEmpty(this.AccessToken))
             {
+                var comp = new TaskCompletionSource<bool>();
+
                 // ヘルパがビヘイビアにアタッチされた時
                 this.OAuthHelper.Attached += (sender, e) =>
                 {
                     // すぐさまログインを開始
                     this.StartOAuthLogin();
                 };
+
+    			// ブラウザのURIが変わった時
+    			this.OAuthHelper.UriNavigated += async (sender, e) =>
+    			{
+                        
+                	try
+                	{
+                		if (e.Uri.Contains("/oauth/authorize/"))
+                		{
+                			var paths = e.Uri.Split('/');
+                			this.AuthorizationCode = paths.Last();
+
+                			await this.CreateClientAsync(tokenRepo);
+
+                			this.OAuthHelper.Hide();
+                            this.HasAuthenticated = true;
+                            comp.SetResult(true);
+                		}
+                	}
+                	catch
+                	{
+                		this.HasAuthenticated = false;
+                        comp.SetResult(false);
+                	}
+                };
+
+                return comp.Task;
             }
             else
             {
-                Task.Run(async () =>
+                return this.CreateClientAsync(tokenRepo).ContinueWith(t =>
                 {
-                    try
-                    {
-                        await this.CreateClientAsync();
-                        this.HasAuthenticated = true;
-                    }
-                    catch
-                    {
-                        this.HasAuthenticated = false;
-                    }
+                    this.HasAuthenticated = t.Result;
                 });
             }
-
-            // ブラウザのURIが変わった時
-            this.OAuthHelper.UriNavigated += async (sender, e) =>
-            {
-                try
-                {
-                    if (e.Uri.Contains("/oauth/authorize/"))
-                    {
-                        var paths = e.Uri.Split('/');
-                        this.AccessToken = paths.Last();
-
-                        await this.CreateClientAsync();
-
-                        this.OAuthHelper.Hide();
-                        this.HasAuthenticated = true;
-                        this.Completed?.Invoke(this, new EventArgs());
-                    }
-                }
-                catch
-                {
-                    this.HasAuthenticated = false;
-                    this.OnError?.Invoke(this, new EventArgs());
-                }
-            };
-
         }
 
         private AppRegistration GetAppRegistration()
@@ -162,11 +167,33 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             return appRegistration;
         }
 
-        private async Task CreateClientAsync()
+        private async Task<bool> CreateClientAsync(OAuthAccessTokenRepository tokenRepo)
         {
-            var auth = await this.preClient.ConnectWithCode(this.AccessToken);
+            Auth auth;
+            if (!string.IsNullOrEmpty(this.AuthorizationCode))
+            {
+                auth = await this.preClient.ConnectWithCode(this.AuthorizationCode);
+                await tokenRepo.Save(this.InstanceUri, auth.AccessToken);
+            }
+            else
+            {
+                auth = new Auth
+                {
+                    AccessToken = this.AccessToken
+                };
+            }
+
             this.Client = new MastodonClient(this.appRegistration, auth);
-            this.CurrentUser = (await this.Client.GetCurrentUser()).ToMastodonAccount();
+
+            var user = await this.Client.GetCurrentUser();
+
+            // 自分のアカウント名が取得できてなかったら失敗とする
+            if (string.IsNullOrEmpty(user?.AccountName))
+            {
+                return false;
+            }
+
+            this.CurrentUser = user.ToMastodonAccount();
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
             {
@@ -183,29 +210,17 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
             this.NotificationStreamingFunctionCounter = new ConnectionFunctionCompositionCounter<MastodonNotification, MastodonStatus>(
                 new NotificationFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
-                );
+            );
+
+            return true;
         }
 
-        public void StartOAuthLogin()
+        private void StartOAuthLogin()
         {
             this.OAuthHelper.Show();
             this.preClient = new AuthenticationClient(this.appRegistration);
             this.OAuthHelper.NavigateRequest(this.preClient.OAuthUrl());
         }
-
-        #endregion
-
-        #region イベント
-
-        /// <summary>
-        /// 認証が完了した時に発行
-        /// </summary>
-        public EventHandler Completed;
-
-        /// <summary>
-        /// エラー発生した時に発行
-        /// </summary>
-        public EventHandler OnError;
 
         #endregion
     }
