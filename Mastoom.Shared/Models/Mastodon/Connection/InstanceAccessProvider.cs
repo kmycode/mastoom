@@ -30,6 +30,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 					StreamingInstance = "streaming.mstdn.jp",
 				};
 			}
+            else if (uri == "mastodon.cloud")
+            {
+                return new InstanceAccessData
+                {
+                    ClientId = "3b7a7f9a3e243aaaaa19d6fcdf18a090c34434f1a510af49d520f9b0a6533ae7",
+                    ClientSecret = "20e436f32ab88be72e2ff2d0492f02dbf624cae55018d58768ae0fa8aff89c54"
+                };
+            }
 
 			return null;
 		}
