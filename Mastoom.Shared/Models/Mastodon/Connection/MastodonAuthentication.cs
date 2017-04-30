@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mastoom.Shared.Repositories;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -33,7 +34,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// <summary>
         /// 認証済 OAuth の AccessToken を保持するレポジトリ
         /// </summary>
-        private readonly Mastoom.Shared.Repositories.OAuthAccessTokenRepository tokenRepo;
+        private readonly OAuthAccessTokenRepository tokenRepo;
 
         #endregion
 
@@ -98,62 +99,63 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         #region メソッド
 
-        public MastodonAuthentication(string instanceUri, string accessToken, Mastoom.Shared.Repositories.OAuthAccessTokenRepository tokenRepo)
+        public MastodonAuthentication(string instanceUri, string accessToken, OAuthAccessTokenRepository tokenRepo)
         {
             this.InstanceUri = instanceUri;
             this.AccessToken = accessToken;
             this.appRegistration = this.GetAppRegistration();
             this.tokenRepo = tokenRepo;
+        }
 
-            if (string.IsNullOrEmpty(accessToken))
+        public Task DoAuth()
+        {
+            if (string.IsNullOrEmpty(this.AccessToken))
             {
+                var comp = new TaskCompletionSource<bool>();
+
                 // ヘルパがビヘイビアにアタッチされた時
                 this.OAuthHelper.Attached += (sender, e) =>
                 {
                     // すぐさまログインを開始
                     this.StartOAuthLogin();
                 };
+
+    			// ブラウザのURIが変わった時
+    			this.OAuthHelper.UriNavigated += async (sender, e) =>
+    			{
+                        
+                	try
+                	{
+                		if (e.Uri.Contains("/oauth/authorize/"))
+                		{
+                			var paths = e.Uri.Split('/');
+                			this.AuthorizationCode = paths.Last();
+
+                			await this.CreateClientAsync();
+
+                			this.OAuthHelper.Hide();
+                            this.HasAuthenticated = true;
+                			this.Completed?.Invoke(this, new EventArgs());
+                            comp.SetResult(true);
+                		}
+                	}
+                	catch
+                	{
+                		this.HasAuthenticated = false;
+                		this.OnError?.Invoke(this, new EventArgs());
+                        comp.SetResult(false);
+                	}
+                };
+
+                return comp.Task;
             }
             else
             {
-                Task.Run(async () =>
+                return this.CreateClientAsync().ContinueWith(t =>
                 {
-                    try
-                    {
-                        await this.CreateClientAsync();
-                        this.HasAuthenticated = true;
-                    }
-                    catch
-                    {
-                        this.HasAuthenticated = false;
-                    }
-                }).Wait();
+                    this.HasAuthenticated = t.Result;
+                });
             }
-
-            // ブラウザのURIが変わった時
-            this.OAuthHelper.UriNavigated += async (sender, e) =>
-            {
-                try
-                {
-                    if (e.Uri.Contains("/oauth/authorize/"))
-                    {
-                        var paths = e.Uri.Split('/');
-                        this.AuthorizationCode = paths.Last();
-
-                        await this.CreateClientAsync();
-
-                        this.OAuthHelper.Hide();
-                        this.HasAuthenticated = true;
-                        this.Completed?.Invoke(this, new EventArgs());
-                    }
-                }
-                catch
-                {
-                    this.HasAuthenticated = false;
-                    this.OnError?.Invoke(this, new EventArgs());
-                }
-            };
-
         }
 
         private AppRegistration GetAppRegistration()
@@ -173,7 +175,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             return appRegistration;
         }
 
-        private async Task CreateClientAsync()
+        private async Task<bool> CreateClientAsync()
         {
             Auth auth;
             if (!string.IsNullOrEmpty(this.AuthorizationCode))
@@ -192,6 +194,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this.Client = new MastodonClient(this.appRegistration, auth);
 
             var user = await this.Client.GetCurrentUser();
+
+            // 自分のアカウント名が取得できてなかったら失敗とする
+            if (string.IsNullOrEmpty(user?.AccountName))
+            {
+                return false;
+            }
+
             this.CurrentUser = user.ToMastodonAccount();
 
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
@@ -209,7 +218,9 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
             this.NotificationStreamingFunctionCounter = new ConnectionFunctionCompositionCounter<MastodonNotification, MastodonStatus>(
                 new NotificationFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
-                );
+            );
+
+            return true;
         }
 
         public void StartOAuthLogin()

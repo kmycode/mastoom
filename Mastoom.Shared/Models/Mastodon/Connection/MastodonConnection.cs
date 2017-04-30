@@ -138,17 +138,15 @@ namespace Mastoom.Shared.Models.Mastodon
         private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
         {
             this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
+            await this.Auth.DoAuth();
 
             if (!this.Auth.HasAuthenticated)
             {
                 // 認証完了した時の処理
-                this.Auth.Completed += (sender, e) =>
+                this.Auth.Completed += async (sender, e) =>
                 {
                     this.ImportAuthenticationData();
-                    Task.Run(async () =>
-                    {
-                        await this.StartFunctionAsync();
-                    }).Wait();
+                    await this.StartFunctionAsync();
                 };
 
                 // 認証開始
@@ -157,7 +155,7 @@ namespace Mastoom.Shared.Models.Mastodon
             else
             {
                 this.ImportAuthenticationData();
-                this.StartFunctionAsync();
+                await this.StartFunctionAsync();
             }
         }
 
