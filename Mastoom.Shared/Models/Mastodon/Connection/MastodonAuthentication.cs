@@ -129,14 +129,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
                 			this.OAuthHelper.Hide();
                             this.HasAuthenticated = true;
-                			this.Completed?.Invoke(this, new EventArgs());
                             comp.SetResult(true);
                 		}
                 	}
                 	catch
                 	{
                 		this.HasAuthenticated = false;
-                		this.OnError?.Invoke(this, new EventArgs());
                         comp.SetResult(false);
                 	}
                 };
@@ -217,26 +215,12 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             return true;
         }
 
-        public void StartOAuthLogin()
+        private void StartOAuthLogin()
         {
             this.OAuthHelper.Show();
             this.preClient = new AuthenticationClient(this.appRegistration);
             this.OAuthHelper.NavigateRequest(this.preClient.OAuthUrl());
         }
-
-        #endregion
-
-        #region イベント
-
-        /// <summary>
-        /// 認証が完了した時に発行
-        /// </summary>
-        public EventHandler Completed;
-
-        /// <summary>
-        /// エラー発生した時に発行
-        /// </summary>
-        public EventHandler OnError;
 
         #endregion
     }

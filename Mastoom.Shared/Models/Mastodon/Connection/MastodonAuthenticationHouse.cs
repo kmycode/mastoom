@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mastoom.Shared.Repositories;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -31,7 +32,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// </summary>
         /// <param name="instanceUri">インスタンスURI</param>
         /// <returns>認証情報</returns>
-        public async static Task<MastodonAuthentication> Get(string instanceUri, Mastoom.Shared.Repositories.OAuthAccessTokenRepository tokenRepo)
+        public async static Task<MastodonAuthentication> Get(string instanceUri, OAuthAccessTokenRepository tokenRepo)
         {
             var auth = Authes.SingleOrDefault(a => a.InstanceUri == instanceUri);
             if (auth != null)
