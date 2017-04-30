@@ -138,7 +138,7 @@ namespace Mastoom.Shared.Models.Mastodon
         private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
         {
             this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
-            await this.Auth.DoAuth();
+            await this.Auth.DoAuth(tokenRepo);
 
             if (!this.Auth.HasAuthenticated)
             {

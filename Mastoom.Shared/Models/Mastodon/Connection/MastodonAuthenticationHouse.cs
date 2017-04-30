@@ -41,7 +41,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             else
             {
                 var accessToken = await tokenRepo.Load(instanceUri);
-                var newAuth = new MastodonAuthentication(instanceUri, accessToken, tokenRepo);
+                var newAuth = new MastodonAuthentication(instanceUri, accessToken);
                 _authes.Add(newAuth);
                 return newAuth;
             }

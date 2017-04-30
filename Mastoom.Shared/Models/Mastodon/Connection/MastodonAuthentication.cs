@@ -31,11 +31,6 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// </summary>
         private AuthenticationClient preClient;
 
-        /// <summary>
-        /// 認証済 OAuth の AccessToken を保持するレポジトリ
-        /// </summary>
-        private readonly OAuthAccessTokenRepository tokenRepo;
-
         #endregion
 
         #region プロパティ
@@ -99,15 +94,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
         #region メソッド
 
-        public MastodonAuthentication(string instanceUri, string accessToken, OAuthAccessTokenRepository tokenRepo)
+        public MastodonAuthentication(string instanceUri, string accessToken)
         {
             this.InstanceUri = instanceUri;
             this.AccessToken = accessToken;
             this.appRegistration = this.GetAppRegistration();
-            this.tokenRepo = tokenRepo;
         }
 
-        public Task DoAuth()
+        public Task DoAuth(OAuthAccessTokenRepository tokenRepo)
         {
             if (string.IsNullOrEmpty(this.AccessToken))
             {
@@ -131,7 +125,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
                 			var paths = e.Uri.Split('/');
                 			this.AuthorizationCode = paths.Last();
 
-                			await this.CreateClientAsync();
+                			await this.CreateClientAsync(tokenRepo);
 
                 			this.OAuthHelper.Hide();
                             this.HasAuthenticated = true;
@@ -151,7 +145,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             }
             else
             {
-                return this.CreateClientAsync().ContinueWith(t =>
+                return this.CreateClientAsync(tokenRepo).ContinueWith(t =>
                 {
                     this.HasAuthenticated = t.Result;
                 });
@@ -175,13 +169,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             return appRegistration;
         }
 
-        private async Task<bool> CreateClientAsync()
+        private async Task<bool> CreateClientAsync(OAuthAccessTokenRepository tokenRepo)
         {
             Auth auth;
             if (!string.IsNullOrEmpty(this.AuthorizationCode))
             {
                 auth = await this.preClient.ConnectWithCode(this.AuthorizationCode);
-                await this.tokenRepo.Save(this.InstanceUri, auth.AccessToken);
+                await tokenRepo.Save(this.InstanceUri, auth.AccessToken);
             }
             else
             {
