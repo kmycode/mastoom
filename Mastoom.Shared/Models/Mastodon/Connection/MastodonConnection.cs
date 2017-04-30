@@ -138,25 +138,17 @@ namespace Mastoom.Shared.Models.Mastodon
         private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
         {
             this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
-            await this.Auth.DoAuth(tokenRepo);
 
-            if (!this.Auth.HasAuthenticated)
+            while (!this.Auth.HasAuthenticated)
             {
-                // 認証完了した時の処理
-                this.Auth.Completed += async (sender, e) =>
-                {
-                    this.ImportAuthenticationData();
-                    await this.StartFunctionAsync();
-                };
+                await this.Auth.DoAuth(tokenRepo);
 
-                // 認証開始
-                this.Auth.StartOAuthLogin();
+                // TODO AccessToken が無効になってた場合にのみここに来るはず。
+                // AccessToken をクリアして、WebView で OAuth 認証からやり直す必要あり。
             }
-            else
-            {
-                this.ImportAuthenticationData();
-                await this.StartFunctionAsync();
-            }
+
+            this.ImportAuthenticationData();
+            await this.StartFunctionAsync();
         }
 
         private void ImportAuthenticationData()
@@ -175,7 +167,7 @@ namespace Mastoom.Shared.Models.Mastodon
             }
 
             await this.container.AllocateFunctionAsync(this.Auth);
-            this.container.GetNewestItemsAsync();
+            await this.container.GetNewestItemsAsync();
             await this.container.Function.StartAsync();
         }
 
