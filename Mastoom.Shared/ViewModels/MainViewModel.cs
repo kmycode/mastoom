@@ -1,5 +1,4 @@
 ﻿using Mastoom.Shared.Models.Mastodon.Connection;
-using Mastoom.Shared.Models.Mastodon.Generic;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -11,10 +10,22 @@ namespace Mastoom.Shared.ViewModels
     {
 		#region プロパティ
 
-		/// <summary>
-		/// 接続グループ一覧
+        public string Test => "sample";
+
+        /// <summary>
+		/// 接続先一覧
 		/// </summary>
-		public MastodonConnectionGroupCollection Groups { get; } = new MastodonConnectionGroupCollection();
+		public MastodonConnectionCollection Connections { get; } = new MastodonConnectionCollection();
+
+		/// <summary>
+		/// メインとなる接続先のステータス一覧
+		/// </summary>
+		public MastodonStatusCollection MainStatuses => this.Connections.Main?.Statuses;
+
+		/// <summary>
+		/// ステータス投稿のモデル
+		/// </summary>
+		public PostStatusModel PostStatus => this.Connections.Main?.PostStatus;
 
 		#endregion
 
@@ -22,12 +33,16 @@ namespace Mastoom.Shared.ViewModels
 
 		public MainViewModel()
 		{
-			this.Groups.AddTestConnection();
+			this.Connections.PropertyChanged += this.RaisePropertyChanged;
+
+			this.Connections.AddTestConnection();
+
+			this.Connections.Main.PropertyChanged += this.RaisePropertyChanged;
 		}
 
 		#endregion
 
-		#region コマンド
+		#region Commands
 
         /// <summary>
         /// Post new status (toot)
@@ -47,17 +62,18 @@ namespace Mastoom.Shared.ViewModels
         /// <summary>
         /// Exit page mode
         /// </summary>
-        public RelayCommand<ITimelineCollection> ExitPageModeCommand
+        public RelayCommand<MastodonStatusCollection> ExitPageModeCommand
         {
             get
             {
-                return this._exitPageModeCommand = this._exitPageModeCommand ?? new RelayCommand<ITimelineCollection>((collection) =>
+                return this._exitPageModeCommand = this._exitPageModeCommand ?? new RelayCommand<MastodonStatusCollection>((collection) =>
                 {
                     collection.ExitPageMode();
                 });
             }
         }
-        private RelayCommand<ITimelineCollection> _exitPageModeCommand;
+        private RelayCommand<MastodonStatusCollection> _exitPageModeCommand;
+
 
         #endregion
     }

@@ -1,7 +1,6 @@
 ﻿using Mastonet;
 using Mastoom.Shared.Common;
 using Mastoom.Shared.Models.Mastodon.Account;
-using Mastoom.Shared.Models.Mastodon.Generic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,32 +14,17 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 	/// <summary>
 	/// Mastodonのステータス
 	/// </summary>
-    public class MastodonStatus : MastodonObject, INotifyPropertyChanged
+    public class MastodonStatus : INotifyPropertyChanged
     {
+		/// <summary>
+		/// ステータスのID
+		/// </summary>
+		public int Id { get; }
+
 		/// <summary>
 		/// アカウント
 		/// </summary>
 		public MastodonAccount Account { get; }
-
-        /// <summary>
-        /// 自分の発言であるか
-        /// </summary>
-        public bool IsMyStatus
-        {
-            get
-            {
-                return this._isMyStatus;
-            }
-            set
-            {
-                if (this._isMyStatus != value)
-                {
-                    this._isMyStatus = value;
-                    this.OnPropertyChanged();
-                }
-            }
-        }
-        private bool _isMyStatus;
 
         /// <summary>
         /// これはブーストされた書き込みであるか
@@ -112,75 +96,98 @@ namespace Mastoom.Shared.Models.Mastodon.Status
         }
         private bool _isBoosted;
 
-        /// <summary>
-        /// ブーストしたトゥート
-        /// </summary>
-        public MastodonStatus Boost { get; }
-
-        /// <summary>
-        /// リプライであるか
-        /// </summary>
-        public bool IsReply { get; }
-
-        /// <summary>
-        /// リプライ先のStatusのID
-        /// </summary>
-        public int ReplyToId { get; }
-
-        /// <summary>
-        /// リプライ先のアカウントのID
-        /// </summary>
-        public int ReplyToAccountId { get; }
-
 		/// <summary>
 		/// 添付メディア(画像など)群
 		/// </summary>
 		/// <value>The media attachments.</value>
-		public IEnumerable<MastodonAttachment> MediaAttachments { get; }
+		public IEnumerable<MastodonAttachment> MediaAttachments
+		{
+			get { return _mediaAttachments; }
+			private set
+			{
+				_mediaAttachments = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private IEnumerable<MastodonAttachment> _mediaAttachments;
 
 		/// <summary>
 		/// タグ群
 		/// </summary>
 		/// <value>The tags.</value>
-		public IEnumerable<MastodonTag> Tags { get; }
-        
-        /// <summary>
-        /// 投稿日時
-        /// </summary>
-		public DateTime CreatedAt { get; }
+		public IEnumerable<MastodonTag> Tags
+		{
+			get { return _tags; }
+			private set
+			{
+				_tags = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private IEnumerable<MastodonTag> _tags;
+
+		/// <summary>
+		/// URL
+		/// </summary>
+		/// <value>The URL.</value>
+		public string Url
+		{
+			get { return _url; }
+			private set
+			{
+				_url = value;
+				this.OnPropertyChanged();
+			}
+		}
+		private string _url;
+
+
+		private DateTime _createdAt;
+		public DateTime CreatedAt
+		{
+			get { return _createdAt; }
+			private set
+			{
+				if (_createdAt == value)
+				{
+					return;
+				}
+				_createdAt = value;
+				this.OnPropertyChanged();
+			}
+		}
 
         #region メソッド
 
-        internal MastodonStatus(int id, MastodonAccount account) : base(id)
+        public MastodonStatus(int id, MastodonAccount account)
 		{
+			this.Id = id;
 			this.Account = account;
 		}
-
-        internal MastodonStatus(int id, MastodonAccount account, string content,
-                                bool reblogged, bool favorited, MastodonStatus reblog,
-                                int? replyToId, int? replyToAccountId,
-                                IEnumerable<MastodonAttachment> mediaAttachments, IEnumerable<MastodonTag> tags,
-                                DateTime createdAt) : this(id, account)
+        
+		public MastodonStatus(Mastonet.Entities.Status status)
         {
-            if (reblog != null)
+            // ブーストされたトゥートの場合でも、ブーストした人が取得したIDを設定する
+            // （元のトゥートとブースト分のトゥート、両方同じTLに表示するため）
+            this.Id = status.Id;
+
+            // ブーストされたトゥートの場合、ここから先はブースト対象のトゥートのデータを設定する
+            if (status.Reblog != null)
             {
-                this.BoostedId = reblog.Id;
+                this.BoostedId = status.Reblog.Id;
+                status = status.Reblog;
                 this.IsBoost = true;
             }
 
-        	this.Content = content;
-        	this.IsFavorited = favorited;
-        	this.IsBoosted = reblogged;
-            this.Boost = reblog;
-            this.Account = account;
-            this.IsReply = replyToAccountId != null || replyToId != null;
-            this.ReplyToId = replyToId ?? 0;
-            this.ReplyToAccountId = replyToAccountId ?? 0;
-            this.MediaAttachments = mediaAttachments;
-            this.Tags = tags;
-            this.CreatedAt = createdAt;
-        }
-        
+            this.Content = status.Content;
+            this.IsFavorited = status.Favourited ?? false;
+            this.IsBoosted = status.Reblogged ?? false;
+			this.Account = new MastodonAccount(status.Account);
+			this.MediaAttachments = status.MediaAttachments.Select(x => new MastodonAttachment(x));
+            this.Tags = status.Tags.Select(x => new MastodonTag(x));
+			this.Url = status.Url;
+		}
+
 		public void CopyTo(MastodonStatus to)
 		{
 			if (to.Id != this.Id)
@@ -190,6 +197,9 @@ namespace Mastoom.Shared.Models.Mastodon.Status
 			to.Content = this.Content;
             to.IsFavorited = this.IsFavorited;
             to.IsBoosted = this.IsBoosted;
+            to.MediaAttachments = this.MediaAttachments.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
+            to.Tags = this.Tags.Select(x => x); // なんとなくIEnumerableのガワだけ生成しなおし
+			to.Url = this.Url;
 		}
 
         #endregion
@@ -206,8 +216,9 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             bool isSucceed = false;
             try
             {
-                var newStatus = 
-                    (!this.IsFavorited ? await client.Favourite(this.Id) : await client.Unfavourite(this.Id)).ToMastodonStatus();
+                var newStatus = new MastodonStatus(
+                    !this.IsFavorited ? await client.Favourite(this.Id) : await client.Unfavourite(this.Id)
+                    );
                 isSucceed = true;
             }
             catch { }
@@ -230,8 +241,9 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             bool isSucceed = false;
             try
             {
-                var newStatus = 
-                    (!this.IsBoosted ? await client.Reblog(this.Id) : await client.Unreblog(this.Id)).ToMastodonStatus();
+                var newStatus = new MastodonStatus(
+                    !this.IsBoosted ? await client.Reblog(this.Id) : await client.Unreblog(this.Id)
+                    );
                 isSucceed = true;
             }
             catch { }
@@ -240,24 +252,6 @@ namespace Mastoom.Shared.Models.Mastodon.Status
             {
                 this.IsBoosted ^= true;
             }
-
-            return isSucceed;
-        }
-
-        /// <summary>
-        /// 発言を削除する
-        /// </summary>
-        /// <param name="client">クライアント</param>
-        /// <returns>成功したかどうか</returns>
-        public async Task<bool> DeleteAsync(MastodonClient client)
-        {
-            bool isSucceed = false;
-            try
-            {
-                await client.DeleteStatus(this.Id);
-                isSucceed = true;
-            }
-            catch { }
 
             return isSucceed;
         }

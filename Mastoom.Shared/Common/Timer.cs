@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Mastoom.Shared.Common
 {
 	/// <summary>
-	/// System.Threading.Timer クラスが Xamarin.Forms で使えないので分岐するためのラッパー
+	/// Timer クラスが Xamarin.Forms で使えないので分岐するためのラッパー
 	/// </summary>
 	/// <remarks>
 	/// Xamarin.Forms側は Task.Delay 使ってみたけど、これはプラットフォーム非依存だから、
@@ -13,11 +13,11 @@ namespace Mastoom.Shared.Common
 	public class Timer
 	{
 #if WINDOWS_UWP
-        private readonly System.Threading.Timer _timer;
+        private readonly Timer _timer;
 
         public Timer(Action<object> callback, object state, int dueTime, int period)
         {
-            _timer = new System.Threading.Timer(s => callback?.Invoke(s), state, dueTime, period);
+            _timer = new Timer(s => callback?.Invoke(s), state, dueTime, period);
         }
 
         public bool Change(int dueTime, int period)
