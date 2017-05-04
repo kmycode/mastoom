@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using CarouselView.FormsPlugin.Android;
+using System.Net;
 
 namespace Mastoom.Droid
 {
@@ -23,6 +24,8 @@ namespace Mastoom.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             base.OnCreate(bundle);
 

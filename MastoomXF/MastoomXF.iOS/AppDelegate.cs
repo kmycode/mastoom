@@ -4,6 +4,7 @@ using System.Linq;
 using CarouselView.FormsPlugin.iOS;
 using Foundation;
 using UIKit;
+using System.Net;
 
 namespace Mastoom.iOS
 {
@@ -12,6 +13,8 @@ namespace Mastoom.iOS
     {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             global::Xamarin.Forms.Forms.Init();
             CarouselViewRenderer.Init();
             LoadApplication(new App());
