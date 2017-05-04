@@ -24,23 +24,22 @@ namespace Mastoom.Shared.Converters
                 Regex myRegex = new Regex(strRegex, RegexOptions.None);
                 string strTargetString = text;
 
-                var succeedMatches = myRegex.Matches(strTargetString).OfType<Match>().Where(mt => mt.Success);
-                foreach (Match myMatch in succeedMatches)
+                var succeedMatchGroups = myRegex.Matches(strTargetString)
+                                                .OfType<Match>().Where(mt => mt.Success)
+                                                .SelectMany(mt => mt.Groups.OfType<Group>());
+                foreach (Group group in succeedMatchGroups)
                 {
-                    foreach (Group group in myMatch.Groups)
-                    {
-                        var key = group.Value.Substring(1, group.Value.Length - 2);
+                    var key = group.Value.Substring(1, group.Value.Length - 2);
 
-                        if (dic.ContainsKey(key))
+                    if (dic.ContainsKey(key))
+                    {
+                        var charCodes = dic[key].Unified.Split('-');
+                        var newString = "";
+                        foreach (var code in charCodes)
                         {
-                            var charCodes = dic[key].Unified.Split('-');
-                            var newString = "";
-                            foreach (var code in charCodes)
-                            {
-                                newString += ((char)(System.Convert.ToInt32(code, 16))).ToString();
-                            }
-                            text = text.Replace(group.Value, newString);
+                            newString += ((char)(System.Convert.ToInt32(code, 16))).ToString();
                         }
+                        text = text.Replace(group.Value, newString);
                     }
                 }
 
