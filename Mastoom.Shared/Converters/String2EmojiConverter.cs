@@ -20,7 +20,7 @@ namespace Mastoom.Shared.Converters
 					return text;
 				}
 
-                string strRegex = @":(.[a-zA-Z0-9_]+):";
+                string strRegex = @":([a-zA-Z0-9_]+):";
                 Regex myRegex = new Regex(strRegex, RegexOptions.None);
                 string strTargetString = text;
 
