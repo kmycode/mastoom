@@ -81,13 +81,14 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
             {
                 var items = (await this._function.GetNewestAsync()).Reverse();
 
-                GuiThread.Run(() =>
+                foreach (var item in items)
                 {
-                    foreach (var item in items)
+                    // 直接Addではなく、オーバーライド可能なOnFunctionUpdatedを経由して、サブクラス独自の加工処理を通す
+                    this.OnFunctionUpdated(this, new ObjectFunctionEventArgs<T>
                     {
-                        this._objects.Add(item);
-                    }
-                });
+                        Object = item,
+                    });
+                }
             }
             catch (Exception e)
             {
