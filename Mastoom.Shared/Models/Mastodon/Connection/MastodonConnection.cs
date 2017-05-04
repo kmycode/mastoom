@@ -20,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Mastoom.Shared.ViewModels.ViewModelBase;
 using Mastoom.Shared.Repositories;
+using Mastoom.Shared.Models.Mastodon.Connection.Frame;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -123,6 +124,12 @@ namespace Mastoom.Shared.Models.Mastodon
 			}
 		}
 		private PostStatusModel _postStatus;
+
+        /// <summary>
+        /// 画面遷移を制御するモデル。
+        /// これを利用して、トゥートの詳細などを表示する
+        /// </summary>
+        public ConnectionFrameStackModel FrameStack { get; } = new ConnectionFrameStackModel();
 
 		#endregion
 
@@ -243,6 +250,32 @@ namespace Mastoom.Shared.Models.Mastodon
             }
         }
         private RelayCommand<MastodonStatus> _deleteCommand;
+
+        public RelayCommand<MastodonStatus> ShowStatusDetailCommand
+        {
+            get
+            {
+                return this._showStatusDetailCommand = this._showStatusDetailCommand ?? new RelayCommand<MastodonStatus>((status) =>
+                {
+                    var frame = new TootDetailFrame(status.Id);
+                    frame.LoadAsync(this.client);
+                    this.FrameStack.Push(frame);
+                });
+            }
+        }
+        private RelayCommand<MastodonStatus> _showStatusDetailCommand;
+
+        public RelayCommand BackFrameCommand
+        {
+            get
+            {
+                return this._backFrameCommand = this._backFrameCommand ?? new RelayCommand(() =>
+                {
+                    this.FrameStack.Pop();
+                });
+            }
+        }
+        private RelayCommand _backFrameCommand;
 
         #endregion
     }
