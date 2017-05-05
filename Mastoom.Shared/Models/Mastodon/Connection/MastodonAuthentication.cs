@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mastoom.Shared.Repositories;
+using Mastoom.Shared.Models.Mastodon.Generic;
 
 namespace Mastoom.Shared.Models.Mastodon.Connection
 {
@@ -89,7 +90,7 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 通知へアクセスする機能のカウンタ
         /// </summary>
         public ConnectionFunctionCounterBase<MastodonNotification> NotificationStreamingFunctionCounter { get; private set; }
-
+        
         #endregion
 
         #region メソッド
@@ -195,6 +196,13 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
 
             this.CurrentUser = user.ToMastodonAccount();
 
+            await this.InitializeFunctionCountersAsync();
+
+            return true;
+        }
+
+        private async Task InitializeFunctionCountersAsync()
+        {
             this.PublicStreamingFunctionCounter = new ConnectionFunctionCounter<MastodonStatus>(new PublicTimelineFunction
             {
                 Client = this.Client,
@@ -211,8 +219,6 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
             this.NotificationStreamingFunctionCounter = new ConnectionFunctionCompositionCounter<MastodonNotification, MastodonStatus>(
                 new NotificationFunction(this.Client, homeFunc), this.HomeStreamingFunctionCounter
             );
-
-            return true;
         }
 
         private void StartOAuthLogin()

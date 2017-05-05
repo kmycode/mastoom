@@ -1,5 +1,5 @@
 ﻿using Mastonet;
-using Mastoom.Shared.Models.Mastodon.Connection.Frame;
+using Mastoom.Shared.Models.Mastodon;
 using Mastoom.Shared.Models.Mastodon.Status;
 using System;
 using System.Collections.Generic;
@@ -18,12 +18,12 @@ namespace Mastoom.Shared.Models.Common
     /// </summary>
     public class ConnectionFrameStackModel : INotifyPropertyChanged
     {
-        private readonly Stack<ConnectionFrame> frames = new Stack<ConnectionFrame>();
+        private readonly Stack<MastodonConnection> frames = new Stack<MastodonConnection>();
 
         /// <summary>
         /// 現在表示すべきフレーム。ない（タイムライン表示）場合はnull
         /// </summary>
-        public ConnectionFrame CurrentFrame
+        public MastodonConnection CurrentFrame
         {
             get
             {
@@ -36,30 +36,30 @@ namespace Mastoom.Shared.Models.Common
         /// </summary>
         public bool IsHaveFrames => this.frames.Count > 0;
 
-        public void Push(ConnectionFrame frame)
+        public void Push(MastodonConnection frame)
         {
             this.frames.Push(frame);
-            this.Pushed?.Invoke(this, new EventArgs());
+            this.Pushed?.Invoke(this, new ConnectionFrameStackChangedEventArgs(frame));
             this.OnPropertyChanged("CurrentFrame");
             this.OnPropertyChanged("IsHaveFrames");
         }
 
-        public ConnectionFrame Pop()
+        public MastodonConnection Pop()
         {
             var item = this.frames.Pop();
-            this.Popped?.Invoke(this, new EventArgs());
+            this.Popped?.Invoke(this, new ConnectionFrameStackChangedEventArgs(item));
             this.OnPropertyChanged("CurrentFrame");
             this.OnPropertyChanged("IsHaveFrames");
             return item;
         }
 
-        public ConnectionFrame Peek()
+        public MastodonConnection Peek()
         {
             return this.frames.Peek();
         }
 
-        public event EventHandler Pushed;
-        public event EventHandler Popped;
+        public event EventHandler<ConnectionFrameStackChangedEventArgs> Pushed;
+        public event EventHandler<ConnectionFrameStackChangedEventArgs> Popped;
         
         #region INotifyPropertyChanged
 
@@ -70,5 +70,15 @@ namespace Mastoom.Shared.Models.Common
         }
 
         #endregion
+    }
+
+    public class ConnectionFrameStackChangedEventArgs : EventArgs
+    {
+        public MastodonConnection Frame { get; }
+
+        public ConnectionFrameStackChangedEventArgs(MastodonConnection frame)
+        {
+            this.Frame = frame;
+        }
     }
 }

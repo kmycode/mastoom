@@ -109,6 +109,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\Frames\SimpleTimelineFrame.xaml.cs">
+      <DependentUpon>SimpleTimelineFrame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Helpers\TimelineDataTemplateSelector.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +148,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\Frames\SimpleTimelineFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Parts\Converters.xaml">
       <SubType>Designer</SubType>

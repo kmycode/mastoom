@@ -28,5 +28,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection
         /// 通知
         /// </summary>
         Notification,
+
+        /// <summary>
+        /// トゥートの詳細
+        /// </summary>
+        StatusDetail,
     }
 }

@@ -34,6 +34,10 @@ namespace Mastoom.Shared.Models.Mastodon.Connection.Function.Container
             this._connectionType = type;
         }
 
+        protected FunctionContainerBase(ConnectionType type) : this(new MastodonObjectCollection<T>(), type)
+        {
+        }
+
         /// <summary>
         /// ConnectionFunctionが手に入った時に呼び出される。
         /// サブクラスからのオーバーライドは任意。

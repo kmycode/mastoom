@@ -20,7 +20,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Mastoom.Shared.ViewModels.ViewModelBase;
 using Mastoom.Shared.Repositories;
-using Mastoom.Shared.Models.Mastodon.Connection.Frame;
 
 namespace Mastoom.Shared.Models.Mastodon
 {
@@ -43,6 +42,8 @@ namespace Mastoom.Shared.Models.Mastodon
 		private string streamingInstance;
 
         private IFunctionContainer container;
+
+        private OAuthAccessTokenRepository tokenRepo;
 
         #endregion
 
@@ -129,7 +130,7 @@ namespace Mastoom.Shared.Models.Mastodon
         /// 画面遷移を制御するモデル。
         /// これを利用して、トゥートの詳細などを表示する
         /// </summary>
-        public ConnectionFrameStackModel FrameStack { get; } = new ConnectionFrameStackModel();
+        public ConnectionFrameStackModel FrameStack { get; private set; } = new ConnectionFrameStackModel();
 
 		#endregion
 
@@ -139,16 +140,27 @@ namespace Mastoom.Shared.Models.Mastodon
         {
             this.InstanceUri = instanceUri;
             this.container = functionContainer;
-            InitializeAsync(tokenRepo);
+            this.tokenRepo = tokenRepo;
+
+            this.InitializeAsync();
         }
 
-        private async void InitializeAsync(OAuthAccessTokenRepository tokenRepo)
+        private void PushNewFrame(IFunctionContainer functionContainer)
         {
-            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, tokenRepo);
+            var frame = new MastodonConnection(this.InstanceUri, functionContainer, this.tokenRepo)
+            {
+                FrameStack = this.FrameStack
+            };
+            this.FrameStack.Push(frame);
+        }
+
+        private async void InitializeAsync()
+        {
+            this.Auth = await MastodonAuthenticationHouse.Get(this.InstanceUri, this.tokenRepo);
 
             while (!this.Auth.HasAuthenticated)
             {
-                await this.Auth.DoAuth(tokenRepo);
+                await this.Auth.DoAuth(this.tokenRepo);
 
                 // TODO AccessToken が無効になってた場合にのみここに来るはず。
                 // AccessToken をクリアして、WebView で OAuth 認証からやり直す必要あり。
@@ -251,20 +263,25 @@ namespace Mastoom.Shared.Models.Mastodon
         }
         private RelayCommand<MastodonStatus> _deleteCommand;
 
+        /// <summary>
+        /// トゥートの詳細を表示する
+        /// </summary>
         public RelayCommand<MastodonStatus> ShowStatusDetailCommand
         {
             get
             {
                 return this._showStatusDetailCommand = this._showStatusDetailCommand ?? new RelayCommand<MastodonStatus>((status) =>
                 {
-                    var frame = new TootDetailFrame(status.Id);
-                    frame.LoadAsync(this.client);
-                    this.FrameStack.Push(frame);
+                    var container = new StatusDetailFunctionContainer(status.Id);
+                    this.PushNewFrame(container);
                 });
             }
         }
         private RelayCommand<MastodonStatus> _showStatusDetailCommand;
 
+        /// <summary>
+        /// フレーム内の画面遷移で、元のページに戻る
+        /// </summary>
         public RelayCommand BackFrameCommand
         {
             get
